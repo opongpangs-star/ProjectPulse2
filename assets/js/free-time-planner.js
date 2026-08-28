@@ -1,0 +1,169 @@
+/*
+ * free-time-planner.js — ตรรกะหน้า Smart Free-Time Planner (บทบาทนิสิต)
+ * โครงสร้างและ convention ยึดตาม assets/js/dashboard-student.js
+ */
+(function () {
+  const esc = PPNav.escapeHtml;
+  const user = PP.getCurrentUser();
+
+  // กันบทบาทผิด: หน้านี้สำหรับนิสิตเท่านั้น
+  if (user.role !== "student") {
+    document.getElementById("plannerContent").style.display = "none";
+    document.getElementById("roleGuardSlot").innerHTML = `
+      <div class="empty-state">
+        <div class="empty-state__icon">🔒</div>
+        หน้านี้ใช้สำหรับบทบาทนิสิตเท่านั้น
+        <div style="margin-top:10px;"><a href="advisor-dashboard.html" class="btn btn-primary btn-sm">กลับไปแดชบอร์ดอาจารย์</a></div>
+      </div>`;
+    return;
+  }
+
+  const team = PP.getTeam(user.teamId);
+
+  // id ของ slot ที่กำลังเปิดฟอร์ม "เปลี่ยนเวลา" อยู่ (มีได้ทีละ 1 ใบ)
+  let openRescheduleId = null;
+
+  const HISTORY_STATUS_META = {
+    confirmed: { icon: "✅", label: "ยืนยันแล้ว — อยู่ในปฏิทินแล้ว" },
+    declined: { icon: "🚫", label: "แจ้งว่าไม่สะดวก" },
+    split: { icon: "✂️", label: "แบ่งเป็นช่วงสั้นแล้ว" },
+  };
+
+  function renderAll() {
+    const advisor = PP.getAdvisor(team.advisorId);
+    document.getElementById("pageDesc").textContent =
+      `${team.name} · ${team.projectType} "${team.projectName}" · อาจารย์ที่ปรึกษา: ${advisor.name}`;
+    renderPending();
+    renderHistory();
+  }
+
+  function slotTimeLabel(slot) {
+    return `${ThaiDate.formatThaiDate(slot.date, { withDow: true })} · ${slot.start}–${slot.end} น.`;
+  }
+
+  function renderPending() {
+    const slots = PP.getFreeTimeSuggestions(team.id)
+      .filter((s) => s.status === "pending")
+      .sort((a, b) => (a.date + a.start).localeCompare(b.date + b.start));
+    const box = document.getElementById("pendingSlots");
+
+    if (!slots.length) {
+      box.innerHTML = `<div class="empty-state" style="grid-column:1/-1;"><div class="empty-state__icon">🎉</div>ยังไม่มีช่วงเวลาแนะนำใหม่ในขณะนี้ ระบบจะแนะนำเพิ่มเมื่อพบช่วงว่างที่เหมาะสม</div>`;
+      return;
+    }
+
+    box.innerHTML = slots.map((s) => `
+      <div class="slot-card">
+        <div class="slot-card__time">${esc(slotTimeLabel(s))}</div>
+        <div class="font-bold text-sm">${esc(s.taskSuggestion)}</div>
+        <div class="slot-card__reason">${esc(s.reason)}</div>
+        <div class="slot-card__actions">
+          <button class="btn btn-success btn-sm" data-act="confirm" data-id="${s.id}">✓ ยืนยันเวลานี้</button>
+          <button class="btn btn-outline btn-sm" data-act="reschedule-toggle" data-id="${s.id}">🔁 เปลี่ยนเวลา</button>
+          <button class="btn btn-secondary btn-sm" data-act="split" data-id="${s.id}">✂️ แบ่งเป็นช่วงสั้น</button>
+          <button class="btn btn-ghost btn-sm" data-act="decline" data-id="${s.id}">✕ แจ้งว่าไม่สะดวก</button>
+        </div>
+        ${openRescheduleId === s.id ? rescheduleFormHtml(s) : ""}
+      </div>`).join("");
+
+    bindPendingEvents();
+  }
+
+  function rescheduleFormHtml(s) {
+    return `
+      <div class="divider"></div>
+      <form data-reschedule-form="${s.id}">
+        <div class="form-row">
+          <div class="field">
+            <label for="rs-date-${s.id}">วันที่ใหม่</label>
+            <input class="input" type="date" id="rs-date-${s.id}" name="date" value="${s.date}" required />
+          </div>
+          <div class="field">
+            <label for="rs-start-${s.id}">เวลาเริ่ม</label>
+            <input class="input" type="time" id="rs-start-${s.id}" name="start" value="${s.start}" required />
+          </div>
+          <div class="field">
+            <label for="rs-end-${s.id}">เวลาสิ้นสุด</label>
+            <input class="input" type="time" id="rs-end-${s.id}" name="end" value="${s.end}" required />
+          </div>
+        </div>
+        <div class="flex gap-2" style="margin-top:8px;">
+          <button type="submit" class="btn btn-primary btn-sm">บันทึกเวลาใหม่</button>
+          <button type="button" class="btn btn-ghost btn-sm" data-act="reschedule-cancel" data-id="${s.id}">ยกเลิก</button>
+        </div>
+      </form>`;
+  }
+
+  function bindPendingEvents() {
+    const box = document.getElementById("pendingSlots");
+
+    box.querySelectorAll('[data-act="confirm"]').forEach((btn) => btn.addEventListener("click", () => {
+      PP.confirmFreeTimeSlot(btn.dataset.id);
+      PPToast.show("เพิ่มลงปฏิทินแล้ว ดูได้ที่ปฏิทินภาระงานทั้งเทอม", "success");
+      renderAll();
+    }));
+
+    box.querySelectorAll('[data-act="split"]').forEach((btn) => btn.addEventListener("click", () => {
+      PP.splitFreeTimeSlot(btn.dataset.id);
+      PPToast.show("แบ่งช่วงเวลาออกเป็น 2 ช่วงสั้นแล้ว", "success");
+      renderAll();
+    }));
+
+    box.querySelectorAll('[data-act="decline"]').forEach((btn) => btn.addEventListener("click", () => {
+      PP.declineFreeTimeSlot(btn.dataset.id);
+      PPToast.show("บันทึกว่าคุณไม่สะดวกช่วงเวลานี้แล้ว", "info");
+      renderAll();
+    }));
+
+    box.querySelectorAll('[data-act="reschedule-toggle"]').forEach((btn) => btn.addEventListener("click", () => {
+      openRescheduleId = openRescheduleId === btn.dataset.id ? null : btn.dataset.id;
+      renderPending();
+    }));
+
+    box.querySelectorAll('[data-act="reschedule-cancel"]').forEach((btn) => btn.addEventListener("click", () => {
+      openRescheduleId = null;
+      renderPending();
+    }));
+
+    box.querySelectorAll("[data-reschedule-form]").forEach((form) => form.addEventListener("submit", (ev) => {
+      ev.preventDefault();
+      const id = form.getAttribute("data-reschedule-form");
+      const date = form.querySelector('[name="date"]').value;
+      const start = form.querySelector('[name="start"]').value;
+      const end = form.querySelector('[name="end"]').value;
+      if (!date || !start || !end) { PPToast.show("กรุณากรอกวันที่และเวลาให้ครบ", "warn"); return; }
+      if (start >= end) { PPToast.show("เวลาสิ้นสุดต้องอยู่หลังเวลาเริ่ม", "warn"); return; }
+      PP.rescheduleFreeTimeSlot(id, date, start, end);
+      openRescheduleId = null;
+      PPToast.show("เปลี่ยนเวลานัดหมายแล้ว รอการยืนยันอีกครั้ง", "success");
+      renderAll();
+    }));
+  }
+
+  function renderHistory() {
+    const slots = PP.getFreeTimeSuggestions(team.id)
+      .filter((s) => s.status !== "pending")
+      .sort((a, b) => (b.date + b.start).localeCompare(a.date + a.start));
+    const box = document.getElementById("historySlots");
+
+    if (!slots.length) {
+      box.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🗒️</div>ยังไม่มีประวัติการพิจารณาช่วงเวลา</div>`;
+      return;
+    }
+
+    box.innerHTML = slots.map((s) => {
+      const meta = HISTORY_STATUS_META[s.status] || { icon: "•", label: s.status };
+      return `
+      <div class="slot-card${s.status === "confirmed" ? " is-confirmed" : ""}">
+        <div class="flex justify-between items-center" style="flex-wrap:wrap;gap:6px;">
+          <div class="slot-card__time">${esc(slotTimeLabel(s))}</div>
+          <span class="text-sm font-bold">${meta.icon} ${esc(meta.label)}</span>
+        </div>
+        <div class="text-sm">${esc(s.taskSuggestion)}</div>
+        <div class="slot-card__reason">${esc(s.reason)}</div>
+      </div>`;
+    }).join("");
+  }
+
+  renderAll();
+})();

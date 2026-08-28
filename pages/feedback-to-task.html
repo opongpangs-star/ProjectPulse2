@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Feedback → งานแก้ไข — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Feedback-to-Task</span>
+            <h1 id="pageTitle">แปลง Feedback เป็นงานที่ต้องทำ</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="project-timeline.html" class="btn btn-secondary">🧩 ไทม์ไลน์โครงงาน</a>
+          </div>
+        </div>
+
+        <div id="feedbackList" class="flex flex-col gap-4"></div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("feedback-to-task");</script>
+<script src="../assets/js/feedback-to-task.js"></script>
+</body>
+</html>

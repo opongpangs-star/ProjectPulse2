@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>แดชบอร์ดอาจารย์ — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Advisor Dashboard</span>
+            <h1 id="pageTitle">แดชบอร์ดอาจารย์</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="team-workload.html" class="btn btn-secondary">👥 ภาระงานทีม</a>
+            <a href="weekly-report.html" class="btn btn-primary">📊 Pilot Metrics</a>
+          </div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+
+        <div id="dashboardContent">
+
+          <div class="grid grid-4" id="statCards"></div>
+
+          <div class="card" style="border-color:#f3b7b2;">
+            <div class="card-hd">
+              <div>
+                <h3>🚧 ทีมที่ติดปัญหา</h3>
+                <div class="card-hd__sub">ทีมที่แจ้งว่าติดปัญหาอยู่ตอนนี้ — แยกจากคิวตรวจงานปกติ เพื่อให้เห็นทีมที่รอความช่วยเหลือได้ชัดเจน</div>
+              </div>
+            </div>
+            <div id="blockedTeamsBox" class="flex flex-col gap-2"></div>
+          </div>
+
+          <div class="grid grid-2">
+            <div class="card">
+              <div class="card-hd">
+                <div>
+                  <h3>🚨 Risk Radar</h3>
+                  <div class="card-hd__sub">ทีมที่มีความเสี่ยง พร้อมเหตุผลที่มาของความเสี่ยงเสมอ — ไม่แสดงคะแนนลอย ๆ</div>
+                </div>
+              </div>
+              <div id="riskRadarBox" class="flex flex-col gap-2"></div>
+            </div>
+            <div class="card">
+              <div class="card-hd">
+                <div>
+                  <h3>📋 ภาระงานตรวจของฉัน</h3>
+                  <div class="card-hd__sub">ภาพรวมคิวที่ต้องตรวจ ไม่ใช้ Gamification หรือ Leaderboard กดดันอาจารย์</div>
+                </div>
+              </div>
+              <div id="advisorWorkloadBox"></div>
+            </div>
+          </div>
+
+          <!-- Review Queue: องค์ประกอบหลักของหน้า ใช้พื้นที่มากที่สุด -->
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>📥 Review Queue — คิวงานรอตรวจ</h3>
+                <div class="card-hd__sub">เรียงตามระยะเวลารอ / Deadline / ความเสี่ยง / จำนวนรอบที่ส่งกลับมาแก้ไข — ปรับลำดับเองได้โดยต้องระบุเหตุผล</div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btnReviewNext">⏭️ ตรวจคิวถัดไป</button>
+            </div>
+            <div class="flex gap-3" style="flex-wrap:wrap;margin-bottom:14px;" id="queueFilters">
+              <div class="field" style="min-width:200px;flex:1;">
+                <label for="filterMilestoneStatus">กรองตามสถานะ Milestone</label>
+                <select class="input" id="filterMilestoneStatus">
+                  <option value="">ทั้งหมด</option>
+                </select>
+              </div>
+              <div class="field" style="min-width:180px;flex:1;">
+                <label for="filterRisk">กรองตามระดับความเสี่ยง</label>
+                <select class="input" id="filterRisk">
+                  <option value="">ทั้งหมด</option>
+                  <option value="ต่ำ">ต่ำ</option>
+                  <option value="ปานกลาง">ปานกลาง</option>
+                  <option value="สูง">สูง</option>
+                </select>
+              </div>
+            </div>
+            <div id="reviewQueueBox" class="flex flex-col gap-3"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>🧑‍🎓 ภาพรวมความก้าวหน้าของทุกทีม</h3>
+                <div class="card-hd__sub">คลิกชื่อทีมเพื่อดูรายละเอียดภาระงานของทีมนั้น</div>
+              </div>
+            </div>
+            <div id="teamsOverview" class="table-wrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><h3>🔔 แจ้งเตือนสำคัญ</h3></div>
+            <div id="urgentNotifBox" class="flex flex-col gap-2"></div>
+          </div>
+
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="overrideModalBackdrop">
+  <div class="modal" style="max-width:460px;">
+    <div class="modal-hd"><h3>📌 จัดลำดับคิวเอง</h3><button class="modal-close" id="closeOverrideModal">✕</button></div>
+    <p class="text-sm text-muted">ระบุเหตุผลที่ต้องการตรวจงานนี้ก่อนลำดับที่ระบบจัดไว้ — เหตุผลนี้จะแสดงในคิวให้เห็นด้วย</p>
+    <div class="field">
+      <label for="overrideReasonInput">เหตุผล</label>
+      <textarea class="input" id="overrideReasonInput" rows="3" placeholder="เช่น ทีมนี้มีนัดสอบเค้าโครงพรุ่งนี้ ต้องรีบให้ Feedback ก่อน"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelOverrideModal">ยกเลิก</button>
+      <button class="btn btn-primary" id="confirmOverrideModal">ยืนยันจัดลำดับ</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("advisor-dashboard");</script>
+<script src="../assets/js/dashboard-advisor.js"></script>
+</body>
+</html>

@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>แดชบอร์ดของฉัน — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Student Dashboard</span>
+            <h1 id="pageTitle">แดชบอร์ดของฉัน</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="project-timeline.html" class="btn btn-secondary">🧩 ไทม์ไลน์โครงงาน</a>
+            <a href="task-detail.html" class="btn btn-primary">📎 ส่งงาน / อัปเดตความคืบหน้า</a>
+          </div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+
+        <div id="dashboardContent">
+        <div id="collisionAlertSlot"></div>
+        <div id="recoveryBannerSlot"></div>
+
+        <!-- 1. Pulse Status Card: สิ่งที่ควรทำวันนี้ + สถานะชีพจร -->
+        <div id="heroSlot"></div>
+
+        <!-- แผนกู้จังหวะ — แสดงเมื่อชีพจรเป็นสีเหลือง/แดงเท่านั้น -->
+        <div id="recoveryPanelSlot"></div>
+
+        <!-- แถบสรุปสั้น ๆ -->
+        <div class="grid grid-4" id="statCards"></div>
+
+        <!-- 2 + 3: Recommended Free Time | Feedback Queue ของตัวเอง -->
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>⏱️ ช่วงเวลาว่างที่แนะนำวันนี้</h3>
+                <div class="card-hd__sub">วิเคราะห์จากตารางเรียนและภาระงานจริง — ไม่เดาจากแค่วันครบกำหนดส่ง</div>
+              </div>
+              <a href="free-time-planner.html" class="btn btn-ghost btn-sm">ดูทั้งหมด</a>
+            </div>
+            <div id="freeTimeTodayBox" class="flex flex-col gap-2"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>📥 คิวตรวจงานของฉัน</h3>
+                <div class="card-hd__sub">เห็นเฉพาะคิวของทีมตัวเอง ไม่แสดงข้อมูลทีมอื่น</div>
+              </div>
+            </div>
+            <div id="myQueueBox"></div>
+          </div>
+        </div>
+
+        <!-- 4. While You Wait / ภารกิจระหว่างรอ -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>➡️ ภารกิจระหว่างรอตรวจ (While You Wait)</h3>
+              <div class="card-hd__sub">ทำได้ขณะรออาจารย์ตรวจ เช่น เตรียมไฟล์ สำรองข้อมูล รวบรวมรายการแก้ไข — กดเสร็จเพื่อรับพลังชีพจร</div>
+            </div>
+          </div>
+          <div id="whileYouWaitBox" class="grid grid-auto"></div>
+        </div>
+
+        <!-- 5. Milestone Timeline + หลักฐานความคืบหน้า | กำหนดส่งที่กำลังจะมาถึง -->
+        <div class="grid grid-2">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>🧩 Milestone ปัจจุบัน & ถัดไป</h3>
+                <div class="card-hd__sub">ส่งหลักฐานความคืบหน้าระหว่างทางได้ ไม่ต้องรอให้เสร็จสมบูรณ์ก่อนค่อยอัปเดต</div>
+              </div>
+            </div>
+            <div id="milestoneMiniBox"></div>
+          </div>
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>📅 กำหนดส่งที่กำลังจะมาถึง</h3>
+                <div class="card-hd__sub">รวมกำหนดส่ง Milestone และงานจากวิชาอื่นในอีก 14 วันข้างหน้า</div>
+              </div>
+            </div>
+            <div id="upcomingDeadlines" class="table-wrap"></div>
+          </div>
+        </div>
+
+        <!-- งานอื่นที่ยังค้างอยู่ (รอง จาก Hero) -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>📋 งานอื่นที่ยังค้างอยู่</h3>
+              <div class="card-hd__sub">งานย่อยและรายการแก้ไขที่เหลือนอกเหนือจากงานหลักด้านบน</div>
+            </div>
+          </div>
+          <div id="secondaryTasksBox" class="flex flex-col gap-2"></div>
+        </div>
+
+        <!-- 6. Feedback-to-Task teaser -->
+        <div id="feedbackToTaskTeaserSlot"></div>
+
+        <!-- Project Pulse (Gamification) -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>💓 Project Pulse — ชีพจรของโครงงาน</h3>
+              <div class="card-hd__sub">ยิ่งดำเนินงานล่าช้าหรือหยุดอัปเดต ชีพจรจะยิ่งเต้นอ่อนและช้าลง — ใช้เพื่อสร้างแรงจูงใจ ไม่มีผลต่อคะแนนหรือการประเมินผลวิชา</div>
+            </div>
+            <span class="badge-chip" id="pulsePointsChip" title="พลังชีพจรสะสม — ไม่เกี่ยวข้องกับคะแนนรายวิชา"></span>
+          </div>
+          <div id="pulseWidgetBox"></div>
+          <div id="badgeRowBox" style="margin-top:12px;"></div>
+          <div style="margin-top:10px;"><a href="achievements.html" class="btn btn-ghost btn-sm">🏅 ดูตราความสำเร็จทั้งหมด</a></div>
+        </div>
+
+        <!-- แรงส่งประจำสัปดาห์ (Weekly Momentum) -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>📅 แรงส่งประจำสัปดาห์</h3>
+              <div class="card-hd__sub">ใช้แทน Daily Streak เพราะแต่ละสัปดาห์อาจต้องรออาจารย์หรือมีตารางเรียนไม่เหมือนกัน — มีความเคลื่อนไหวต่อเนื่อง 3 สัปดาห์ จะได้ตรา "รักษาจังหวะ"</div>
+            </div>
+          </div>
+          <div id="weeklyMomentumBox"></div>
+        </div>
+
+        <!-- 7. Weekly Check-in -->
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>🗓️ Weekly Check-in</h3>
+              <div class="card-hd__sub">ใช้เวลาไม่เกิน 1 นาทีต่อสัปดาห์ ไม่มีคำตอบผิด — แค่บอกความจริงของทีม</div>
+            </div>
+          </div>
+          <div id="weeklyCheckinBox"></div>
+        </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="blockedModalBackdrop">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hd"><h3>🚧 แจ้งว่าติดปัญหา</h3><button class="modal-close" id="closeBlockedModal">✕</button></div>
+    <p class="text-sm text-muted">อธิบายสั้น ๆ ว่าติดขัดตรงไหน อาจารย์ที่ปรึกษาจะได้รับแจ้งทันทีเพื่อช่วยปลดล็อกให้</p>
+    <div class="field">
+      <label for="blockedReasonInput">ติดปัญหาอะไร / ต้องการความช่วยเหลือแบบไหน</label>
+      <textarea class="input" id="blockedReasonInput" rows="3" placeholder="เช่น ติดต่อแหล่งข้อมูลไม่ได้ ต้องการให้อาจารย์ช่วยแนะนำผู้ให้สัมภาษณ์เพิ่ม"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelBlockedModal">ยกเลิก</button>
+      <button class="btn btn-danger" id="confirmBlockedModal">แจ้งอาจารย์ที่ปรึกษา</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="evidenceModalBackdrop">
+  <div class="modal" style="max-width:480px;">
+    <div class="modal-hd"><h3>📎 ส่งหลักฐานความคืบหน้า</h3><button class="modal-close" id="closeEvidenceModal">✕</button></div>
+    <p class="text-sm text-muted">ไม่ใช่การส่งงานฉบับเต็ม — แค่บันทึกความคืบหน้าระหว่างทาง เช่น ลิงก์ตัวอย่างงาน ไฟล์ หรือหมายเหตุสั้น ๆ</p>
+    <div class="form-row">
+      <div class="field">
+        <label for="evidenceType">ประเภทหลักฐาน</label>
+        <select class="input" id="evidenceType">
+          <option value="link">ลิงก์</option>
+          <option value="file">ชื่อไฟล์ (จำลอง)</option>
+          <option value="note">หมายเหตุ/ข้อความ</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="evidenceValue">ลิงก์ / ชื่อไฟล์</label>
+        <input class="input" id="evidenceValue" placeholder="เช่น https://... หรือ storyboard_v2.pdf" />
+      </div>
+    </div>
+    <div class="field">
+      <label for="evidenceNote">คำอธิบายสั้น ๆ</label>
+      <textarea class="input" id="evidenceNote" rows="2" placeholder="เช่น อัปโหลด Footage วันแรกครบแล้ว"></textarea>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelEvidenceModal">ยกเลิก</button>
+      <button class="btn btn-primary" id="confirmEvidenceModal">บันทึกหลักฐาน</button>
+    </div>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/pulse-widget.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("student-dashboard");</script>
+<script src="../assets/js/dashboard-student.js"></script>
+</body>
+</html>

@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ไทม์ไลน์โครงงาน &amp; Micro-Milestones — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Project Timeline</span>
+            <h1 id="pageTitle">ไทม์ไลน์โครงงานและ Micro-Milestones</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="student-dashboard.html" class="btn btn-ghost">🧭 กลับแดชบอร์ด</a>
+            <a href="task-detail.html" class="btn btn-primary">📎 ไปหน้าส่งงาน</a>
+          </div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>🗺️ เส้นทางโครงการ</h3>
+              <div class="card-hd__sub">Research → Storyboard/Planning → Prototype → Production → Testing → Presentation</div>
+            </div>
+          </div>
+          <div id="phaseMapBox" class="grid grid-auto"></div>
+        </div>
+
+        <div class="card">
+          <div class="card-hd">
+            <div>
+              <h3>🧩 Milestone ทั้งหมด (10 ขั้น)</h3>
+              <div class="card-hd__sub" id="timelineSummary"></div>
+            </div>
+          </div>
+          <div id="timelineList" class="timeline"></div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script src="../assets/js/pulse-widget.js"></script>
+<script>PPNav.mount("project-timeline");</script>
+<script src="../assets/js/project-timeline.js"></script>
+</body>
+</html>

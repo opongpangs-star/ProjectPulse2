@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>แผนเวลาว่างอัจฉริยะ — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Smart Free-Time Planner</span>
+            <h1 id="pageTitle">แผนเวลาว่างอัจฉริยะ</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="workload-map.html" class="btn btn-secondary">🗓️ ดูปฏิทินภาระงานทั้งเทอม</a>
+          </div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+
+        <div id="plannerContent">
+          <div class="card">
+            <div class="card-hd"><h3>ระบบพิจารณาช่วงเวลาว่างจากอะไรบ้าง</h3></div>
+            <div class="callout-muted">
+              ระบบไม่ได้สรุปเวลาว่างจากกำหนดส่งงานเพียงอย่างเดียว แต่พิจารณาร่วมกันจาก
+              ตารางเรียน, เวลานอน/เวลาส่วนตัว, งานประจำ/กิจกรรมของทีม, กำหนดส่งงานวิชาอื่น,
+              จำนวนชั่วโมงที่แต่ละงานต้องใช้ และช่วงเวลาที่ทีมทำงานได้อย่างมีประสิทธิภาพที่สุด
+              (เวอร์ชัน demo นี้ไม่ต้องกรอกระดับพลังงาน/สมาธิจริงของผู้ใช้)
+            </div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>⏱️ ช่วงเวลาแนะนำในสัปดาห์นี้</h3>
+                <div class="card-hd__sub">เลือกยืนยัน เปลี่ยนเวลา แบ่งเป็นช่วงสั้น หรือแจ้งว่าไม่สะดวกได้ทันที</div>
+              </div>
+            </div>
+            <div id="pendingSlots" class="grid grid-auto"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><h3>📜 ประวัติช่วงเวลาที่เคยพิจารณาแล้ว</h3></div>
+            <div id="historySlots" class="flex flex-col gap-2"></div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("free-time-planner");</script>
+<script src="../assets/js/free-time-planner.js"></script>
+</body>
+</html>

@@ -1,0 +1,346 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ProjectPulse — เข้าสู่ระบบ (Demo)</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  body { background: var(--pp-gradient-pulse); min-height: 100vh; }
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: var(--pp-space-6) var(--pp-space-4); }
+  .login-hero { text-align: center; color: #fff; max-width: 640px; margin-bottom: var(--pp-space-6); }
+  .login-hero h1 { color: #fff; font-size: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px; }
+  .login-hero p { color: rgba(255,255,255,.88); }
+  .login-card { background: #fff; border-radius: var(--pp-radius-lg); padding: var(--pp-space-5); width: 100%; max-width: 880px; box-shadow: var(--pp-shadow-lg); }
+  .role-tabs { display: flex; gap: 8px; background: var(--pp-surface-muted); padding: 4px; border-radius: 999px; margin-bottom: var(--pp-space-5); }
+  .role-tabs button { flex: 1; border: none; background: transparent; padding: 12px; border-radius: 999px; font-weight: 800; cursor: pointer; color: var(--pp-text-500); }
+  .role-tabs button.is-active { background: var(--pp-gradient-pulse); color: #fff; }
+  .id-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 420px; overflow-y: auto; padding: 2px; }
+  @media (max-width: 640px) { .id-grid { grid-template-columns: 1fr; } }
+  .id-card { border: 2px solid var(--pp-border); border-radius: var(--pp-radius-md); padding: 14px; cursor: pointer; text-align: left; background: #fff; }
+  .id-card:hover { border-color: var(--pp-purple-500); }
+  .id-card.is-selected { border-color: var(--pp-purple-600); background: var(--pp-purple-100); }
+  .id-card__title { font-weight: 800; color: var(--pp-navy-900); }
+  .id-card__sub { color: var(--pp-text-500); font-size: .82rem; margin-top: 2px; }
+  .login-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--pp-space-5); flex-wrap: wrap; gap: 12px; }
+  .pulse-legend { display:flex; gap: 14px; flex-wrap: wrap; color: rgba(255,255,255,.85); font-size:.8rem; margin-top: var(--pp-space-4);}
+  .pulse-legend span { display:flex; align-items:center; gap:6px; }
+</style>
+</head>
+<body>
+  <div class="login-wrap">
+    <div class="login-hero">
+      <h1><span class="pulse-dot" style="width:20px;height:20px;"></span> ProjectPulse</h1>
+      <p>ระบบติดตามความก้าวหน้ารายวิชาโครงงาน สาขาวิชาการสื่อสารสื่อใหม่ มหาวิทยาลัยพะเยา — เห็นภาระงานทั้งเทอม ไม่พลาดกำหนดส่ง และรู้เสมอว่าควรทำอะไรต่อ</p>
+      <div class="pulse-legend">
+        <span>💚 Pulse On Track</span>
+        <span>💛 Pulse Warning</span>
+        <span>❤️ Pulse Critical</span>
+      </div>
+    </div>
+
+    <div class="login-card">
+      <div class="role-tabs">
+        <button id="tabStudent" class="is-active">🎓 นิสิต</button>
+        <button id="tabAdvisor">🧑‍🏫 อาจารย์ที่ปรึกษา</button>
+      </div>
+
+      <div id="panelStudent">
+        <div class="flex justify-between items-center" style="margin-bottom:10px;flex-wrap:wrap;gap:8px;">
+          <p class="text-muted text-sm" style="margin:0;">เลือกทีมโครงงานที่มีอยู่แล้ว หรือสร้างทีมของคุณเองใหม่</p>
+          <button class="btn btn-secondary btn-sm" id="btnOpenCreateTeam">➕ สร้างทีมของฉันใหม่</button>
+        </div>
+        <div class="id-grid" id="teamGrid"></div>
+      </div>
+      <div id="panelAdvisor" style="display:none;">
+        <p class="text-muted text-sm" style="margin-bottom:10px;">เลือกอาจารย์ที่ปรึกษาที่ต้องการเข้าใช้งาน (Demo)</p>
+        <div class="id-grid" id="advisorGrid"></div>
+      </div>
+
+      <div class="login-footer">
+        <span class="text-xs text-muted">ข้อมูลทั้งหมดเป็นข้อมูลจำลองสำหรับสาธิต เก็บไว้ในเบราว์เซอร์ของคุณเท่านั้น</span>
+        <button class="btn btn-primary" id="btnEnter" disabled>เข้าสู่ระบบ →</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="createTeamBackdrop">
+    <div class="modal" style="max-width:580px;">
+      <div class="modal-hd">
+        <h3>➕ สร้างทีมโครงงานของฉัน</h3>
+        <button class="modal-close" id="closeCreateTeam">✕</button>
+      </div>
+      <form id="createTeamForm">
+        <div class="flex flex-col gap-3">
+          <div class="field">
+            <label for="ctTeamName">ชื่อทีม</label>
+            <input class="input" id="ctTeamName" required placeholder="เช่น ทีมของฉัน" />
+          </div>
+          <div class="form-row">
+            <div class="field">
+              <label for="ctProjectName">ชื่อโครงงาน</label>
+              <input class="input" id="ctProjectName" required placeholder="เช่น เรื่องเล่าจากบ้านเรา" />
+            </div>
+            <div class="field">
+              <label for="ctProjectType">ประเภทผลงาน</label>
+              <select class="input" id="ctProjectType">
+                <option>สารคดี</option><option>หนังสั้น</option><option>พอดแคสต์</option>
+                <option>แคมเปญโซเชียลมีเดีย</option><option>แอนิเมชัน</option><option>เกมเพื่อการศึกษา</option>
+                <option>เว็บไซต์เชิงโต้ตอบ</option><option>ภาพถ่ายสารคดี</option><option>ซีรีส์วล็อก</option>
+                <option>สื่อ Infographic</option><option>มิวสิควิดีโอ</option><option>Data Visualization</option>
+                <option>Motion Graphic</option><option>อื่นๆ</option>
+              </select>
+            </div>
+          </div>
+          <div class="field">
+            <label for="ctAdvisor">อาจารย์ที่ปรึกษา</label>
+            <select class="input" id="ctAdvisor"></select>
+          </div>
+          <div class="field">
+            <label>สมาชิกในทีม <span class="hint">(อย่างน้อย 1 คน)</span></label>
+            <div id="ctMembers" class="flex flex-col gap-2"></div>
+            <button type="button" class="btn btn-outline btn-sm" id="btnAddMemberRow" style="align-self:flex-start;margin-top:4px;">+ เพิ่มสมาชิก</button>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-ghost" id="cancelCreateTeam">ยกเลิก</button>
+          <button type="submit" class="btn btn-primary">สร้างทีมและเข้าสู่ระบบ →</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="onboardBackdrop">
+    <div class="modal" style="max-width:640px;">
+      <div class="modal-hd">
+        <h3>🗓️ ตั้งค่าตารางเรียน/เวลาส่วนตัวเริ่มต้น</h3>
+        <button class="modal-close" id="closeOnboard">✕</button>
+      </div>
+      <p class="text-sm text-muted">ใช้คำนวณช่วงเวลาว่างที่แนะนำให้ตรงกับตารางจริงของคุณ — ข้ามขั้นตอนนี้ไปก่อนแล้วมาตั้งค่าเพิ่มทีหลังได้เสมอที่หน้า "ตั้งค่า"</p>
+      <div class="field">
+        <label>เวลานอนปกติ</label>
+        <div class="form-row">
+          <div class="field"><label for="obSleepStart" class="hint">เข้านอนประมาณ</label><input type="time" class="input" id="obSleepStart" value="23:00" /></div>
+          <div class="field"><label for="obSleepEnd" class="hint">ตื่นประมาณ</label><input type="time" class="input" id="obSleepEnd" value="07:00" /></div>
+        </div>
+      </div>
+      <div class="field">
+        <label>ตารางเรียนประจำสัปดาห์ <span class="hint">(ไม่บังคับ)</span></label>
+        <div id="obScheduleRows" class="flex flex-col gap-2"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="btnAddScheduleRow" style="align-self:flex-start;margin-top:4px;">+ เพิ่มคาบเรียน</button>
+      </div>
+      <div class="field">
+        <label>งานจากวิชาอื่นที่ต้องส่งเร็ว ๆ นี้ <span class="hint">(ไม่บังคับ)</span></label>
+        <div id="obOtherCourseRows" class="flex flex-col gap-2"></div>
+        <button type="button" class="btn btn-outline btn-sm" id="btnAddOtherCourseRow" style="align-self:flex-start;margin-top:4px;">+ เพิ่มงานวิชาอื่น</button>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="btnFinishOnboard">เริ่มใช้งาน →</button>
+      </div>
+    </div>
+  </div>
+
+<script src="assets/js/thai-date.js"></script>
+<script src="assets/js/seed-data.js"></script>
+<script src="assets/js/store.js"></script>
+<script>
+  const HEALTH_LABEL = { green: "Pulse On Track", yellow: "Pulse Warning", red: "Pulse Critical" };
+  const HEALTH_HEART = { green: "💚", yellow: "💛", red: "❤️" };
+  const HEALTH_CHIP = { green: "chip-green", yellow: "chip-yellow", red: "chip-red" };
+  let mode = "student";
+  let selectedTeam = null, selectedAdvisor = null;
+
+  function renderTeams() {
+    const grid = document.getElementById("teamGrid");
+    grid.innerHTML = PP.getTeams().map((t) => {
+      const health = PP.computeHealthScore(t.id); // ใช้ชีพจรที่คำนวณสดเสมอ ไม่ใช่ค่า t.health แบบ seed ที่นิ่งค้างไว้
+      return `
+      <button class="id-card" data-team="${t.id}">
+        <div class="id-card__title">${t.name}</div>
+        <div class="id-card__sub">${t.projectType} · "${t.projectName}"</div>
+        <span class="chip ${HEALTH_CHIP[health.level]}" style="margin-top:8px;">${HEALTH_HEART[health.level]} ${HEALTH_LABEL[health.level]}</span>
+      </button>`;
+    }).join("");
+    grid.querySelectorAll("[data-team]").forEach((el) => el.addEventListener("click", () => {
+      selectedTeam = el.dataset.team;
+      grid.querySelectorAll(".id-card").forEach((c) => c.classList.remove("is-selected"));
+      el.classList.add("is-selected");
+      document.getElementById("btnEnter").disabled = false;
+    }));
+  }
+  function renderAdvisors() {
+    const grid = document.getElementById("advisorGrid");
+    grid.innerHTML = PP.getAdvisors().map((a) => {
+      const teams = PP.getTeamsByAdvisor(a.id);
+      return `<button class="id-card" data-adv="${a.id}">
+        <div class="id-card__title">${a.name}</div>
+        <div class="id-card__sub">ดูแล ${teams.length} ทีมโครงงาน</div>
+      </button>`;
+    }).join("");
+    grid.querySelectorAll("[data-adv]").forEach((el) => el.addEventListener("click", () => {
+      selectedAdvisor = el.dataset.adv;
+      grid.querySelectorAll(".id-card").forEach((c) => c.classList.remove("is-selected"));
+      el.classList.add("is-selected");
+      document.getElementById("btnEnter").disabled = false;
+    }));
+  }
+
+  document.getElementById("tabStudent").addEventListener("click", () => {
+    mode = "student";
+    document.getElementById("tabStudent").classList.add("is-active");
+    document.getElementById("tabAdvisor").classList.remove("is-active");
+    document.getElementById("panelStudent").style.display = "";
+    document.getElementById("panelAdvisor").style.display = "none";
+    document.getElementById("btnEnter").disabled = !selectedTeam;
+  });
+  document.getElementById("tabAdvisor").addEventListener("click", () => {
+    mode = "advisor";
+    document.getElementById("tabAdvisor").classList.add("is-active");
+    document.getElementById("tabStudent").classList.remove("is-active");
+    document.getElementById("panelAdvisor").style.display = "";
+    document.getElementById("panelStudent").style.display = "none";
+    document.getElementById("btnEnter").disabled = !selectedAdvisor;
+  });
+  document.getElementById("btnEnter").addEventListener("click", () => {
+    if (mode === "student" && selectedTeam) {
+      PP.setCurrentTeam(selectedTeam);
+      window.location.href = "pages/student-dashboard.html";
+    } else if (mode === "advisor" && selectedAdvisor) {
+      PP.setCurrentAdvisor(selectedAdvisor);
+      window.location.href = "pages/advisor-dashboard.html";
+    }
+  });
+
+  renderTeams();
+  renderAdvisors();
+
+  // ---------------------------------------------------------------------
+  // สร้างทีมโครงงานของตัวเอง (สำหรับนิสิตที่ต้องการใช้ข้อมูลจริงของทีมตัวเอง แทนทีมตัวอย่าง)
+  // ---------------------------------------------------------------------
+  const createTeamBackdrop = document.getElementById("createTeamBackdrop");
+  const ctMembersBox = document.getElementById("ctMembers");
+
+  function addMemberRow(prefillName, prefillRole) {
+    const row = document.createElement("div");
+    row.className = "flex gap-2 member-row";
+    row.innerHTML = `
+      <input class="input" data-field="name" placeholder="ชื่อ-สกุล" value="${prefillName ? prefillName.replace(/"/g, "&quot;") : ""}" />
+      <input class="input" data-field="role" placeholder="บทบาท เช่น หัวหน้าทีม" style="max-width:200px;" value="${prefillRole ? prefillRole.replace(/"/g, "&quot;") : ""}" />
+      <button type="button" class="btn btn-danger btn-sm" data-remove-row>ลบ</button>
+    `;
+    row.querySelector("[data-remove-row]").addEventListener("click", () => {
+      if (ctMembersBox.children.length > 1) row.remove();
+    });
+    ctMembersBox.appendChild(row);
+  }
+
+  function openCreateTeamModal() {
+    const advSelect = document.getElementById("ctAdvisor");
+    advSelect.innerHTML = PP.getAdvisors().map((a) => `<option value="${a.id}">${a.name}</option>`).join("");
+    ctMembersBox.innerHTML = "";
+    addMemberRow("", "หัวหน้าทีม");
+    createTeamBackdrop.classList.add("is-open");
+  }
+
+  document.getElementById("btnOpenCreateTeam").addEventListener("click", openCreateTeamModal);
+  document.getElementById("closeCreateTeam").addEventListener("click", () => createTeamBackdrop.classList.remove("is-open"));
+  document.getElementById("cancelCreateTeam").addEventListener("click", () => createTeamBackdrop.classList.remove("is-open"));
+  createTeamBackdrop.addEventListener("click", (e) => { if (e.target === createTeamBackdrop) createTeamBackdrop.classList.remove("is-open"); });
+  document.getElementById("btnAddMemberRow").addEventListener("click", () => addMemberRow("", ""));
+
+  document.getElementById("createTeamForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const members = Array.from(ctMembersBox.querySelectorAll(".member-row")).map((row) => ({
+      name: row.querySelector('[data-field="name"]').value.trim(),
+      role: row.querySelector('[data-field="role"]').value.trim() || "สมาชิก",
+    })).filter((m) => m.name);
+    if (!members.length) { alert("กรุณากรอกชื่อสมาชิกอย่างน้อย 1 คน"); return; }
+
+    const team = PP.createTeam({
+      name: document.getElementById("ctTeamName").value.trim(),
+      projectName: document.getElementById("ctProjectName").value.trim(),
+      projectType: document.getElementById("ctProjectType").value,
+      advisorId: document.getElementById("ctAdvisor").value,
+      members,
+    });
+    // ระบุสมาชิกคนแรกของทีมใหม่นี้เป็นผู้ใช้ปัจจุบันเสมอ — ป้องกัน studentId ของทีมก่อนหน้าค้างอยู่
+    PP.setCurrentTeam(team.id, team.memberIds && team.memberIds[0]);
+    createTeamBackdrop.classList.remove("is-open");
+    openOnboardModal(team);
+  });
+
+  // ---------------------------------------------------------------------
+  // ตั้งค่าตารางเรียน/เวลาส่วนตัว/งานวิชาอื่นเบื้องต้น สำหรับทีมที่สร้างขึ้นใหม่ (ไม่บังคับ ข้ามได้)
+  // ---------------------------------------------------------------------
+  const onboardBackdrop = document.getElementById("onboardBackdrop");
+  const DOW_LABELS = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
+  let onboardTeam = null;
+
+  function addOnboardScheduleRow() {
+    const box = document.getElementById("obScheduleRows");
+    const row = document.createElement("div");
+    row.className = "form-row";
+    row.innerHTML = `
+      <select class="input" data-field="dow" style="max-width:130px;">${DOW_LABELS.map((l, i) => `<option value="${i}">${l}</option>`).join("")}</select>
+      <input type="time" class="input" data-field="start" value="09:00" style="max-width:110px;" />
+      <input type="time" class="input" data-field="end" value="12:00" style="max-width:110px;" />
+      <input class="input" data-field="title" placeholder="ชื่อวิชา" />
+      <button type="button" class="btn btn-danger btn-sm" data-remove-row>ลบ</button>`;
+    row.querySelector("[data-remove-row]").addEventListener("click", () => row.remove());
+    box.appendChild(row);
+  }
+  function addOnboardOtherCourseRow() {
+    const box = document.getElementById("obOtherCourseRows");
+    const row = document.createElement("div");
+    row.className = "form-row";
+    row.innerHTML = `
+      <input class="input" data-field="courseName" placeholder="ชื่อวิชา" />
+      <input class="input" data-field="title" placeholder="งานที่ต้องส่ง" />
+      <input type="date" class="input" data-field="dueDate" style="max-width:150px;" />
+      <input type="number" min="1" class="input" data-field="hours" placeholder="ชม." style="max-width:80px;" />
+      <button type="button" class="btn btn-danger btn-sm" data-remove-row>ลบ</button>`;
+    row.querySelector("[data-remove-row]").addEventListener("click", () => row.remove());
+    box.appendChild(row);
+  }
+  function openOnboardModal(team) {
+    onboardTeam = team;
+    document.getElementById("obScheduleRows").innerHTML = "";
+    document.getElementById("obOtherCourseRows").innerHTML = "";
+    document.getElementById("obSleepStart").value = "23:00";
+    document.getElementById("obSleepEnd").value = "07:00";
+    onboardBackdrop.classList.add("is-open");
+  }
+  function finishOnboarding() {
+    if (!onboardTeam) return;
+    const studentId = PP.getCurrentUser().studentId;
+    PP.updatePersonalPrefs(studentId, {
+      sleepStart: document.getElementById("obSleepStart").value || "23:00",
+      sleepEnd: document.getElementById("obSleepEnd").value || "07:00",
+    });
+    document.querySelectorAll("#obScheduleRows .form-row").forEach((row) => {
+      const start = row.querySelector('[data-field="start"]').value;
+      const end = row.querySelector('[data-field="end"]').value;
+      const title = row.querySelector('[data-field="title"]').value.trim();
+      if (start && end && title) {
+        PP.addScheduleBlock(onboardTeam.id, { dow: row.querySelector('[data-field="dow"]').value, start, end, title });
+      }
+    });
+    document.querySelectorAll("#obOtherCourseRows .form-row").forEach((row) => {
+      const courseName = row.querySelector('[data-field="courseName"]').value.trim();
+      const title = row.querySelector('[data-field="title"]').value.trim();
+      const dueDate = row.querySelector('[data-field="dueDate"]').value;
+      const hours = row.querySelector('[data-field="hours"]').value;
+      if (courseName && title && dueDate && hours) {
+        PP.addOtherCourseTask(onboardTeam.id, { courseName, title, dueDate: new Date(dueDate + "T23:59:00").toISOString(), hoursEstimate: hours });
+      }
+    });
+    onboardBackdrop.classList.remove("is-open");
+    window.location.href = "pages/student-dashboard.html";
+  }
+  document.getElementById("btnAddScheduleRow").addEventListener("click", addOnboardScheduleRow);
+  document.getElementById("btnAddOtherCourseRow").addEventListener("click", addOnboardOtherCourseRow);
+  document.getElementById("btnFinishOnboard").addEventListener("click", finishOnboarding);
+  document.getElementById("closeOnboard").addEventListener("click", finishOnboarding);
+</script>
+</body>
+</html>

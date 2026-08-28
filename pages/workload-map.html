@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ปฏิทินภาระงานทั้งเทอม — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Semester Workload Map</span>
+            <h1 id="pageTitle">ปฏิทินภาระงานทั้งเทอม</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="free-time-planner.html" class="btn btn-secondary">⏱️ แผนเวลาว่างอัจฉริยะ</a>
+          </div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+
+        <div id="mapContent">
+          <div class="card">
+            <div class="card-hd">
+              <div>
+                <h3>📚 งานจากวิชาอื่นของฉัน</h3>
+                <div class="card-hd__sub">เพิ่มงาน/กำหนดส่งจากวิชาอื่นเอง ระบบจะคำนวณ Deadline Collision และช่วงเวลาว่างใหม่ให้ทันที</div>
+              </div>
+              <button class="btn btn-primary btn-sm" id="btnAddOtherCourseTask">+ เพิ่มงานจากวิชาอื่น</button>
+            </div>
+            <div id="otherCourseTaskList" class="table-wrap"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd flex justify-between items-center" style="flex-wrap:wrap;gap:8px;">
+              <div class="flex items-center gap-2">
+                <button class="btn btn-outline btn-sm" id="btnPrevMonth" aria-label="เดือนก่อนหน้า">‹ เดือนก่อนหน้า</button>
+                <h3 id="calMonthLabel" style="min-width:180px;text-align:center;"></h3>
+                <button class="btn btn-outline btn-sm" id="btnNextMonth" aria-label="เดือนถัดไป">เดือนถัดไป ›</button>
+              </div>
+              <span class="text-xs text-muted" id="calRangeHint"></span>
+            </div>
+            <div class="cal-grid" id="calDowRow" style="margin-bottom:6px;"></div>
+            <div class="cal-grid" id="calGrid"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><h3>คำอธิบายสัญลักษณ์</h3></div>
+            <div class="flex flex-col gap-3">
+              <div>
+                <div class="text-sm font-bold" style="margin-bottom:6px;">ประเภทกิจกรรม</div>
+                <div class="legend" id="legendTypes"></div>
+              </div>
+              <div class="divider"></div>
+              <div>
+                <div class="text-sm font-bold" style="margin-bottom:6px;">ระดับภาระงานต่อวัน (Heatmap)</div>
+                <div class="legend" id="legendLoad"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="dayModalBackdrop">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3 id="dayModalTitle"></h3>
+      <button class="modal-close" id="dayModalClose">✕</button>
+    </div>
+    <div id="dayModalBody" class="flex flex-col gap-2"></div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary btn-sm" id="dayModalCloseBtn">ปิด</button>
+    </div>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="taskModalBackdrop">
+  <div class="modal">
+    <div class="modal-hd">
+      <h3>📚 เพิ่มงานจากวิชาอื่น</h3>
+      <button class="modal-close" id="taskModalClose">✕</button>
+    </div>
+    <form id="otherCourseTaskForm">
+      <div class="flex flex-col gap-3">
+        <div class="field">
+          <label for="ocCourseName">ชื่อวิชา</label>
+          <input class="input" id="ocCourseName" type="text" required placeholder="เช่น หลักการตลาดดิจิทัล" />
+        </div>
+        <div class="field">
+          <label for="ocTitle">ชื่องาน/กำหนดส่ง</label>
+          <input class="input" id="ocTitle" type="text" required placeholder="เช่น ส่งรายงานกลุ่ม" />
+        </div>
+        <div class="form-row">
+          <div class="field">
+            <label for="ocDueDate">วันที่ครบกำหนด</label>
+            <input class="input" id="ocDueDate" type="date" required />
+          </div>
+          <div class="field">
+            <label for="ocDueTime">เวลา</label>
+            <input class="input" id="ocDueTime" type="time" value="23:59" required />
+          </div>
+        </div>
+        <div class="field">
+          <label for="ocHours">จำนวนชั่วโมงที่คาดว่าจะใช้ <span class="hint">(โดยประมาณ)</span></label>
+          <input class="input" id="ocHours" type="number" min="0.5" step="0.5" required placeholder="เช่น 4" />
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-ghost" id="taskModalCancel">ยกเลิก</button>
+        <button type="submit" class="btn btn-primary">+ เพิ่มงานนี้</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("workload-map");</script>
+<script src="../assets/js/workload-map.js"></script>
+</body>
+</html>

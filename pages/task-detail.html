@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>รายละเอียดงานและการส่งไฟล์ — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Task Detail</span>
+            <h1 id="pageTitle">รายละเอียดงานและการส่งไฟล์</h1>
+            <p class="page-head__desc" id="pageDesc"></p>
+          </div>
+          <div class="page-head__actions">
+            <a href="student-dashboard.html" class="btn btn-ghost">🧭 กลับแดชบอร์ด</a>
+            <a href="project-timeline.html" class="btn btn-secondary">🧩 ดูไทม์ไลน์ทั้งหมด</a>
+          </div>
+        </div>
+
+        <div id="feedbackAlertSlot"></div>
+
+        <div class="grid grid-3">
+          <div class="card col-span-2">
+            <div class="card-hd">
+              <div>
+                <h3 id="milestoneTitle">Milestone ปัจจุบัน</h3>
+                <div class="card-hd__sub" id="milestoneSub"></div>
+              </div>
+            </div>
+            <div id="milestoneInfo" class="grid grid-2" style="margin-bottom:16px;"></div>
+            <div class="font-bold text-sm" style="margin-bottom:6px;">✅ งานย่อยทั้งหมด</div>
+            <div id="subtaskList" class="flex flex-col gap-2"></div>
+          </div>
+
+          <div class="card">
+            <div class="card-hd"><h3>📨 ส่งงานเข้าคิวตรวจ</h3></div>
+            <div id="submitStatusSlot"></div>
+            <form id="submitForm">
+              <fieldset id="submitFieldset" style="border:none;padding:0;margin:0;display:flex;flex-direction:column;gap:14px;">
+                <div id="resubmitSection" style="display:none;">
+                  <div class="field">
+                    <label>รายการที่แก้ไขแล้วจาก Feedback ล่าสุด</label>
+                    <div id="resubmitChecklistBox" class="flex flex-col gap-2"></div>
+                  </div>
+                  <div class="field">
+                    <label for="changesSummaryInput">อธิบายสิ่งที่แก้ไข <span class="hint">(จำเป็นก่อนส่งใหม่)</span></label>
+                    <textarea id="changesSummaryInput" class="input" rows="3" placeholder="สรุปว่าแก้อะไรไปบ้างตาม Feedback ที่ได้รับ"></textarea>
+                  </div>
+                </div>
+                <div class="field">
+                  <label for="fileInput">แนบไฟล์งาน</label>
+                  <input type="file" id="fileInput" class="input" />
+                  <span class="hint">ระบบจำลองการแนบไฟล์ — บันทึกเฉพาะชื่อไฟล์ ไม่มีการอัปโหลดจริง</span>
+                </div>
+                <div class="field">
+                  <label for="noteInput">หมายเหตุถึงอาจารย์ที่ปรึกษา</label>
+                  <textarea id="noteInput" class="input" rows="4" placeholder="สรุปสิ่งที่ทำ ปัญหาที่พบ หรือคำถามถึงอาจารย์"></textarea>
+                </div>
+                <button type="submit" class="btn btn-primary btn-block" id="btnSubmitMilestone">📨 ส่งงานเข้าคิวตรวจ</button>
+              </fieldset>
+            </form>
+          </div>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script src="../assets/js/pulse-widget.js"></script>
+<script>PPNav.mount("task-detail");</script>
+<script src="../assets/js/task-detail.js"></script>
+</body>
+</html>
