@@ -22,6 +22,18 @@
 
 เอกสารระดับ conceptual (`ARCHITECTURE.md`, `CONCEPTUAL_DATA_MODEL.md`, `CONCEPTUAL_API_SPEC.md`, `DETAILED_DESIGN.md`) ไม่ผูกกับ implementation ปัจจุบัน ใช้ Mermaid diagram ตลอด (render อัตโนมัติบน GitHub)
 
+## ฐานข้อมูลจริง (Firestore)
+
+โปรเจกต์นี้เชื่อมกับ [Cloud Firestore](https://firebase.google.com/products/firestore) จริงแล้ว (นอกเหนือจาก localStorage ที่แอปหลักยังใช้อยู่) — ดูรายละเอียด:
+
+- [firebase-config.js](assets/js/firebase-config.js) — การตั้งค่าเชื่อมต่อ
+- [seed-firestore.html](seed-firestore.html) — สคริปต์ใส่ข้อมูลตัวอย่าง (`advisors` 3 รายการ, `teams` 5 รายการ)
+- [firestore-teams.html](firestore-teams.html) — หน้ารายการทีมที่อ่านข้อมูลสดจาก Firestore โดยตรง
+
+ภาพหน้า Firebase Console แสดงข้อมูลจริงใน collection `teams`:
+
+![หน้า Firestore Console แสดง collection teams](docs/firestore-console.png)
+
 ## เทคโนโลยีที่ใช้ (Implementation ปัจจุบัน)
 
 Prototype แบบ static เว็บล้วน ไม่มี backend/database จริง — ข้อมูลทั้งหมดเก็บใน **localStorage** ของเบราว์เซอร์ผ่านชั้นข้อมูล `assets/js/store.js` (`window.PP`)
