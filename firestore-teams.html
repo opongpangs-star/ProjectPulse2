@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ProjectPulse2 — ภาพรวมทีมทั้งหมด (จาก Firestore)</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  .page-wrap { max-width: 960px; margin: 40px auto; padding: 0 20px; }
+  .team-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: var(--pp-space-4); margin-top: var(--pp-space-5); }
+  .team-card__title { margin: 0 0 4px; }
+  .team-card__project { color: var(--pp-text-500); font-size: .85rem; margin: 0 0 10px; }
+  .team-card__meta { font-size: .82rem; color: var(--pp-text-700); display: flex; flex-direction: column; gap: 4px; margin-top: 10px; }
+  .toolbar { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; margin-top: var(--pp-space-3); }
+</style>
+</head>
+<body>
+  <div class="page-wrap">
+    <h1>📋 ภาพรวมทีมทั้งหมด</h1>
+    <p class="text-muted">อ่านข้อมูลสด ๆ จากโฟลเดอร์ <code>teams</code> ใน Firestore โดยตรง (ไม่ผ่าน localStorage ของแอปหลัก)</p>
+
+    <div class="toolbar">
+      <span id="statusLine" class="text-muted" style="font-size:.85rem;">กำลังโหลด...</span>
+      <div>
+        <button class="btn btn-secondary btn-sm" id="btnReload">🔄 โหลดใหม่</button>
+        <a class="btn btn-secondary btn-sm" href="index.html">กลับหน้าแรก</a>
+      </div>
+    </div>
+
+    <div class="team-grid" id="teamGrid"></div>
+  </div>
+
+  <script type="module">
+    import { db } from "./assets/js/firebase-config.js";
+    import {
+      collection,
+      getDocs,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const HEALTH_META = {
+      เขียว: { chip: "chip-green", icon: "🟢" },
+      เหลือง: { chip: "chip-yellow", icon: "🟡" },
+      แดง: { chip: "chip-red", icon: "🔴" },
+    };
+
+    const gridEl = document.getElementById("teamGrid");
+    const statusEl = document.getElementById("statusLine");
+
+    function escapeHtml(str) {
+      const div = document.createElement("div");
+      div.textContent = str ?? "";
+      return div.innerHTML;
+    }
+
+    function renderTeamCard(team) {
+      const health = HEALTH_META[team.health] || HEALTH_META["เขียว"];
+      const blockedBadge = team.blocksNext
+        ? `<span class="chip chip-red" style="margin-top:8px;">⛔ ติดปัญหา ไปขั้นถัดไปไม่ได้</span>`
+        : "";
+      return `
+        <div class="card card-pad-lg">
+          <div class="card-hd">
+            <div>
+              <h3 class="team-card__title">${escapeHtml(team.name)}</h3>
+              <p class="team-card__project">${escapeHtml(team.projectName)}</p>
+            </div>
+            <span class="chip ${health.chip}">${health.icon} ${escapeHtml(team.health)}</span>
+          </div>
+          <div class="team-card__meta">
+            <span>🧑‍🏫 อาจารย์ที่ปรึกษา: ${escapeHtml(team.advisorName)}</span>
+            <span>🚩 Milestone ปัจจุบัน: ลำดับที่ ${escapeHtml(team.currentMilestoneOrder)}</span>
+            <span>📌 ประเภทโครงงาน: ${escapeHtml(team.projectType)}</span>
+          </div>
+          ${blockedBadge}
+        </div>`;
+    }
+
+    async function loadTeams() {
+      statusEl.textContent = "กำลังโหลด...";
+      gridEl.innerHTML = "";
+      try {
+        const snapshot = await getDocs(collection(db, "teams"));
+        if (snapshot.empty) {
+          statusEl.textContent = "ยังไม่มีข้อมูลทีมใน Firestore";
+          return;
+        }
+        const teams = snapshot.docs.map((d) => d.data());
+        gridEl.innerHTML = teams.map(renderTeamCard).join("");
+        const now = new Date();
+        statusEl.textContent = `พบ ${teams.length} ทีม · โหลดล่าสุด ${now.toLocaleTimeString("th-TH")}`;
+      } catch (err) {
+        statusEl.textContent = `โหลดข้อมูลไม่สำเร็จ: ${err.message}`;
+      }
+    }
+
+    document.getElementById("btnReload").addEventListener("click", loadTeams);
+    loadTeams();
+  </script>
+</body>
+</html>

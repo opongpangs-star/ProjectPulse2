@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ProjectPulse2 — ใส่ข้อมูลตัวอย่างลง Firestore</title>
+<link rel="stylesheet" href="assets/css/style.css" />
+<style>
+  body { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+  .log-line { padding: 6px 10px; border-radius: 6px; margin-bottom: 6px; font-family: monospace; font-size: 0.85rem; }
+  .log-ok { background: #e6f7ee; color: #0a7a3d; }
+  .log-err { background: #fdeaea; color: #b3261e; }
+  .log-info { background: #eef2f7; color: #33475b; }
+  #log { margin-top: 20px; }
+</style>
+</head>
+<body>
+  <h1>🌱 ใส่ข้อมูลตัวอย่างลง Firestore</h1>
+  <p class="text-muted">
+    หน้านี้เขียน 3 เอกสารลงโฟลเดอร์ <code>advisors</code> และ 5 เอกสารลงโฟลเดอร์ <code>teams</code> ตามแผนที่วางไว้ในส่วน B
+    (ข้อมูลทั้งหมดเป็นข้อมูลสมมติ ไม่ใช่นิสิต/อาจารย์จริง) — กดปุ่มด้านล่างครั้งเดียว รันซ้ำได้ปลอดภัย (เขียนทับ id เดิม ไม่สร้างซ้ำ)
+  </p>
+
+  <button class="btn btn-primary" id="btnSeed">ใส่ข้อมูลตัวอย่างเลย</button>
+  <a class="btn btn-secondary" href="index.html" style="margin-left:8px;">กลับหน้าแรก</a>
+
+  <div id="log"></div>
+
+  <script type="module">
+    import { db } from "./assets/js/firebase-config.js";
+    import {
+      doc,
+      setDoc,
+    } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    const advisors = [
+      { id: "adv-01", name: "อ.ดวงใจ ศรีวิไล", initials: "ด.ว.", feedbackSlaDays: 3 },
+      { id: "adv-02", name: "อ.สมชาย พงษ์เจริญ", initials: "ส.ช.", feedbackSlaDays: 5 },
+      { id: "adv-03", name: "อ.พิมพ์ชนก แก้วมณี", initials: "พ.ช.", feedbackSlaDays: 3 },
+    ];
+
+    const teams = [
+      {
+        id: "team-01",
+        name: "ทีมสารคดีสายลม",
+        projectType: "สื่อสารคดี",
+        projectName: "สารคดีสั้นด้านสิ่งแวดล้อมพะเยา",
+        advisorId: "adv-01",
+        advisorName: "อ.ดวงใจ ศรีวิไล",
+        pace: "ตามแผน",
+        health: "เขียว",
+        currentMilestoneOrder: 4,
+        blocksNext: false,
+        inactivityDays: 0,
+      },
+      {
+        id: "team-02",
+        name: "ทีมกาแล็กซี่มีเดีย",
+        projectType: "แอปพลิเคชัน",
+        projectName: "แอปแนะนำร้านอาหารท้องถิ่น",
+        advisorId: "adv-02",
+        advisorName: "อ.สมชาย พงษ์เจริญ",
+        pace: "ช้ากว่าแผนเล็กน้อย",
+        health: "เหลือง",
+        currentMilestoneOrder: 3,
+        blocksNext: false,
+        inactivityDays: 2,
+      },
+      {
+        id: "team-03",
+        name: "ทีมเสียงเมือง",
+        projectType: "พอดแคสต์",
+        projectName: "พอดแคสต์ประวัติศาสตร์พะเยา",
+        advisorId: "adv-01",
+        advisorName: "อ.ดวงใจ ศรีวิไล",
+        pace: "ตามแผน",
+        health: "เขียว",
+        currentMilestoneOrder: 5,
+        blocksNext: false,
+        inactivityDays: 0,
+      },
+      {
+        id: "team-04",
+        name: "ทีมดินสอสี",
+        projectType: "เกม",
+        projectName: "เกมกระดานให้ความรู้เรื่องขยะ",
+        advisorId: "adv-03",
+        advisorName: "อ.พิมพ์ชนก แก้วมณี",
+        pace: "ล่าช้า",
+        health: "แดง",
+        currentMilestoneOrder: 2,
+        blocksNext: true,
+        inactivityDays: 9,
+      },
+      {
+        id: "team-05",
+        name: "ทีมพิกเซลอาร์ต",
+        projectType: "เว็บไซต์",
+        projectName: "เว็บไซต์รวมงานศิลปะนิสิต",
+        advisorId: "adv-02",
+        advisorName: "อ.สมชาย พงษ์เจริญ",
+        pace: "เร็วกว่าแผน",
+        health: "เขียว",
+        currentMilestoneOrder: 6,
+        blocksNext: false,
+        inactivityDays: 0,
+      },
+    ];
+
+    const logEl = document.getElementById("log");
+
+    function log(message, kind = "info") {
+      const line = document.createElement("div");
+      line.className = `log-line log-${kind}`;
+      line.textContent = message;
+      logEl.appendChild(line);
+    }
+
+    async function seedCollection(collectionName, items) {
+      for (const item of items) {
+        const { id, ...fields } = item;
+        try {
+          await setDoc(doc(db, collectionName, id), fields);
+          log(`✅ ${collectionName}/${id} เขียนสำเร็จ`, "ok");
+        } catch (err) {
+          log(`❌ ${collectionName}/${id} ผิดพลาด: ${err.message}`, "err");
+        }
+      }
+    }
+
+    document.getElementById("btnSeed").addEventListener("click", async () => {
+      logEl.innerHTML = "";
+      log("เริ่มใส่ข้อมูล...", "info");
+      await seedCollection("advisors", advisors);
+      await seedCollection("teams", teams);
+      log("เสร็จแล้ว — ไปเช็คที่ Firebase Console > Firestore Database > Data ได้เลย", "info");
+    });
+  </script>
+</body>
+</html>
