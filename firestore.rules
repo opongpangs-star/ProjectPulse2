@@ -1,0 +1,13 @@
+rules_version = '2';
+
+// กฎขั้นต่ำ: ต้องล็อกอินก่อนเสมอถึงจะอ่านหรือเขียนอะไรก็ได้ในโปรเจกต์นี้
+// (ยังไม่ใช่ role-based ACL เต็มรูปแบบตาม ACL.md — นั่นคือขั้นถัดไป ไม่ใช่ของหน้านี้)
+service cloud.firestore {
+  match /databases/{database}/documents {
+    match /{document=**} {
+      // บรรทัดนี้คือ "ต้องล็อกอินก่อน": request.auth ไม่เป็น null ก็ต่อเมื่อมีการล็อกอินผ่าน
+      // Firebase Authentication มาแล้วเท่านั้น (ผู้ใช้ไม่ล็อกอิน = request.auth เป็น null เสมอ)
+      allow read, write: if request.auth != null;
+    }
+  }
+}

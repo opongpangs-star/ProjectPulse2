@@ -17,12 +17,13 @@
           <div class="page-head__title">
             <span class="page-head__eyebrow">Profile · Firestore demo</span>
             <h1>Advisor Change Requests</h1>
-            <p class="page-head__desc">Read live from Firestore's <code>advisorChangeRequests</code> collection — not <code>localStorage</code>. There's no real login linking requests to a specific person yet (that's Part C), so every logged-in student can request/delete and every logged-in advisor can approve/decline any pending request here.</p>
+            <p class="page-head__desc">Read live from Firestore's <code>advisorChangeRequests</code> collection — not <code>localStorage</code>. Requires signing in with a real Firebase Authentication account; what you can do here depends on your account's <code>role</code> field in the <code>users</code> collection (defaults to <code>student</code> at sign-up — an advisor account is set manually in the Firebase Console).</p>
           </div>
           <div class="page-head__actions" id="pageActions"></div>
         </div>
 
         <div id="roleGuardSlot"></div>
+        <div id="authBar"></div>
         <div id="listContent"></div>
 
       </div>
@@ -38,12 +39,15 @@
 <script type="module">
   import { db } from "../assets/js/firebase-config.js";
   import { collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { requireAuth, renderAuthBar } from "../assets/js/auth-guard.js";
 
   const esc = PPNav.escapeHtml;
-  const user = PP.getCurrentUser();
   const listBox = document.getElementById("listContent");
 
-  if (user.role === "student") {
+  const { user: authUser, role } = await requireAuth("advisor-change-list.html");
+  renderAuthBar(document.getElementById("authBar"), authUser);
+
+  if (role === "student") {
     document.getElementById("pageActions").innerHTML = `<a href="advisor-change-new.html" class="btn btn-primary">+ New Request</a>`;
   }
 
@@ -56,12 +60,13 @@
   function rowHtml(r) {
     const meta = STATUS_META[r.status] || { label: r.status, chip: "chip-neutral" };
     const decided = r.status !== "pending";
+    const isOwnRequest = r.createdByUid && r.createdByUid === authUser.uid;
     let actions = "";
-    if (user.role === "advisor" && !decided) {
+    if (role === "advisor" && !decided) {
       actions = `
         <button class="btn btn-success btn-sm" data-approve="${r.id}">✅ Approve</button>
         <button class="btn btn-danger btn-sm" data-decline="${r.id}">⛔ Decline</button>`;
-    } else if (user.role === "student" && !decided) {
+    } else if (role === "student" && !decided && isOwnRequest) {
       actions = `<button class="btn btn-outline btn-sm" data-delete="${r.id}">🗑️ Delete</button>`;
     }
     return `
@@ -86,9 +91,13 @@
     listBox.innerHTML = `<div class="flex flex-col gap-3">${[1, 2, 3].map(() => `<div class="card skeleton skeleton-card"></div>`).join("")}</div>`;
     try {
       const snap = await getDocs(collection(db, "advisorChangeRequests"));
-      const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      let rows = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      // ACL: นิสิตเห็นเฉพาะคำขอของตัวเองเท่านั้น (กรองด้วย uid จริงจาก Firebase Auth ได้แล้ว)
+      // ฝั่งอาจารย์ยังเห็นคำขอทั้งหมด — เพราะบัญชี Firebase Auth ของอาจารย์ยังไม่ได้ผูกกับ advisor doc
+      // เฉพาะเจาะจงใน Firestore (นั่นต้องมีขั้นตอนผูกบัญชีเพิ่ม ซึ่งเกินขอบเขตของแบบฝึกหัดนี้)
+      if (role === "student") rows = rows.filter((r) => r.createdByUid === authUser.uid);
       if (!rows.length) {
-        listBox.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state__icon">📭</div>No advisor change requests yet.${user.role === "student" ? ` <a href="advisor-change-new.html">Send one</a>.` : ""}</div></div>`;
+        listBox.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state__icon">📭</div>${role === "student" ? "You haven't sent any requests yet." : "No advisor change requests yet."}${role === "student" ? ` <a href="advisor-change-new.html">Send one</a>.` : ""}</div></div>`;
         return;
       }
       listBox.innerHTML = `<div class="flex flex-col gap-3">${rows.map(rowHtml).join("")}</div>`;

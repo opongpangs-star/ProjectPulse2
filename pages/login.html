@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign In — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+<style>
+  body { background: var(--pp-bg); min-height: 100vh; }
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--pp-space-4); }
+  .auth-card { width: 100%; max-width: 420px; }
+</style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card card-pad-lg auth-card">
+      <div class="card-hd">
+        <div>
+          <span class="page-head__eyebrow">Firestore demo · real login</span>
+          <h1 class="brand-wordmark" style="font-size:1.4rem;">ProjectPulse</h1>
+          <div class="card-hd__sub">Sign in (Firebase Authentication)</div>
+        </div>
+      </div>
+      <form id="loginForm" class="flex flex-col gap-3">
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" type="email" id="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="password">Password</label>
+          <input class="input" type="password" id="password" required autocomplete="current-password" />
+        </div>
+        <div id="errorBox"></div>
+        <button type="submit" class="btn btn-primary btn-block" id="btnLogin">Sign In →</button>
+      </form>
+      <div class="text-sm text-muted" style="margin-top:14px;text-align:center;">
+        New here? <a href="signup.html">Create an account</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth } from "../assets/js/firebase-config.js";
+    import { signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+
+    document.getElementById("loginForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const btn = document.getElementById("btnLogin");
+      const errorBox = document.getElementById("errorBox");
+      errorBox.innerHTML = "";
+      btn.disabled = true;
+      btn.textContent = "Signing in…";
+      try {
+        await signInWithEmailAndPassword(auth, email, password);
+        const returnTo = new URLSearchParams(location.search).get("returnTo");
+        window.location.href = returnTo || "advisor-change-list.html";
+      } catch (err) {
+        errorBox.innerHTML = `<div class="alert alert-danger" style="padding:8px 12px;"><div class="text-sm">${err.message}</div></div>`;
+        btn.disabled = false;
+        btn.textContent = "Sign In →";
+      }
+    });
+  </script>
+</body>
+</html>

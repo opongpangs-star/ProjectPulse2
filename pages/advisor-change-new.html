@@ -22,7 +22,7 @@
         </div>
 
         <div id="roleGuardSlot"></div>
-
+        <div id="authBar"></div>
         <div id="formContent"></div>
 
       </div>
@@ -38,12 +38,16 @@
 <script type="module">
   import { db } from "../assets/js/firebase-config.js";
   import { collection, getDocs, addDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { requireAuth, renderAuthBar } from "../assets/js/auth-guard.js";
 
   const esc = PPNav.escapeHtml;
-  const user = PP.getCurrentUser();
   const formBox = document.getElementById("formContent");
 
-  if (user.role !== "student") {
+  // รอสถานะล็อกอินให้พร้อมก่อนเสมอ — requireAuth() จะเด้งไปหน้า login.html เองถ้ายังไม่ได้ล็อกอิน
+  const { user: authUser, role } = await requireAuth("advisor-change-new.html");
+  renderAuthBar(document.getElementById("authBar"), authUser);
+
+  if (role !== "student") {
     document.getElementById("roleGuardSlot").innerHTML = `
       <div class="empty-state">
         <div class="empty-state__icon">🚫</div>
@@ -67,7 +71,7 @@
             <select class="input" id="newAdvisorSelect" required disabled><option value="" disabled selected>Choose a team first…</option></select>
           </div>
           <div class="field">
-            <label for="nameInput">Your name <span class="hint">(no real login yet — Part C adds that)</span></label>
+            <label for="nameInput">Your name <span class="hint">(shown alongside your account's uid on the request)</span></label>
             <input class="input" id="nameInput" required placeholder="e.g. สมชาย ใจดี" />
           </div>
           <div class="field">
@@ -131,6 +135,7 @@
           newAdvisorId,
           newAdvisorName,
           requestedByName: name,
+          createdByUid: authUser.uid,
           reason,
           status: "pending",
           createdAt: new Date().toISOString(),

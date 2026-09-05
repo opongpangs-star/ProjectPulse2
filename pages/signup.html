@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sign Up — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+<style>
+  body { background: var(--pp-bg); min-height: 100vh; }
+  .auth-wrap { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: var(--pp-space-4); }
+  .auth-card { width: 100%; max-width: 420px; }
+</style>
+</head>
+<body>
+  <div class="auth-wrap">
+    <div class="card card-pad-lg auth-card">
+      <div class="card-hd">
+        <div>
+          <span class="page-head__eyebrow">Firestore demo · real login</span>
+          <h1 class="brand-wordmark" style="font-size:1.4rem;">ProjectPulse</h1>
+          <div class="card-hd__sub">Create an account (Firebase Authentication)</div>
+        </div>
+      </div>
+      <form id="signupForm" class="flex flex-col gap-3">
+        <div class="field">
+          <label for="email">Email</label>
+          <input class="input" type="email" id="email" required autocomplete="email" />
+        </div>
+        <div class="field">
+          <label for="password">Password <span class="hint">(at least 6 characters)</span></label>
+          <input class="input" type="password" id="password" required minlength="6" autocomplete="new-password" />
+        </div>
+        <div id="errorBox"></div>
+        <button type="submit" class="btn btn-primary btn-block" id="btnSignup">Create Account →</button>
+      </form>
+      <div class="text-sm text-muted" style="margin-top:14px;text-align:center;">
+        Already have an account? <a href="login.html">Sign in</a>
+      </div>
+    </div>
+  </div>
+
+  <script type="module">
+    import { auth, db } from "../assets/js/firebase-config.js";
+    import { createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+    import { doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+    document.getElementById("signupForm").addEventListener("submit", async (e) => {
+      e.preventDefault();
+      const email = document.getElementById("email").value.trim();
+      const password = document.getElementById("password").value;
+      const btn = document.getElementById("btnSignup");
+      const errorBox = document.getElementById("errorBox");
+      errorBox.innerHTML = "";
+      btn.disabled = true;
+      btn.textContent = "Creating account…";
+      try {
+        const cred = await createUserWithEmailAndPassword(auth, email, password);
+        // ผู้ใช้ใหม่ทุกคนเริ่มต้นเป็น role "student" เสมอ — เปลี่ยนเป็น "advisor" ได้จาก Firebase Console เท่านั้น
+        // (จงใจไม่ให้เลือก role เองตอนสมัคร เพื่อไม่ให้ผู้ใช้ตั้งสิทธิ์ตัวเองได้ตามใจ)
+        await setDoc(doc(db, "users", cred.user.uid), {
+          email: cred.user.email,
+          role: "student",
+          createdAt: new Date().toISOString(),
+        });
+        window.location.href = "advisor-change-list.html";
+      } catch (err) {
+        errorBox.innerHTML = `<div class="alert alert-danger" style="padding:8px 12px;"><div class="text-sm">${err.message}</div></div>`;
+        btn.disabled = false;
+        btn.textContent = "Create Account →";
+      }
+    });
+  </script>
+</body>
+</html>

@@ -2,6 +2,9 @@
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
 
+# Firebase CLI local cache (deploy hashes, not project content)
+.firebase/
+
 # Secrets / credentials - never commit real keys, even if the repo is currently key-file-free.
 # (assets/js/firebase-config.js is NOT covered here on purpose - it's a Firebase client-side
 # web config, which Google's own docs say is safe to expose publicly; the real security boundary

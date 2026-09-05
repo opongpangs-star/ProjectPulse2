@@ -2,6 +2,7 @@
 // ใช้ร่วมกันทั้งหน้า seed ข้อมูลตัวอย่างและหน้าที่อ่านข้อมูลจริงจาก Firestore
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getFirestore } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyCGyTSG8rnEwjC0LDF2-Ruhay1T3172c10",
@@ -15,3 +16,4 @@ const firebaseConfig = {
 
 export const app = initializeApp(firebaseConfig);
 export const db = getFirestore(app);
+export const auth = getAuth(app);
