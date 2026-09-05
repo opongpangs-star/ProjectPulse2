@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Advisor Change Requests — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Profile · Firestore demo</span>
+            <h1>Advisor Change Requests</h1>
+            <p class="page-head__desc">Read live from Firestore's <code>advisorChangeRequests</code> collection — not <code>localStorage</code>. There's no real login linking requests to a specific person yet (that's Part C), so every logged-in student can request/delete and every logged-in advisor can approve/decline any pending request here.</p>
+          </div>
+          <div class="page-head__actions" id="pageActions"></div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+        <div id="listContent"></div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("profile");</script>
+<script type="module">
+  import { db } from "../assets/js/firebase-config.js";
+  import { collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  const esc = PPNav.escapeHtml;
+  const user = PP.getCurrentUser();
+  const listBox = document.getElementById("listContent");
+
+  if (user.role === "student") {
+    document.getElementById("pageActions").innerHTML = `<a href="advisor-change-new.html" class="btn btn-primary">+ New Request</a>`;
+  }
+
+  const STATUS_META = {
+    pending: { label: "Pending", chip: "chip-waiting" },
+    approved: { label: "Approved", chip: "chip-passed" },
+    declined: { label: "Declined", chip: "chip-blocked" },
+  };
+
+  function rowHtml(r) {
+    const meta = STATUS_META[r.status] || { label: r.status, chip: "chip-neutral" };
+    const decided = r.status !== "pending";
+    let actions = "";
+    if (user.role === "advisor" && !decided) {
+      actions = `
+        <button class="btn btn-success btn-sm" data-approve="${r.id}">✅ Approve</button>
+        <button class="btn btn-danger btn-sm" data-decline="${r.id}">⛔ Decline</button>`;
+    } else if (user.role === "student" && !decided) {
+      actions = `<button class="btn btn-outline btn-sm" data-delete="${r.id}">🗑️ Delete</button>`;
+    }
+    return `
+    <div class="card" data-row="${r.id}">
+      <div class="card-hd">
+        <div>
+          <h3>${esc(r.teamName)}</h3>
+          <div class="card-hd__sub">${esc(r.currentAdvisorName)} → ${esc(r.newAdvisorName)} · requested by ${esc(r.requestedByName || "—")}</div>
+        </div>
+        <span class="chip ${meta.chip}">${meta.label}</span>
+      </div>
+      <div class="text-sm">${esc(r.reason)}</div>
+      <div class="text-xs text-muted" style="margin-top:8px;">
+        Requested ${r.createdAt ? ThaiDate.formatThaiDateTime(r.createdAt) : "—"}
+        ${r.decidedAt ? ` · Decided ${ThaiDate.formatThaiDateTime(r.decidedAt)}` : ""}
+      </div>
+      ${actions ? `<div class="flex gap-2" style="margin-top:12px;flex-wrap:wrap;">${actions}</div>` : ""}
+    </div>`;
+  }
+
+  async function load() {
+    listBox.innerHTML = `<div class="flex flex-col gap-3">${[1, 2, 3].map(() => `<div class="card skeleton skeleton-card"></div>`).join("")}</div>`;
+    try {
+      const snap = await getDocs(collection(db, "advisorChangeRequests"));
+      const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+      if (!rows.length) {
+        listBox.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state__icon">📭</div>No advisor change requests yet.${user.role === "student" ? ` <a href="advisor-change-new.html">Send one</a>.` : ""}</div></div>`;
+        return;
+      }
+      listBox.innerHTML = `<div class="flex flex-col gap-3">${rows.map(rowHtml).join("")}</div>`;
+      bindActions();
+    } catch (err) {
+      listBox.innerHTML = `<div class="error-state"><div class="error-state__icon">⚠️</div>Couldn't load requests: ${esc(err.message)}</div>`;
+    }
+  }
+
+  function bindActions() {
+    listBox.querySelectorAll("[data-approve]").forEach((btn) => btn.addEventListener("click", () => decide(btn.dataset.approve, "approved")));
+    listBox.querySelectorAll("[data-decline]").forEach((btn) => btn.addEventListener("click", () => decide(btn.dataset.decline, "declined")));
+    listBox.querySelectorAll("[data-delete]").forEach((btn) => btn.addEventListener("click", () => remove(btn.dataset.delete)));
+  }
+
+  // แก้ไขเฉพาะช่อง status/decidedAt เท่านั้น — ไม่แตะช่องอื่น (teamId/reason/newAdvisorId ฯลฯ) ตามกติกาที่ตกลงไว้
+  async function decide(id, status) {
+    try {
+      await updateDoc(doc(db, "advisorChangeRequests", id), { status, decidedAt: new Date().toISOString() });
+      PPToast.show(`Request ${status}.`, status === "approved" ? "success" : "info");
+      load();
+    } catch (err) {
+      PPToast.show(`Couldn't update: ${err.message}`, "danger");
+    }
+  }
+
+  async function remove(id) {
+    if (!window.confirm("Delete this request permanently? This can't be undone.")) return;
+    try {
+      await deleteDoc(doc(db, "advisorChangeRequests", id));
+      PPToast.show("Request deleted.", "info");
+      load();
+    } catch (err) {
+      PPToast.show(`Couldn't delete: ${err.message}`, "danger");
+    }
+  }
+
+  load();
+</script>
+</body>
+</html>
