@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Privacy — ProjectPulse</title>
+<link rel="stylesheet" href="../assets/css/style.css" />
+</head>
+<body>
+<a href="#pageContent" class="skip-link">ข้ามไปยังเนื้อหา</a>
+<div class="app-shell" id="appShell">
+  <div class="app-body" id="appBody">
+    <main class="app-main">
+      <div class="app-main__inner" id="pageContent">
+
+        <div class="page-head">
+          <div class="page-head__title">
+            <span class="page-head__eyebrow">Legal</span>
+            <h1>Privacy</h1>
+          </div>
+        </div>
+
+        <div id="roleGuardSlot"></div>
+
+        <div class="card card-pad-lg">
+          <div class="card-hd"><h2>What this page actually needs to say</h2></div>
+          <p>ProjectPulse, as it exists right now, is a static prototype — there is no server, no database, and no account system behind it. We'd rather tell you plainly what that means than paste in boilerplate that wouldn't be true here.</p>
+
+          <h2>Where your data lives</h2>
+          <p>Everything you see — teams, milestones, submissions, notifications — is stored only in your own browser's <code>localStorage</code>. Nothing is sent to a server, because there is no server to send it to. Clearing your browser's site data for this page, or opening it in a different browser or device, will reset it back to the seed demo data.</p>
+
+          <h2>No real accounts, no real collection</h2>
+          <p>Signing in simply selects a demo user profile already built into the app — no password, email, or personal information is collected or transmitted anywhere. Any names, teams, or projects you see are demo data, not records of real people.</p>
+
+          <h2>If this becomes a real service later</h2>
+          <p>Should ProjectPulse ever move beyond a prototype into a deployed service with real accounts, this page would need to be replaced with an actual privacy policy describing real data handling. Until then, this note reflects the honest state of the demo.</p>
+
+          <p>See also the <a href="terms.html">Terms</a> page for the same kind of plain statement about what this project is.</p>
+        </div>
+
+      </div>
+    </main>
+  </div>
+</div>
+
+<script src="../assets/js/thai-date.js"></script>
+<script src="../assets/js/seed-data.js"></script>
+<script src="../assets/js/store.js"></script>
+<script src="../assets/js/nav.js"></script>
+<script>PPNav.mount("privacy");</script>
+</body>
+</html>

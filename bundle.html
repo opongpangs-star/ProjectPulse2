@@ -7,50 +7,61 @@
 <style>
 /* ==========================================================================
    ProjectPulse — Design System
-   แนวคิดหลัก: "Pulse" (ชีพจรของโครงงาน) — สีกรมท่า/ม่วง/ฟ้าเป็นสีหลัก
-   สีเขียว/เหลือง/ส้ม/แดง ใช้เฉพาะสื่อความหมายสถานะ/ความเสี่ยงเท่านั้น
+   แนวคิดหลัก: "Pulse" (ชีพจรของโครงงาน) — editorial SaaS: off-white/charcoal/soft-gray
+   สีเขียว/เหลือง(amber)/ส้ม/แดง ใช้เฉพาะสื่อความหมายสถานะ Pulse (Strong/Steady/Weak/Dormant) เท่านั้น
    ========================================================================== */
 
-:root {
-  --pp-navy-900: #0b1f3a;
-  --pp-navy-800: #10284d;
-  --pp-navy-700: #16345f;
-  --pp-navy-600: #1d4272;
-  --pp-purple-700: #4b3789;
-  --pp-purple-600: #5f47a8;
-  --pp-purple-500: #7457c9;
-  --pp-blue-600: #2464c9;
-  --pp-blue-500: #3b82d6;
-  --pp-blue-100: #e6f0fb;
-  --pp-purple-100: #efe9fb;
+@import url("https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Fraunces:ital,opsz,wght@1,9..144,500;1,9..144,600&display=swap");
 
-  --pp-bg: #f4f6fb;
+:root {
+  /* --- Ink scale (headings, dark surfaces) --- */
+  --pp-navy-900: #1d1a15;
+  --pp-navy-800: #2a251e;
+  --pp-navy-700: #3a3327;
+  --pp-navy-600: #4b4232;
+
+  /* --- Interactive accent ink (active nav/tabs, focus ring, links, badges) --- */
+  --pp-purple-700: #46402f;
+  --pp-purple-600: #5a5240;
+  --pp-purple-500: #7a715c;
+  --pp-purple-100: #f1ecdf;
+
+  /* --- Muted slate: only used for the Calendar "class" category swatch --- */
+  --pp-blue-600: #5b6b72;
+  --pp-blue-500: #74838a;
+  --pp-blue-100: #ebeff0;
+
+  /* --- Neutrals --- */
+  --pp-bg: #faf8f4;
   --pp-surface: #ffffff;
-  --pp-surface-muted: #f0f2f9;
-  --pp-border: #d9deec;
-  --pp-border-strong: #b9c2dc;
-  --pp-text-900: #101528;
-  --pp-text-700: #313a56;
-  --pp-text-500: #5b6485;
+  --pp-surface-muted: #f3f0e9;
+  --pp-border: #e7e2d6;
+  --pp-border-strong: #d2cbba;
+  --pp-text-900: #201d18;
+  --pp-text-700: #4a453c;
+  --pp-text-500: #756e60;
   --pp-text-inverse: #ffffff;
 
-  --pp-green-600: #16794f;
-  --pp-green-100: #e0f6ec;
-  --pp-yellow-700: #8a6800;
-  --pp-yellow-100: #fff5d6;
-  --pp-orange-700: #a04a00;
-  --pp-orange-100: #ffe8d6;
-  --pp-red-700: #b3261e;
-  --pp-red-100: #fde3e1;
+  /* --- Status colors (ใช้เฉพาะ Project Pulse 4 ระดับ: Strong/Steady/Weak/Dormant) --- */
+  --pp-green-600: #1f7a5c;
+  --pp-green-100: #e3f3ea;
+  --pp-yellow-700: #8a6a12;
+  --pp-yellow-100: #fbf0d2;
+  --pp-orange-700: #a0501a;
+  --pp-orange-100: #fce7d4;
+  --pp-red-700: #b3271e;
+  --pp-red-100: #fbe1de;
 
-  --pp-gradient-pulse: linear-gradient(135deg, var(--pp-navy-700) 0%, var(--pp-purple-600) 55%, var(--pp-blue-600) 100%);
+  /* --- Gradients: restrained ink gradient only, no bright brand hue --- */
+  --pp-gradient-pulse: linear-gradient(135deg, var(--pp-navy-800) 0%, var(--pp-navy-700) 55%, var(--pp-navy-600) 100%);
 
+  /* --- Elevation / radius / spacing --- */
   --pp-radius-sm: 8px;
   --pp-radius-md: 14px;
   --pp-radius-lg: 20px;
-  --pp-shadow-sm: 0 1px 3px rgba(16, 21, 40, 0.08);
-  --pp-shadow-md: 0 6px 20px rgba(16, 21, 40, 0.10);
-  --pp-shadow-lg: 0 16px 40px rgba(16, 21, 40, 0.16);
+  --pp-shadow-sm: 0 1px 3px rgba(29, 26, 21, 0.07);
+  --pp-shadow-md: 0 6px 20px rgba(29, 26, 21, 0.08);
+  --pp-shadow-lg: 0 16px 40px rgba(29, 26, 21, 0.14);
   --pp-space-1: 4px;
   --pp-space-2: 8px;
   --pp-space-3: 12px;
@@ -59,7 +70,8 @@
   --pp-space-6: 32px;
   --pp-space-7: 48px;
 
-  --pp-font-sans: "Noto Sans Thai", "Sarabun", "IBM Plex Sans Thai", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --pp-font-sans: "Manrope", "Noto Sans Thai", "Sarabun", "IBM Plex Sans Thai", "Segoe UI", system-ui, -apple-system, sans-serif;
+  --pp-font-serif: "Fraunces", Georgia, "Times New Roman", serif;
   --pp-header-h: 64px;
   --pp-sidebar-w: 248px;
 }
@@ -76,12 +88,12 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-h1, h2, h3, h4, h5 { margin: 0 0 var(--pp-space-2); font-weight: 700; color: var(--pp-navy-900); line-height: 1.3; }
+h1, h2, h3, h4, h5 { margin: 0 0 var(--pp-space-2); font-weight: 700; color: var(--pp-navy-900); line-height: 1.3; letter-spacing: -0.01em; }
 h1 { font-size: 1.6rem; }
 h2 { font-size: 1.3rem; }
 h3 { font-size: 1.1rem; }
 p { margin: 0 0 var(--pp-space-3); }
-a { color: var(--pp-blue-600); }
+a { color: var(--pp-purple-700); }
 ul { margin: 0; padding: 0; list-style: none; }
 button { font-family: inherit; }
 img, svg { max-width: 100%; }
@@ -91,6 +103,18 @@ img, svg { max-width: 100%; }
   outline-offset: 2px;
 }
 
+/* Logo wordmark — distinctive italic serif, used only for the word "ProjectPulse" */
+.brand-wordmark {
+  font-family: var(--pp-font-serif);
+  font-style: italic;
+  font-weight: 600;
+  letter-spacing: 0.002em;
+}
+
+/* ==========================================================================
+   App shell: header + sidebar + content
+   ========================================================================== */
+
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; }
 
 .app-header {
@@ -99,62 +123,64 @@ img, svg { max-width: 100%; }
   display: flex; align-items: center; justify-content: space-between;
   gap: var(--pp-space-4);
   padding: 0 var(--pp-space-5);
-  background: var(--pp-gradient-pulse);
-  color: var(--pp-text-inverse);
-  box-shadow: var(--pp-shadow-md);
+  background: rgba(250, 248, 244, 0.86);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+  border-bottom: 1px solid var(--pp-border);
+  color: var(--pp-text-900);
+  box-shadow: var(--pp-shadow-sm);
 }
 
-.app-header__brand { display: flex; align-items: center; gap: var(--pp-space-3); font-weight: 800; font-size: 1.15rem; white-space: nowrap; }
+.app-header__brand { display: flex; align-items: center; gap: var(--pp-space-3); font-weight: 700; font-size: 1.2rem; white-space: nowrap; color: var(--pp-navy-900); }
 
 .pulse-dot {
   width: 14px; height: 14px; border-radius: 50%;
-  background: #6fe3b4;
-  box-shadow: 0 0 0 0 rgba(111,227,180,.7);
+  background: var(--pp-green-600);
+  box-shadow: 0 0 0 0 rgba(31,122,92,.7);
   animation: pulse-beat 1.8s infinite;
   flex-shrink: 0;
 }
 @keyframes pulse-beat {
-  0% { box-shadow: 0 0 0 0 rgba(111,227,180,.55); }
-  70% { box-shadow: 0 0 0 10px rgba(111,227,180,0); }
-  100% { box-shadow: 0 0 0 0 rgba(111,227,180,0); }
+  0% { box-shadow: 0 0 0 0 rgba(31,122,92,.5); }
+  70% { box-shadow: 0 0 0 10px rgba(31,122,92,0); }
+  100% { box-shadow: 0 0 0 0 rgba(31,122,92,0); }
 }
 @media (prefers-reduced-motion: reduce) { .pulse-dot { animation: none; } }
 
 .app-header__menu-btn {
   display: none;
-  background: rgba(255,255,255,.14); border: none; color: #fff;
+  background: var(--pp-surface-muted); border: none; color: var(--pp-text-700);
   width: 40px; height: 40px; border-radius: var(--pp-radius-sm); font-size: 1.2rem; cursor: pointer;
 }
 
 .app-header__right { display: flex; align-items: center; gap: var(--pp-space-3); }
 
 .role-switch {
-  display: flex; background: rgba(255,255,255,.14); border-radius: 999px; padding: 3px; gap: 2px;
+  display: flex; background: var(--pp-surface-muted); border-radius: 999px; padding: 3px; gap: 2px;
 }
 .role-switch button {
-  border: none; background: transparent; color: rgba(255,255,255,.85);
+  border: none; background: transparent; color: var(--pp-text-500);
   padding: 6px 14px; border-radius: 999px; font-size: .85rem; font-weight: 600; cursor: pointer;
 }
-.role-switch button.is-active { background: #fff; color: var(--pp-navy-800); }
+.role-switch button.is-active { background: var(--pp-navy-900); color: #fff; }
 
 .icon-btn {
   position: relative; width: 40px; height: 40px; border-radius: 50%;
-  background: rgba(255,255,255,.14); border: none; color: #fff; cursor: pointer; font-size: 1.05rem;
+  background: var(--pp-surface-muted); border: none; color: var(--pp-text-700); cursor: pointer; font-size: 1.05rem;
   display: flex; align-items: center; justify-content: center;
 }
 .icon-btn .badge-dot {
   position: absolute; top: 2px; right: 2px; min-width: 16px; height: 16px; padding: 0 3px;
   border-radius: 999px; background: var(--pp-red-700); color: #fff; font-size: .65rem; font-weight: 700;
-  display: flex; align-items: center; justify-content: center; border: 2px solid var(--pp-navy-800);
+  display: flex; align-items: center; justify-content: center; border: 2px solid var(--pp-bg);
 }
 
 .user-chip { display: flex; align-items: center; gap: var(--pp-space-2); font-size: .85rem; }
 .user-chip__avatar {
-  width: 34px; height: 34px; border-radius: 50%; background: rgba(255,255,255,.22);
+  width: 34px; height: 34px; border-radius: 50%; background: var(--pp-navy-900); color: #fff;
   display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: .8rem;
 }
-.user-chip__name { font-weight: 700; }
-.user-chip__role { opacity: .8; font-size: .75rem; }
+.user-chip__name { font-weight: 700; color: var(--pp-text-900); }
+.user-chip__role { opacity: .7; font-size: .75rem; }
 
 .app-body { display: flex; flex: 1; min-height: calc(100vh - var(--pp-header-h)); }
 
@@ -200,7 +226,7 @@ img, svg { max-width: 100%; }
   }
   .app-sidebar.is-open { transform: translateX(0); }
   .sidebar-overlay.is-open {
-    display: block; position: fixed; inset: var(--pp-header-h) 0 0 0; background: rgba(10,14,30,.35); z-index: 44;
+    display: block; position: fixed; inset: var(--pp-header-h) 0 0 0; background: rgba(29,26,21,.35); z-index: 44;
   }
   .app-main { padding: var(--pp-space-4); }
   .user-chip__role, .user-chip__name { display: none; }
@@ -212,6 +238,10 @@ img, svg { max-width: 100%; }
 
 .bottom-nav { display: none; }
 
+/* ==========================================================================
+   Primitives: buttons, chips, cards, badges
+   ========================================================================== */
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   border: 1px solid transparent; border-radius: var(--pp-radius-sm);
@@ -221,8 +251,8 @@ img, svg { max-width: 100%; }
 .btn:active { transform: translateY(1px); }
 .btn:disabled { opacity: .5; cursor: not-allowed; }
 .btn-sm { padding: 6px 12px; font-size: .8rem; }
-.btn-primary { background: var(--pp-gradient-pulse); color: #fff; }
-.btn-primary:hover { filter: brightness(1.08); }
+.btn-primary { background: var(--pp-navy-900); color: #fff; }
+.btn-primary:hover { filter: brightness(1.25); }
 .btn-secondary { background: var(--pp-purple-100); color: var(--pp-purple-700); }
 .btn-secondary:hover { filter: brightness(0.97); }
 .btn-outline { background: #fff; color: var(--pp-navy-800); border-color: var(--pp-border-strong); }
@@ -237,37 +267,42 @@ img, svg { max-width: 100%; }
 .card {
   background: var(--pp-surface); border: 1px solid var(--pp-border); border-radius: var(--pp-radius-md);
   padding: var(--pp-space-4); box-shadow: var(--pp-shadow-sm);
-  min-width: 0;
+  min-width: 0; /* กัน .card ที่เป็น grid/flex item ไม่ยอมหด (min-width:auto ตาม default) จนเนื้อหาภายใน เช่น table ดันความกว้างทั้งการ์ดล้นจอ */
+  transition: box-shadow .18s ease, transform .18s ease, border-color .18s ease;
 }
 .card-hd { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--pp-space-3); margin-bottom: var(--pp-space-3); }
 .card-hd h3 { margin: 0; }
 .card-hd__sub { color: var(--pp-text-500); font-size: .82rem; margin-top: 2px; }
 .card-pad-lg { padding: var(--pp-space-5); }
-.card-stat { display: flex; flex-direction: column; gap: 4px; }
+.card-stat {
+  display: flex; flex-direction: column; gap: 4px;
+}
 .card-stat__label { font-size: .78rem; color: var(--pp-text-500); font-weight: 600; }
 .card-stat__value { font-size: 1.7rem; font-weight: 800; color: var(--pp-navy-900); }
 .card-stat__hint { font-size: .78rem; color: var(--pp-text-500); }
 
 .grid { display: grid; gap: var(--pp-space-4); }
-.grid > * { min-width: 0; }
+.grid > * { min-width: 0; } /* กัน grid item ไม่ยอมหดตาม default (min-width:auto) เมื่อมีเนื้อหากว้าง เช่น table ข้างใน */
 .grid-2 { grid-template-columns: repeat(2, 1fr); }
 .grid-3 { grid-template-columns: repeat(3, 1fr); }
 .grid-4 { grid-template-columns: repeat(4, 1fr); }
+.grid-5 { grid-template-columns: repeat(5, 1fr); }
 .grid-auto { grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); }
-@media (max-width: 980px) { .grid-3, .grid-4 { grid-template-columns: repeat(2, 1fr); } }
-@media (max-width: 640px) { .grid-2, .grid-3, .grid-4 { grid-template-columns: 1fr; } }
+@media (max-width: 980px) { .grid-3, .grid-4, .grid-5 { grid-template-columns: repeat(2, 1fr); } }
+@media (max-width: 640px) { .grid-2, .grid-3, .grid-4, .grid-5 { grid-template-columns: 1fr; } }
 
 .col-span-2 { grid-column: span 2; }
 .col-span-3 { grid-column: span 3; }
 @media (max-width: 980px) { .col-span-2, .col-span-3 { grid-column: span 2; } }
 @media (max-width: 640px) { .col-span-2, .col-span-3 { grid-column: span 1; } }
 
+/* Status chip: ใช้สถานะมาตรฐาน 10 สถานะทั่วระบบ */
 .chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 4px 11px; border-radius: 999px;
   font-size: .76rem; font-weight: 700; white-space: nowrap; border: 1px solid transparent;
 }
 .chip::before { content: ""; width: 7px; height: 7px; border-radius: 50%; background: currentColor; flex-shrink: 0; }
-.chip-neutral   { background: #eceef5; color: var(--pp-text-700); }
+.chip-neutral   { background: var(--pp-surface-muted); color: var(--pp-text-700); }
 .chip-progress  { background: var(--pp-blue-100); color: var(--pp-blue-600); }
 .chip-ready     { background: var(--pp-purple-100); color: var(--pp-purple-700); }
 .chip-waiting   { background: var(--pp-yellow-100); color: var(--pp-yellow-700); }
@@ -282,12 +317,17 @@ img, svg { max-width: 100%; }
 .chip-orange { background: var(--pp-orange-100); color: var(--pp-orange-700); }
 .chip-red    { background: var(--pp-red-100); color: var(--pp-red-700); }
 
+/* Health score badge — Project Pulse: 4 ระดับ Strong/Steady/Weak/Dormant (icon+สี+ข้อความเสมอ) */
 .health-badge { display: inline-flex; align-items: center; gap: 8px; padding: 6px 14px; border-radius: 999px; font-weight: 800; font-size: .85rem; }
-.health-badge.green  { background: var(--pp-green-100); color: var(--pp-green-600); }
-.health-badge.yellow { background: var(--pp-yellow-100); color: var(--pp-yellow-700); }
-.health-badge.red    { background: var(--pp-red-100); color: var(--pp-red-700); }
+.health-badge.strong  { background: var(--pp-green-100); color: var(--pp-green-600); }
+.health-badge.steady  { background: var(--pp-yellow-100); color: var(--pp-yellow-700); }
+.health-badge.weak    { background: var(--pp-orange-100); color: var(--pp-orange-700); }
+.health-badge.dormant { background: var(--pp-red-100); color: var(--pp-red-700); }
 .health-dot { width: 10px; height: 10px; border-radius: 50%; background: currentColor; }
 
+/* ==========================================================================
+   Gamification: Project Pulse (heartbeat), streaks, badges
+   ========================================================================== */
 @keyframes pulse-ecg-scroll {
   from { transform: translateX(0); }
   to { transform: translateX(-100px); }
@@ -300,12 +340,13 @@ img, svg { max-width: 100%; }
   border-radius: var(--pp-radius-md); padding: var(--pp-space-4);
   border: 1px solid var(--pp-border); background: var(--pp-surface);
 }
-.pulse-widget--strong { background: linear-gradient(180deg, var(--pp-green-100) 0%, var(--pp-surface) 65%); border-color: #a9e2c6; }
-.pulse-widget--weak { background: linear-gradient(180deg, var(--pp-yellow-100) 0%, var(--pp-surface) 65%); border-color: #f0dd9a; }
-.pulse-widget--critical { background: linear-gradient(180deg, var(--pp-red-100) 0%, var(--pp-surface) 65%); border-color: #f3b7b2; }
+.pulse-widget--strong  { background: linear-gradient(180deg, var(--pp-green-100) 0%, var(--pp-surface) 65%); border-color: #a9e2c6; }
+.pulse-widget--steady  { background: linear-gradient(180deg, var(--pp-yellow-100) 0%, var(--pp-surface) 65%); border-color: #ecd991; }
+.pulse-widget--weak    { background: linear-gradient(180deg, var(--pp-orange-100) 0%, var(--pp-surface) 65%); border-color: #edbb8c; }
+.pulse-widget--dormant { background: linear-gradient(180deg, var(--pp-red-100) 0%, var(--pp-surface) 65%); border-color: #f3b7b2; }
 
 .pulse-widget__hd { display: flex; align-items: center; gap: var(--pp-space-3); margin-bottom: 6px; flex-wrap: wrap; }
-.pulse-widget__face { font-size: 1.8rem; line-height: 1; }
+.pulse-widget__face { font-size: 1.5rem; line-height: 1; }
 .pulse-widget__label { font-weight: 800; color: var(--pp-navy-900); }
 .pulse-widget__bpm { font-size: .78rem; color: var(--pp-text-500); }
 
@@ -322,9 +363,10 @@ img, svg { max-width: 100%; }
 .badge-chip {
   display: inline-flex; align-items: center; gap: 6px; padding: 6px 12px; border-radius: 999px;
   background: var(--pp-purple-100); color: var(--pp-purple-700); font-size: .8rem; font-weight: 700;
-  border: 1px solid #ddd0f7;
+  border: 1px solid var(--pp-border-strong);
 }
 
+/* Micro-animation ตอนทำงานสำเร็จ (pulse burst) */
 .pulse-burst-layer {
   position: fixed; top: 90px; left: 50%; transform: translateX(-50%); z-index: 120;
   display: flex; flex-direction: column; align-items: center; gap: 8px; pointer-events: none;
@@ -334,7 +376,7 @@ img, svg { max-width: 100%; }
   padding: 8px 16px; border-radius: 999px; font-weight: 700; font-size: .85rem;
   box-shadow: var(--pp-shadow-lg); animation: pulse-burst-pop 1.4s ease forwards;
 }
-.pulse-burst__heart { font-size: 1.2rem; display: inline-block; animation: pulse-burst-heart .5s ease infinite alternate; }
+.pulse-burst__heart { font-size: 1.1rem; display: inline-block; animation: pulse-burst-heart .5s ease infinite alternate; }
 @keyframes pulse-burst-pop {
   0% { opacity: 0; transform: translateY(6px) scale(.8); }
   15% { opacity: 1; transform: translateY(0) scale(1.08); }
@@ -342,22 +384,28 @@ img, svg { max-width: 100%; }
   80% { opacity: 1; transform: translateY(-4px) scale(1); }
   100% { opacity: 0; transform: translateY(-18px) scale(.95); }
 }
-@keyframes pulse-burst-heart { from { transform: scale(1); } to { transform: scale(1.25); } }
+@keyframes pulse-burst-heart { from { transform: scale(1); } to { transform: scale(1.2); } }
 @media (prefers-reduced-motion: reduce) {
   .pulse-burst { animation: none; }
   .pulse-burst__heart { animation: none; }
 }
 
+/* ==========================================================================
+   Progress bar
+   ========================================================================== */
 .progress { height: 10px; border-radius: 999px; background: var(--pp-surface-muted); overflow: hidden; border: 1px solid var(--pp-border); }
-.progress__bar { height: 100%; border-radius: 999px; background: var(--pp-gradient-pulse); transition: width .4s ease; }
+.progress__bar { height: 100%; border-radius: 999px; background: var(--pp-navy-800); transition: width .4s ease; }
 .progress__bar.green { background: var(--pp-green-600); }
-.progress__bar.yellow { background: #d3a300; }
-.progress__bar.orange { background: #d67a26; }
+.progress__bar.yellow { background: var(--pp-yellow-700); }
+.progress__bar.orange { background: var(--pp-orange-700); }
 .progress__bar.red { background: var(--pp-red-700); }
 .progress-row { display: flex; align-items: center; gap: var(--pp-space-3); }
 .progress-row .progress { flex: 1; }
 .progress-row__pct { font-weight: 800; font-size: .85rem; min-width: 3ch; text-align: right; }
 
+/* ==========================================================================
+   Timeline (Milestones)
+   ========================================================================== */
 .timeline { display: flex; flex-direction: column; }
 .timeline-item { display: flex; gap: var(--pp-space-4); position: relative; padding-bottom: var(--pp-space-5); }
 .timeline-item:last-child { padding-bottom: 0; }
@@ -368,7 +416,7 @@ img, svg { max-width: 100%; }
   border: 2px solid var(--pp-border-strong); flex-shrink: 0; z-index: 1;
 }
 .timeline-item__dot.done { background: var(--pp-green-600); border-color: var(--pp-green-600); color: #fff; }
-.timeline-item__dot.current { background: var(--pp-purple-600); border-color: var(--pp-purple-600); color: #fff; box-shadow: 0 0 0 5px var(--pp-purple-100); }
+.timeline-item__dot.current { background: var(--pp-navy-800); border-color: var(--pp-navy-800); color: #fff; box-shadow: 0 0 0 5px var(--pp-purple-100); }
 .timeline-item__dot.risk { background: var(--pp-red-700); border-color: var(--pp-red-700); color: #fff; }
 .timeline-item__line { flex: 1; width: 2px; background: var(--pp-border-strong); margin-top: 4px; min-height: 16px; }
 .timeline-item__dot.done + .timeline-item__line { background: var(--pp-green-600); }
@@ -378,6 +426,9 @@ img, svg { max-width: 100%; }
 .timeline-item__meta { color: var(--pp-text-500); font-size: .82rem; }
 .timeline-item__tasks { margin-top: var(--pp-space-2); display: flex; flex-direction: column; gap: 6px; }
 
+/* ==========================================================================
+   Task row / checklist
+   ========================================================================== */
 .task-row { display: flex; align-items: center; gap: var(--pp-space-3); padding: 10px 12px; border: 1px solid var(--pp-border); border-radius: var(--pp-radius-sm); background: var(--pp-surface); }
 .task-row.is-done { opacity: .68; }
 .task-row.is-done .task-row__title { text-decoration: line-through; }
@@ -389,6 +440,9 @@ img, svg { max-width: 100%; }
 }
 .checkbox.is-checked { background: var(--pp-green-600); border-color: var(--pp-green-600); color: #fff; }
 
+/* ==========================================================================
+   Calendar / Heatmap (Workload Map)
+   ========================================================================== */
 .cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; }
 .cal-dow { text-align: center; font-size: .74rem; font-weight: 700; color: var(--pp-text-500); padding-bottom: 4px; }
 .cal-cell {
@@ -397,20 +451,20 @@ img, svg { max-width: 100%; }
 }
 .cal-cell:hover { border-color: var(--pp-purple-500); }
 .cal-cell.is-outside { opacity: .35; }
-.cal-cell.is-today { border: 2px solid var(--pp-purple-600); }
+.cal-cell.is-today { border: 2px solid var(--pp-navy-800); }
 .cal-cell__date { font-size: .78rem; font-weight: 800; color: var(--pp-text-700); }
 .cal-cell__load { margin-left: auto; font-size: .64rem; font-weight: 800; padding: 1px 6px; border-radius: 999px; }
-.cal-cell.load-low { background: #f4fbf7; }
+.cal-cell.load-low { background: #f6faf7; }
 .cal-cell.load-low .cal-cell__load { background: var(--pp-green-100); color: var(--pp-green-600); }
-.cal-cell.load-mid { background: #fffbf0; }
+.cal-cell.load-mid { background: #fdfaf1; }
 .cal-cell.load-mid .cal-cell__load { background: var(--pp-yellow-100); color: var(--pp-yellow-700); }
-.cal-cell.load-high { background: #fff3ec; }
+.cal-cell.load-high { background: #fdf3ec; }
 .cal-cell.load-high .cal-cell__load { background: var(--pp-red-100); color: var(--pp-red-700); }
 .cal-event { font-size: .66rem; padding: 1px 5px; border-radius: 5px; font-weight: 700; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .cal-event.type-class { background: var(--pp-blue-100); color: var(--pp-blue-600); }
 .cal-event.type-other-course { background: var(--pp-orange-100); color: var(--pp-orange-700); }
 .cal-event.type-project { background: var(--pp-purple-100); color: var(--pp-purple-700); }
-.cal-event.type-personal { background: #eceef5; color: var(--pp-text-700); }
+.cal-event.type-personal { background: var(--pp-surface-muted); color: var(--pp-text-700); }
 .cal-event.type-milestone { background: var(--pp-red-100); color: var(--pp-red-700); }
 .cal-more { font-size: .64rem; color: var(--pp-text-500); font-weight: 700; }
 
@@ -425,12 +479,18 @@ img, svg { max-width: 100%; }
   .cal-cell__load { position: absolute; bottom: 4px; right: 4px; margin-left: 0; }
 }
 
+/* ==========================================================================
+   Time-slot suggestion cards (Free-Time Planner)
+   ========================================================================== */
 .slot-card { border: 1px solid var(--pp-border); border-radius: var(--pp-radius-md); padding: var(--pp-space-4); background: var(--pp-surface); display: flex; flex-direction: column; gap: var(--pp-space-2); }
 .slot-card.is-confirmed { border-color: var(--pp-green-600); background: var(--pp-green-100); }
 .slot-card__time { font-weight: 800; font-size: 1.05rem; color: var(--pp-navy-900); }
 .slot-card__reason { color: var(--pp-text-500); font-size: .84rem; }
 .slot-card__actions { display: flex; gap: 8px; flex-wrap: wrap; margin-top: var(--pp-space-2); }
 
+/* ==========================================================================
+   Table
+   ========================================================================== */
 .table-wrap { overflow-x: auto; border: 1px solid var(--pp-border); border-radius: var(--pp-radius-md); background: var(--pp-surface); }
 table.pp-table { width: 100%; border-collapse: collapse; min-width: 720px; }
 table.pp-table th { text-align: left; font-size: .74rem; text-transform: uppercase; letter-spacing: .03em; color: var(--pp-text-500); padding: 12px 14px; border-bottom: 1px solid var(--pp-border); white-space: nowrap; }
@@ -439,6 +499,9 @@ table.pp-table tr:last-child td { border-bottom: none; }
 table.pp-table tr:hover td { background: var(--pp-surface-muted); }
 .queue-rank { display: inline-flex; align-items: center; justify-content: center; width: 26px; height: 26px; border-radius: 50%; background: var(--pp-navy-900); color: #fff; font-weight: 800; font-size: .78rem; }
 
+/* ==========================================================================
+   Forms
+   ========================================================================== */
 .field { display: flex; flex-direction: column; gap: 6px; }
 .field label { font-weight: 700; font-size: .84rem; color: var(--pp-text-700); }
 .field .hint { font-weight: 400; color: var(--pp-text-500); font-size: .78rem; }
@@ -452,11 +515,22 @@ textarea.input { resize: vertical; min-height: 88px; }
 .form-row > .field { flex: 1; min-width: 160px; }
 .checkbox-line { display: flex; align-items: center; gap: 8px; font-size: .87rem; }
 
+/* Search input with a leading icon — used by the Projects grid + other filter bars */
+.search-field { position: relative; flex: 1; min-width: 220px; }
+.search-field .input { padding-left: 38px; }
+.search-field__icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); color: var(--pp-text-500); pointer-events: none; }
+
+.filter-bar { display: flex; flex-wrap: wrap; gap: var(--pp-space-2); align-items: center; }
+.filter-bar select.input { width: auto; min-width: 150px; }
+
+/* ==========================================================================
+   Alerts / Callouts
+   ========================================================================== */
 .alert { display: flex; gap: var(--pp-space-3); padding: var(--pp-space-4); border-radius: var(--pp-radius-md); border: 1px solid transparent; }
 .alert__icon { font-size: 1.3rem; flex-shrink: 0; }
 .alert__title { font-weight: 800; margin-bottom: 2px; }
-.alert-info { background: var(--pp-blue-100); border-color: #bcd8f5; color: var(--pp-navy-800); }
-.alert-warn { background: var(--pp-yellow-100); border-color: #f0dd9a; color: #6b5200; }
+.alert-info { background: var(--pp-blue-100); border-color: #c7d3d6; color: var(--pp-navy-800); }
+.alert-warn { background: var(--pp-yellow-100); border-color: #ecd991; color: #5c4600; }
 .alert-danger { background: var(--pp-red-100); border-color: #f3b7b2; color: #7a1a14; }
 .alert-success { background: var(--pp-green-100); border-color: #a9e2c6; color: #0f4d34; }
 .alert ul { padding-left: 1.1em; list-style: disc; margin-top: 6px; }
@@ -464,8 +538,11 @@ textarea.input { resize: vertical; min-height: 88px; }
 
 .callout-muted { background: var(--pp-surface-muted); border-radius: var(--pp-radius-md); padding: var(--pp-space-3) var(--pp-space-4); color: var(--pp-text-500); font-size: .84rem; display: flex; gap: 8px; align-items: flex-start; }
 
+/* ==========================================================================
+   Modal / Drawer
+   ========================================================================== */
 .modal-backdrop {
-  display: none; position: fixed; inset: 0; background: rgba(10,14,30,.45); z-index: 90;
+  display: none; position: fixed; inset: 0; background: rgba(29,26,21,.45); z-index: 90;
   align-items: center; justify-content: center; padding: var(--pp-space-4);
 }
 .modal-backdrop.is-open { display: flex; }
@@ -477,25 +554,116 @@ textarea.input { resize: vertical; min-height: 88px; }
 .modal-close { background: var(--pp-surface-muted); border: none; width: 32px; height: 32px; border-radius: 50%; cursor: pointer; font-size: 1rem; }
 .modal-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: var(--pp-space-5); flex-wrap: wrap; }
 
+/* ==========================================================================
+   Tabs
+   ========================================================================== */
 .tabs { display: flex; gap: 4px; border-bottom: 1px solid var(--pp-border); flex-wrap: wrap; }
 .tab-btn { border: none; background: transparent; padding: 10px 16px; font-weight: 700; font-size: .87rem; color: var(--pp-text-500); cursor: pointer; border-bottom: 3px solid transparent; margin-bottom: -1px; }
-.tab-btn.is-active { color: var(--pp-purple-700); border-color: var(--pp-purple-600); }
+.tab-btn.is-active { color: var(--pp-purple-700); border-color: var(--pp-navy-800); }
 .tab-panel { display: none; }
 .tab-panel.is-active { display: block; }
 
+/* ==========================================================================
+   Toast
+   ========================================================================== */
 .toast-stack { position: fixed; bottom: var(--pp-space-5); right: var(--pp-space-5); z-index: 100; display: flex; flex-direction: column; gap: 10px; max-width: min(360px, 90vw); }
 .toast { background: var(--pp-navy-900); color: #fff; padding: 12px 16px; border-radius: var(--pp-radius-sm); box-shadow: var(--pp-shadow-lg); font-size: .85rem; display: flex; gap: 10px; align-items: center; animation: toast-in .2s ease; }
 .toast.success { background: var(--pp-green-600); }
-.toast.warn { background: #8a6800; }
+.toast.warn { background: var(--pp-yellow-700); }
 .toast.danger { background: var(--pp-red-700); }
 @keyframes toast-in { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
 @media (max-width: 640px) { .toast-stack { left: var(--pp-space-3); right: var(--pp-space-3); max-width: none; } }
 
-.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--pp-purple-600); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .78rem; border: 2px solid #fff; flex-shrink: 0; }
+/* ==========================================================================
+   Avatar stack (Team Workload)
+   ========================================================================== */
+.avatar { width: 34px; height: 34px; border-radius: 50%; background: var(--pp-navy-800); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: .78rem; border: 2px solid #fff; flex-shrink: 0; }
 .avatar-stack { display: flex; }
 .avatar-stack .avatar { margin-left: -10px; }
 .avatar-stack .avatar:first-child { margin-left: 0; }
 
+/* ==========================================================================
+   Project card (Projects grid) — hover/expand/status-change animation
+   ========================================================================== */
+.project-card {
+  background: var(--pp-surface); border: 1px solid var(--pp-border); border-radius: var(--pp-radius-md);
+  padding: var(--pp-space-4); box-shadow: var(--pp-shadow-sm); cursor: pointer; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: var(--pp-space-3);
+  transition: transform .18s ease, box-shadow .18s ease, border-color .18s ease;
+}
+.project-card:hover, .project-card:focus-visible {
+  transform: translateY(-3px); box-shadow: var(--pp-shadow-md); border-color: var(--pp-border-strong);
+}
+.project-card__hd { display: flex; align-items: flex-start; justify-content: space-between; gap: var(--pp-space-2); }
+.project-card__name { font-weight: 800; color: var(--pp-navy-900); font-size: 1rem; }
+.project-card__team { color: var(--pp-text-500); font-size: .82rem; }
+.project-card__meta-row { display: flex; flex-wrap: wrap; gap: 6px 14px; font-size: .78rem; color: var(--pp-text-500); }
+.project-card__meta-row strong { color: var(--pp-text-700); font-weight: 700; }
+.project-card__more {
+  max-height: 0; overflow: hidden; opacity: 0; transition: max-height .22s ease, opacity .18s ease, margin-top .22s ease;
+  display: flex; flex-direction: column; gap: 6px; font-size: .8rem; color: var(--pp-text-700);
+}
+.project-card:hover .project-card__more, .project-card.is-expanded .project-card__more {
+  max-height: 160px; opacity: 1; margin-top: 2px;
+}
+@media (prefers-reduced-motion: reduce) { .project-card, .project-card__more { transition: none; } }
+
+/* ==========================================================================
+   Skeleton loading state
+   ========================================================================== */
+.skeleton { position: relative; overflow: hidden; background: var(--pp-surface-muted); border-radius: var(--pp-radius-sm); }
+.skeleton::after {
+  content: ""; position: absolute; inset: 0; transform: translateX(-100%);
+  background: linear-gradient(90deg, transparent, rgba(255,255,255,.7), transparent);
+  animation: skeleton-shimmer 1.3s infinite;
+}
+@keyframes skeleton-shimmer { 100% { transform: translateX(100%); } }
+@media (prefers-reduced-motion: reduce) { .skeleton::after { animation: none; } }
+.skeleton-line { height: 12px; margin-bottom: 8px; }
+.skeleton-line.w-60 { width: 60%; } .skeleton-line.w-40 { width: 40%; } .skeleton-line.w-80 { width: 80%; }
+.skeleton-card { height: 120px; }
+
+/* ==========================================================================
+   Landing hero + final CTA + footer
+   ========================================================================== */
+.hero {
+  position: relative; border-radius: var(--pp-radius-lg); overflow: hidden;
+  background: var(--pp-surface); border: 1px solid var(--pp-border);
+  padding: var(--pp-space-7) var(--pp-space-5); text-align: center;
+}
+.hero__pulse-line { position: absolute; inset: 0; z-index: 0; opacity: .5; pointer-events: none; }
+.hero__content { position: relative; z-index: 1; max-width: 680px; margin: 0 auto; }
+.hero__eyebrow { display: inline-flex; align-items: center; gap: 8px; font-weight: 700; font-size: .8rem; letter-spacing: .05em; text-transform: uppercase; color: var(--pp-purple-600); margin-bottom: var(--pp-space-3); }
+.hero__title { font-size: clamp(2rem, 4.5vw, 3rem); margin-bottom: var(--pp-space-3); }
+.hero__title .brand-wordmark { color: var(--pp-navy-900); }
+.hero__desc { font-size: 1.05rem; color: var(--pp-text-700); max-width: 56ch; margin: 0 auto var(--pp-space-5); }
+.hero__actions { display: flex; gap: var(--pp-space-3); justify-content: center; flex-wrap: wrap; }
+.hero__legend { display: flex; gap: var(--pp-space-4); justify-content: center; flex-wrap: wrap; margin-top: var(--pp-space-5); font-size: .82rem; color: var(--pp-text-500); }
+@media (max-width: 640px) { .hero { padding: var(--pp-space-6) var(--pp-space-3); } }
+
+.final-cta {
+  border-radius: var(--pp-radius-lg); padding: var(--pp-space-6) var(--pp-space-5); text-align: center;
+  background: var(--pp-gradient-pulse); color: #fff;
+}
+.final-cta h2 { color: #fff; }
+.final-cta p { color: rgba(255,255,255,.82); max-width: 52ch; margin: 0 auto var(--pp-space-4); }
+.final-cta .btn-primary { background: #fff; color: var(--pp-navy-900); }
+.final-cta .btn-outline { background: rgba(255,255,255,.12); color: #fff; border-color: rgba(255,255,255,.35); }
+.final-cta .btn-outline:hover { background: rgba(255,255,255,.2); }
+
+.app-footer {
+  border-top: 1px solid var(--pp-border); margin-top: var(--pp-space-6);
+  padding: var(--pp-space-5); display: flex; flex-wrap: wrap; gap: var(--pp-space-4);
+  align-items: center; justify-content: space-between; color: var(--pp-text-500); font-size: .82rem;
+}
+.app-footer__brand { display: flex; align-items: center; gap: 8px; font-weight: 700; color: var(--pp-text-700); }
+.app-footer__links { display: flex; flex-wrap: wrap; gap: var(--pp-space-4); }
+.app-footer__links a { color: var(--pp-text-500); text-decoration: none; }
+.app-footer__links a:hover { color: var(--pp-purple-700); text-decoration: underline; }
+
+/* ==========================================================================
+   Misc utility
+   ========================================================================== */
 .flex { display: flex; }
 .flex-col { flex-direction: column; }
 .items-center { align-items: center; }
@@ -510,39 +678,38 @@ textarea.input { resize: vertical; min-height: 88px; }
 .divider { height: 1px; background: var(--pp-border); border: none; margin: var(--pp-space-3) 0; }
 .empty-state { text-align: center; padding: var(--pp-space-6) var(--pp-space-4); color: var(--pp-text-500); }
 .empty-state__icon { font-size: 2.4rem; margin-bottom: var(--pp-space-2); }
+.error-state { text-align: center; padding: var(--pp-space-6) var(--pp-space-4); color: #7a1a14; background: var(--pp-red-100); border-radius: var(--pp-radius-md); }
+.error-state__icon { font-size: 2rem; margin-bottom: var(--pp-space-2); }
 .section-title-row { display: flex; align-items: center; justify-content: space-between; gap: var(--pp-space-3); flex-wrap: wrap; }
 .skip-link { position: absolute; left: -999px; top: 0; background: #fff; padding: 10px 16px; z-index: 200; border-radius: 0 0 8px 0; }
 .skip-link:focus { left: 0; }
 
 /* Login view (standalone, no header/sidebar) */
-#loginView { background: var(--pp-gradient-pulse); min-height: 100vh; }
-.login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: var(--pp-space-6) var(--pp-space-4); }
-.login-hero { text-align: center; color: #fff; max-width: 640px; margin-bottom: var(--pp-space-6); }
-.login-hero h1 { color: #fff; font-size: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px; }
-.login-hero p { color: rgba(255,255,255,.88); }
-.login-card { background: #fff; border-radius: var(--pp-radius-lg); padding: var(--pp-space-5); width: 100%; max-width: 880px; box-shadow: var(--pp-shadow-lg); }
-.role-tabs { display: flex; gap: 8px; background: var(--pp-surface-muted); padding: 4px; border-radius: 999px; margin-bottom: var(--pp-space-5); }
-.role-tabs button { flex: 1; border: none; background: transparent; padding: 12px; border-radius: 999px; font-weight: 800; cursor: pointer; color: var(--pp-text-500); }
-.role-tabs button.is-active { background: var(--pp-gradient-pulse); color: #fff; }
-.id-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 420px; overflow-y: auto; padding: 2px; }
-@media (max-width: 640px) { .id-grid { grid-template-columns: 1fr; } }
-.id-card { border: 2px solid var(--pp-border); border-radius: var(--pp-radius-md); padding: 14px; cursor: pointer; text-align: left; background: #fff; }
-.id-card:hover { border-color: var(--pp-purple-500); }
-.id-card.is-selected { border-color: var(--pp-purple-600); background: var(--pp-purple-100); }
-.id-card__title { font-weight: 800; color: var(--pp-navy-900); }
-.id-card__sub { color: var(--pp-text-500); font-size: .82rem; margin-top: 2px; }
-.login-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--pp-space-5); flex-wrap: wrap; gap: 12px; }
-.pulse-legend { display:flex; gap: 14px; flex-wrap: wrap; color: rgba(255,255,255,.85); font-size:.8rem; margin-top: var(--pp-space-4);}
-.pulse-legend span { display:flex; align-items:center; gap:6px; }
+#loginView { background: var(--pp-bg); min-height: 100vh; }
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: var(--pp-space-6) var(--pp-space-4); gap: var(--pp-space-6); max-width: 960px; margin: 0 auto; }
+  .login-wrap > * { width: 100%; }
+  .login-wrap .app-footer { margin-top: 0; }
+  .login-card { background: #fff; border-radius: var(--pp-radius-lg); padding: var(--pp-space-5); width: 100%; max-width: 880px; box-shadow: var(--pp-shadow-lg); border: 1px solid var(--pp-border); }
+  .role-tabs { display: flex; gap: 8px; background: var(--pp-surface-muted); padding: 4px; border-radius: 999px; margin-bottom: var(--pp-space-5); }
+  .role-tabs button { flex: 1; border: none; background: transparent; padding: 12px; border-radius: 999px; font-weight: 800; cursor: pointer; color: var(--pp-text-500); }
+  .role-tabs button.is-active { background: var(--pp-navy-900); color: #fff; }
+  .id-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 420px; overflow-y: auto; padding: 2px; }
+  @media (max-width: 640px) { .id-grid { grid-template-columns: 1fr; } }
+  .id-card { border: 2px solid var(--pp-border); border-radius: var(--pp-radius-md); padding: 14px; cursor: pointer; text-align: left; background: #fff; }
+  .id-card:hover { border-color: var(--pp-purple-500); }
+  .id-card.is-selected { border-color: var(--pp-navy-800); background: var(--pp-purple-100); }
+  .id-card__title { font-weight: 800; color: var(--pp-navy-900); }
+  .id-card__sub { color: var(--pp-text-500); font-size: .82rem; margin-top: 2px; }
+  .login-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--pp-space-5); flex-wrap: wrap; gap: 12px; }
 
-/* Bottom Navigation (มือถือ) + ขนาดจุดกดบนมือถือ — วางไว้ท้ายสุดเจตนา เพื่อชนะ base rule ที่ specificity เท่ากัน
-   (เช่น .checkbox/.btn-sm/.modal-close/.toast-stack ที่ประกาศไว้ก่อนหน้านี้) ตามลำดับ cascade ของ CSS */
+/* Bottom Navigation (มือถือ) + ขนาดจุดกดบนมือถือ — วางไว้ท้ายไฟล์เจตนา เพื่อให้ชนะ base rule ที่ specificity เท่ากัน
+   (เช่น .checkbox/.btn-sm/.modal-close/.toast-stack ที่ประกาศไว้ก่อนหน้านี้ในไฟล์) ตามลำดับ cascade ของ CSS */
 @media (max-width: 640px) {
   .bottom-nav {
     display: flex; position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
     background: var(--pp-surface); border-top: 1px solid var(--pp-border);
     padding: 4px 4px calc(4px + env(safe-area-inset-bottom, 0px));
-    box-shadow: 0 -4px 14px rgba(16, 21, 40, .1);
+    box-shadow: 0 -4px 14px rgba(29, 26, 21, .1);
   }
   .bottom-nav__item {
     flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
@@ -559,6 +726,8 @@ textarea.input { resize: vertical; min-height: 88px; }
   .modal-close, .icon-btn { min-width: 40px; min-height: 40px; }
 }
 @media (max-width: 480px) {
+  /* จอแคบมาก: ปุ่มสลับบทบาท Demo + ปุ่มข้อมูลระบบ ล้นหัวข้อพร้อมปุ่มแจ้งเตือน/user chip ที่ขยายใหญ่ขึ้นเพื่อรองรับนิ้ว
+     สลับบทบาท/ทีมยังทำได้เหมือนเดิมผ่านปุ่ม user chip (avatar) ซึ่งยังคงแสดงอยู่ */
   .role-switch, #btnDataScopeInfo { display: none; }
 }
 </style>
@@ -569,15 +738,23 @@ textarea.input { resize: vertical; min-height: 88px; }
 
 <div id="loginView">
   <div class="login-wrap">
-    <div class="login-hero">
-      <h1><span class="pulse-dot" style="width:20px;height:20px;"></span> ProjectPulse</h1>
-      <p>ระบบติดตามความก้าวหน้ารายวิชาโครงงาน สาขาวิชาการสื่อสารสื่อใหม่ มหาวิทยาลัยพะเยา — เห็นภาระงานทั้งเทอม ไม่พลาดกำหนดส่ง และรู้เสมอว่าควรทำอะไรต่อ</p>
-      <div class="pulse-legend">
-        <span>💚 Pulse On Track</span>
-        <span>💛 Pulse Warning</span>
-        <span>❤️ Pulse Critical</span>
+    <section class="hero">
+      <div class="hero__content">
+        <div class="hero__eyebrow"><span class="pulse-dot"></span> Project management for lecturers &amp; students</div>
+        <h1 class="hero__title"><span class="brand-wordmark">ProjectPulse</span> — Keep Every Project Moving</h1>
+        <p class="hero__desc">ระบบติดตามความก้าวหน้ารายวิชาโครงงาน สาขาวิชาการสื่อสารสื่อใหม่ มหาวิทยาลัยพะเยา — เห็นภาระงานทั้งเทอม ไม่พลาดกำหนดส่ง และรู้เสมอว่าควรทำอะไรต่อ</p>
+        <div class="hero__actions">
+          <button class="btn btn-primary" id="btnHeroViewDashboard">View Dashboard →</button>
+          <button class="btn btn-outline" id="btnHeroCreateProject">➕ Create Project</button>
+        </div>
+        <div class="hero__legend">
+          <span>⬆️ Strong — ahead of schedule</span>
+          <span>➡️ Steady — on track</span>
+          <span>⬇️ Weak — behind schedule</span>
+          <span>⏸️ Dormant — no recent activity</span>
+        </div>
       </div>
-    </div>
+    </section>
 
     <div class="login-card">
       <div class="role-tabs">
@@ -602,6 +779,27 @@ textarea.input { resize: vertical; min-height: 88px; }
         <button class="btn btn-primary" id="btnEnter" disabled>เข้าสู่ระบบ →</button>
       </div>
     </div>
+
+    <section class="final-cta">
+      <h2>Ready to move your project forward?</h2>
+      <p>Start a new project, or jump straight into the work that's waiting for you.</p>
+      <div class="hero__actions">
+        <button class="btn btn-primary" id="btnCtaCreateProject">➕ Create Project</button>
+        <a href="#feedback-queue" class="btn btn-outline">📥 Review Pending Work</a>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <div class="app-footer__brand"><span class="brand-wordmark">ProjectPulse</span></div>
+      <nav class="app-footer__links" aria-label="Footer">
+        <a href="#help">Help Center</a>
+        <a href="#user-guide">User Guide</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#terms">Terms</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div>© <span id="footerYear"></span> ProjectPulse · University of Phayao</div>
+    </footer>
   </div>
 
   <div class="modal-backdrop" id="createTeamBackdrop">
@@ -719,7 +917,7 @@ textarea.input { resize: vertical; min-height: 88px; }
           <h3>⏱️ ช่วงเวลาว่างที่แนะนำวันนี้</h3>
           <div class="card-hd__sub">วิเคราะห์จากตารางเรียนและภาระงานจริง — ไม่เดาจากแค่วันครบกำหนดส่ง</div>
         </div>
-        <a href="#free-time-planner" class="btn btn-ghost btn-sm">ดูทั้งหมด</a>
+        <a href="#workload-map?tab=free-time" class="btn btn-ghost btn-sm">ดูทั้งหมด</a>
       </div>
       <div id="freeTimeTodayBox" class="flex flex-col gap-2"></div>
     </div>
@@ -861,7 +1059,7 @@ textarea.input { resize: vertical; min-height: 88px; }
   </div>
   <div id="roleGuardSlot"></div>
   <div id="dashboardContent">
-    <div class="grid grid-4" id="statCards"></div>
+    <div class="grid grid-5" id="statCards"></div>
     <div class="card" style="border-color:#f3b7b2;">
       <div class="card-hd">
         <div>
@@ -918,15 +1116,7 @@ textarea.input { resize: vertical; min-height: 88px; }
       </div>
       <div id="reviewQueueBox" class="flex flex-col gap-3"></div>
     </div>
-    <div class="card">
-      <div class="card-hd">
-        <div>
-          <h3>🧑‍🎓 ภาพรวมความก้าวหน้าของทุกทีม</h3>
-          <div class="card-hd__sub">คลิกชื่อทีมเพื่อดูรายละเอียดภาระงานของทีมนั้น</div>
-        </div>
-      </div>
-      <div id="teamsOverview" class="table-wrap"></div>
-    </div>
+    <div class="callout-muted">🧑‍🎓 มองหาภาพรวมความก้าวหน้าของทุกทีมแบบละเอียด? ดูได้ที่หน้า <a href="#projects">Projects</a></div>
     <div class="card">
       <div class="card-hd"><h3>🔔 แจ้งเตือนสำคัญ</h3></div>
       <div id="urgentNotifBox" class="flex flex-col gap-2"></div>
@@ -951,54 +1141,59 @@ textarea.input { resize: vertical; min-height: 88px; }
 <template id="tpl-workload-map">
   <div class="page-head">
     <div class="page-head__title">
-      <span class="page-head__eyebrow">Semester Workload Map</span>
-      <h1 id="pageTitle">ปฏิทินภาระงานทั้งเทอม</h1>
+      <span class="page-head__eyebrow">Calendar</span>
+      <h1 id="pageTitle">ปฏิทินภาระงาน และแผนเวลาว่างอัจฉริยะ</h1>
       <p class="page-head__desc" id="pageDesc"></p>
-    </div>
-    <div class="page-head__actions">
-      <a href="#free-time-planner" class="btn btn-secondary">⏱️ แผนเวลาว่างอัจฉริยะ</a>
     </div>
   </div>
   <div id="roleGuardSlot"></div>
   <div id="mapContent">
-    <div class="card">
-      <div class="card-hd">
-        <div>
-          <h3>📚 งานจากวิชาอื่นของฉัน</h3>
-          <div class="card-hd__sub">เพิ่มงาน/กำหนดส่งจากวิชาอื่นเอง ระบบจะคำนวณ Deadline Collision และช่วงเวลาว่างใหม่ให้ทันที</div>
-        </div>
-        <button class="btn btn-primary btn-sm" id="btnAddOtherCourseTask">+ เพิ่มงานจากวิชาอื่น</button>
-      </div>
-      <div id="otherCourseTaskList" class="table-wrap"></div>
+    <div class="tabs" id="calendarTabs">
+      <button type="button" class="tab-btn is-active" data-tab="calendar" id="tabBtnCalendar">🗓️ ปฏิทินภาระงานทั้งเทอม</button>
     </div>
 
-    <div class="card">
-      <div class="card-hd flex justify-between items-center" style="flex-wrap:wrap;gap:8px;">
-        <div class="flex items-center gap-2">
-          <button class="btn btn-outline btn-sm" id="btnPrevMonth" aria-label="เดือนก่อนหน้า">‹ เดือนก่อนหน้า</button>
-          <h3 id="calMonthLabel" style="min-width:180px;text-align:center;"></h3>
-          <button class="btn btn-outline btn-sm" id="btnNextMonth" aria-label="เดือนถัดไป">เดือนถัดไป ›</button>
+    <div class="tab-panel is-active" id="tabPanelCalendar" data-tab-panel="calendar">
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <h3>📚 งานจากวิชาอื่นของฉัน</h3>
+            <div class="card-hd__sub">เพิ่มงาน/กำหนดส่งจากวิชาอื่นเอง ระบบจะคำนวณ Deadline Collision และช่วงเวลาว่างใหม่ให้ทันที</div>
+          </div>
+          <button class="btn btn-primary btn-sm" id="btnAddOtherCourseTask">+ เพิ่มงานจากวิชาอื่น</button>
         </div>
-        <span class="text-xs text-muted" id="calRangeHint"></span>
+        <div id="otherCourseTaskList" class="table-wrap"></div>
       </div>
-      <div class="cal-grid" id="calDowRow" style="margin-bottom:6px;"></div>
-      <div class="cal-grid" id="calGrid"></div>
+
+      <div class="card">
+        <div class="card-hd flex justify-between items-center" style="flex-wrap:wrap;gap:8px;">
+          <div class="flex items-center gap-2">
+            <button class="btn btn-outline btn-sm" id="btnPrevMonth" aria-label="เดือนก่อนหน้า">‹ เดือนก่อนหน้า</button>
+            <h3 id="calMonthLabel" style="min-width:180px;text-align:center;"></h3>
+            <button class="btn btn-outline btn-sm" id="btnNextMonth" aria-label="เดือนถัดไป">เดือนถัดไป ›</button>
+          </div>
+          <span class="text-xs text-muted" id="calRangeHint"></span>
+        </div>
+        <div class="cal-grid" id="calDowRow" style="margin-bottom:6px;"></div>
+        <div class="cal-grid" id="calGrid"></div>
+      </div>
+
+      <div class="card">
+        <div class="card-hd"><h3>คำอธิบายสัญลักษณ์</h3></div>
+        <div class="flex flex-col gap-3">
+          <div>
+            <div class="text-sm font-bold" style="margin-bottom:6px;">ประเภทกิจกรรม</div>
+            <div class="legend" id="legendTypes"></div>
+          </div>
+          <div class="divider"></div>
+          <div>
+            <div class="text-sm font-bold" style="margin-bottom:6px;">ระดับภาระงานต่อวัน (Heatmap)</div>
+            <div class="legend" id="legendLoad"></div>
+          </div>
+        </div>
+      </div>
     </div>
 
-    <div class="card">
-      <div class="card-hd"><h3>คำอธิบายสัญลักษณ์</h3></div>
-      <div class="flex flex-col gap-3">
-        <div>
-          <div class="text-sm font-bold" style="margin-bottom:6px;">ประเภทกิจกรรม</div>
-          <div class="legend" id="legendTypes"></div>
-        </div>
-        <div class="divider"></div>
-        <div>
-          <div class="text-sm font-bold" style="margin-bottom:6px;">ระดับภาระงานต่อวัน (Heatmap)</div>
-          <div class="legend" id="legendLoad"></div>
-        </div>
-      </div>
-    </div>
+    <div class="tab-panel" id="tabPanelFreeTime" data-tab-panel="free-time"></div>
   </div>
 
   <div class="modal-backdrop" id="dayModalBackdrop">
@@ -1050,44 +1245,6 @@ textarea.input { resize: vertical; min-height: 88px; }
           <button type="submit" class="btn btn-primary">+ เพิ่มงานนี้</button>
         </div>
       </form>
-    </div>
-  </div>
-</template>
-
-<template id="tpl-free-time-planner">
-  <div class="page-head">
-    <div class="page-head__title">
-      <span class="page-head__eyebrow">Smart Free-Time Planner</span>
-      <h1 id="pageTitle">แผนเวลาว่างอัจฉริยะ</h1>
-      <p class="page-head__desc" id="pageDesc"></p>
-    </div>
-    <div class="page-head__actions">
-      <a href="#workload-map" class="btn btn-secondary">🗓️ ดูปฏิทินภาระงานทั้งเทอม</a>
-    </div>
-  </div>
-  <div id="roleGuardSlot"></div>
-  <div id="plannerContent">
-    <div class="card">
-      <div class="card-hd"><h3>ระบบพิจารณาช่วงเวลาว่างจากอะไรบ้าง</h3></div>
-      <div class="callout-muted">
-        ระบบไม่ได้สรุปเวลาว่างจากกำหนดส่งงานเพียงอย่างเดียว แต่พิจารณาร่วมกันจาก
-        ตารางเรียน, เวลานอน/เวลาส่วนตัว, งานประจำ/กิจกรรมของทีม, กำหนดส่งงานวิชาอื่น,
-        จำนวนชั่วโมงที่แต่ละงานต้องใช้ และช่วงเวลาที่ทีมทำงานได้อย่างมีประสิทธิภาพที่สุด
-        (เวอร์ชัน demo นี้ไม่ต้องกรอกระดับพลังงาน/สมาธิจริงของผู้ใช้)
-      </div>
-    </div>
-    <div class="card">
-      <div class="card-hd">
-        <div>
-          <h3>⏱️ ช่วงเวลาแนะนำในสัปดาห์นี้</h3>
-          <div class="card-hd__sub">เลือกยืนยัน เปลี่ยนเวลา แบ่งเป็นช่วงสั้น หรือแจ้งว่าไม่สะดวกได้ทันที</div>
-        </div>
-      </div>
-      <div id="pendingSlots" class="grid grid-auto"></div>
-    </div>
-    <div class="card">
-      <div class="card-hd"><h3>📜 ประวัติช่วงเวลาที่เคยพิจารณาแล้ว</h3></div>
-      <div id="historySlots" class="flex flex-col gap-2"></div>
     </div>
   </div>
 </template>
@@ -1387,6 +1544,212 @@ textarea.input { resize: vertical; min-height: 88px; }
       <div class="text-sm text-muted">การกระทำนี้จะล้างข้อมูลทีม, Milestone, การส่งงาน, Feedback และการแจ้งเตือนทั้งหมด แล้วสร้างข้อมูลตัวอย่างชุดใหม่ ไม่สามารถย้อนกลับได้</div>
       <button class="btn btn-danger" id="btnResetDemo">🗑️ รีเซ็ตข้อมูลตัวอย่าง</button>
     </div>
+  </div>
+</template>
+
+<template id="tpl-projects">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Projects</span>
+      <h1 id="pageTitle">Projects</h1>
+      <p class="page-head__desc" id="pageDesc">Every team project you can see, in one searchable grid.</p>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div id="projectsContent">
+    <div class="card" style="margin-bottom:var(--pp-space-4);">
+      <div class="flex flex-col gap-3">
+        <div class="search-field" role="search">
+          <span class="search-field__icon" aria-hidden="true">🔍</span>
+          <input class="input" id="filterSearch" type="search" placeholder="Search by team name or project name…" aria-label="Search projects" />
+        </div>
+        <div class="filter-bar" id="filterBar">
+          <select class="input" id="filterCourse" aria-label="Course" disabled></select>
+          <select class="input" id="filterPhase" aria-label="Project phase"></select>
+          <select class="input" id="filterPulse" aria-label="Pulse status"></select>
+          <select class="input" id="filterDeadline" aria-label="Deadline"></select>
+          <select class="input" id="filterTeam" aria-label="Student group"></select>
+          <select class="input" id="filterReview" aria-label="Review status"></select>
+          <button class="btn btn-ghost btn-sm" id="btnClearFilters" type="button">✕ Clear filters</button>
+        </div>
+        <div class="text-xs text-muted" id="resultCount"></div>
+      </div>
+    </div>
+
+    <div id="projectsSkeleton" class="grid grid-auto"></div>
+    <div id="projectsGrid" class="grid grid-auto" hidden></div>
+    <div id="projectsEmpty" class="empty-state" hidden>
+      <div class="empty-state__icon">🗂️</div>
+      No projects match these filters.
+      <div style="margin-top:12px;"><button class="btn btn-secondary btn-sm" id="btnEmptyClear" type="button">Clear filters</button></div>
+    </div>
+  </div>
+</template>
+
+<template id="tpl-project-detail">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Project Detail</span>
+      <h1 id="pageTitle">Project Detail</h1>
+      <p class="page-head__desc" id="pageDesc"></p>
+    </div>
+    <div class="page-head__actions">
+      <a href="#projects" class="btn btn-ghost">🗂️ Back to Projects</a>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div id="projectDetailContent"></div>
+</template>
+
+<template id="tpl-profile">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Profile</span>
+      <h1 id="pageTitle">Profile</h1>
+      <p class="page-head__desc" id="pageDesc"></p>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div id="profileContent"></div>
+</template>
+
+<template id="tpl-help">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Support</span>
+      <h1>Help Center</h1>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div class="card card-pad-lg">
+    <div class="card-hd"><h2>Frequently asked questions</h2></div>
+
+    <h2>How do I check my project's Pulse status?</h2>
+    <p>Every team has a Project Pulse shown on the Dashboard and Projects page as a colored badge with an icon and a short label — never just a color or a bare number. Click through to a team's workload page to see the specific reasons behind the current Pulse.</p>
+
+    <h2>What do the four Pulse levels mean?</h2>
+    <ul>
+      <li><strong>⬆️ Strong</strong> — the team is ahead of schedule.</li>
+      <li><strong>➡️ Steady</strong> — the team is on track.</li>
+      <li><strong>⬇️ Weak</strong> — the team is behind schedule and may need attention.</li>
+      <li><strong>⏸️ Dormant</strong> — there has been no recent activity logged for the team.</li>
+    </ul>
+    <p>Pulse is always computed from real activity — submissions, task updates, and deadlines — so a level is never assigned arbitrarily.</p>
+
+    <h2>How do I submit work for review?</h2>
+    <p>From your team's workload page, open the current milestone and use the submission action to attach your work and mark it ready. This places the submission into your advisor's Review Queue, where you can track its status as it moves from "submitted" to "under review" to "feedback ready."</p>
+
+    <h2>How does the Review Queue ordering work?</h2>
+    <p>The queue is ordered automatically using three factors: how long a submission has been waiting, how urgent its deadline is, and how much risk the associated project currently carries. Advisors can manually re-order an item ahead of the queue, but only after entering a reason, which is then shown alongside the item so the ordering stays transparent.</p>
+
+    <h2>Still need help?</h2>
+    <p>If something on this page doesn't answer your question, see the <a href="#user-guide">User Guide</a> for a walkthrough of the whole app, or visit the <a href="#contact">Contact</a> page.</p>
+  </div>
+</template>
+
+<template id="tpl-user-guide">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Support</span>
+      <h1>User Guide</h1>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div class="card card-pad-lg">
+    <div class="card-hd"><h2>A quick tour of the main areas</h2></div>
+    <p>ProjectPulse looks a little different depending on whether you sign in as a student or a lecturer (advisor), but the same main areas apply to both roles.</p>
+
+    <h2>Dashboard</h2>
+    <p>Your starting point after signing in. Students see their team's current milestone, progress, and any notifications that need attention. Lecturers see a set of stat tiles, a Risk Radar highlighting teams that need attention, and their personal Review Queue — a prioritized list of submissions still waiting to be reviewed.</p>
+
+    <h2>Projects</h2>
+    <p>A searchable, filterable grid of every project a lecturer supervises (or, for a student, their own team's project). Use it to scan Pulse status, progress, and risk across teams at a glance, then open any project for its full detail and workload breakdown.</p>
+
+    <h2>Review Queue</h2>
+    <p>Where advisors work through submitted milestones. The queue is ordered by wait time, urgency, and risk, with the reasoning always visible — an advisor can manually re-prioritize an item, but only by providing a reason first. Opening an item takes you to the Review Workspace to leave structured feedback.</p>
+
+    <h2>Calendar</h2>
+    <p>A combined view of milestone deadlines, review dates, and team availability. Students use it to plan working sessions around deadlines and teammates' free time; lecturers use it to see upcoming deadlines across all the teams they supervise.</p>
+
+    <h2>Notifications</h2>
+    <p>Time-sensitive updates such as feedback being ready, a deadline approaching, or a teammate flagging a blocker. Notifications are grouped by severity so the most urgent items are never buried.</p>
+
+    <h2>Profile</h2>
+    <p>Your account details, team membership (for students) or advisee list (for lecturers), and any personal preferences for the app.</p>
+
+    <p>For answers to specific questions, see the <a href="#help">Help Center</a>.</p>
+  </div>
+</template>
+
+<template id="tpl-privacy">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Legal</span>
+      <h1>Privacy</h1>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div class="card card-pad-lg">
+    <div class="card-hd"><h2>What this page actually needs to say</h2></div>
+    <p>ProjectPulse, as it exists right now, is a static prototype — there is no server, no database, and no account system behind it. We'd rather tell you plainly what that means than paste in boilerplate that wouldn't be true here.</p>
+
+    <h2>Where your data lives</h2>
+    <p>Everything you see — teams, milestones, submissions, notifications — is stored only in your own browser's <code>localStorage</code>. Nothing is sent to a server, because there is no server to send it to. Clearing your browser's site data for this page, or opening it in a different browser or device, will reset it back to the seed demo data.</p>
+
+    <h2>No real accounts, no real collection</h2>
+    <p>Signing in simply selects a demo user profile already built into the app — no password, email, or personal information is collected or transmitted anywhere. Any names, teams, or projects you see are demo data, not records of real people.</p>
+
+    <h2>If this becomes a real service later</h2>
+    <p>Should ProjectPulse ever move beyond a prototype into a deployed service with real accounts, this page would need to be replaced with an actual privacy policy describing real data handling. Until then, this note reflects the honest state of the demo.</p>
+
+    <p>See also the <a href="#terms">Terms</a> page for the same kind of plain statement about what this project is.</p>
+  </div>
+</template>
+
+<template id="tpl-terms">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Legal</span>
+      <h1>Terms</h1>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div class="card card-pad-lg">
+    <div class="card-hd"><h2>What ProjectPulse is</h2></div>
+    <p>ProjectPulse is an academic prototype built for coursework and demonstration purposes — it is not a production service, and it isn't offered as one. Everything described below reflects that.</p>
+
+    <h2>No warranty</h2>
+    <p>The app is provided as-is, for demonstration and evaluation only. It may contain bugs, incomplete features, or placeholder data, and no guarantee is made about its accuracy, availability, or fitness for any particular purpose.</p>
+
+    <h2>Demo data only</h2>
+    <p>All teams, projects, submissions, and users you encounter are seeded demo data used to illustrate how the app would behave, not records of real people or real academic work. Data lives only in your browser and can be reset at any time.</p>
+
+    <h2>Use of this project</h2>
+    <p>This prototype was built as part of a course project at the University of Phayao. It's shared here to demonstrate design and functionality, not as a service you should rely on for real project tracking.</p>
+
+    <p>For related notes on data handling, see the <a href="#privacy">Privacy</a> page.</p>
+  </div>
+</template>
+
+<template id="tpl-contact">
+  <div class="page-head">
+    <div class="page-head__title">
+      <span class="page-head__eyebrow">Support</span>
+      <h1>Contact</h1>
+    </div>
+  </div>
+  <div id="roleGuardSlot"></div>
+  <div class="card card-pad-lg">
+    <div class="card-hd"><h2>Get in touch</h2></div>
+    <p>ProjectPulse is a student project built for a course at the University of Phayao, not a supported commercial product — so there isn't a formal support desk behind this page. That said, feedback, bug reports, and suggestions are genuinely welcome.</p>
+
+    <h2>How to reach us</h2>
+    <p>If you're reviewing this prototype as part of a course, please reach out via your course's usual channels (e.g. the class discussion board or your instructor's contact details) rather than through this page.</p>
+
+    <h2>Found something broken?</h2>
+    <p>Since this is a static demo without a backend, most issues are reproducible simply by describing what you clicked and what you expected to happen — that's usually enough detail to track down and fix.</p>
+
+    <p>For general questions about how the app works, the <a href="#help">Help Center</a> and <a href="#user-guide">User Guide</a> are a good place to start first.</p>
   </div>
 </template>
 
@@ -2642,7 +3005,7 @@ textarea.input { resize: vertical; min-height: 88px; }
 
       // riskLevel มาจากชีพจรที่คำนวณสด (computeHealthScore) เสมอ ไม่ใช่ค่า team.health แบบ seed ที่นิ่งค้างไว้
       const health = computeHealthScore(team.id);
-      const riskLevel = health.level === "red" ? "สูง" : health.level === "yellow" ? "ปานกลาง" : "ต่ำ";
+      const riskLevel = health.level === "dormant" ? "สูง" : health.level === "weak" ? "ปานกลาง" : "ต่ำ";
       const priorityScore = waitDays * 10 + (team.blocksNext ? 15 : 0) + (riskLevel === "สูง" ? 8 : riskLevel === "ปานกลาง" ? 4 : 0) - TD.diffDays(nextMilestone ? nextMilestone.dueDate : TD.addDays(now, 30), now) * 0.2;
       const override = overrides[sub.id];
 
@@ -2818,13 +3181,12 @@ textarea.input { resize: vertical; min-height: 88px; }
     }
 
     score = Math.max(0, Math.min(100, Math.round(score)));
-    let level = "green";
-    if (score < 55) level = "red"; else if (score < 78) level = "yellow";
-    // สถานะ 4 ระดับ (เพิ่มเติมจาก level เดิม ไม่แทนที่) — ใช้ label ภาษาไทยตามที่ผู้ใช้ยืนยัน พร้อมผู้รับผิดชอบขั้นตอนถัดไป
+    // Project Pulse — 4 ระดับ (Dormant/Weak/Steady/Strong) คำนวณจาก threshold เดียวกับ statusTier ที่มีอยู่เดิม
+    let level = "dormant";
     let statusTier = 0, statusLabel = "ต้องช่วยเหลือทันที";
-    if (score >= 90) { statusTier = 3; statusLabel = "เดินหน้าได้ดี"; }
-    else if (score >= 78) { statusTier = 2; statusLabel = "อยู่ในจังหวะ"; }
-    else if (score >= 55) { statusTier = 1; statusLabel = "ต้องเฝ้าระวัง"; }
+    if (score >= 90) { statusTier = 3; statusLabel = "เดินหน้าได้ดี"; level = "strong"; }
+    else if (score >= 78) { statusTier = 2; statusLabel = "อยู่ในจังหวะ"; level = "steady"; }
+    else if (score >= 55) { statusTier = 1; statusLabel = "ต้องเฝ้าระวัง"; level = "weak"; }
     const nextStepOwner = isAwaitingReview ? "advisor" : "student";
     if (reasons.length === 0) reasons.push("ยังไม่พบความเสี่ยงในขณะนี้");
     return { score, level, statusTier, statusLabel, nextStepOwner, reasons };
@@ -3010,8 +3372,7 @@ textarea.input { resize: vertical; min-height: 88px; }
   function getPulseState(teamId) {
     const team = getTeam(teamId);
     const health = computeHealthScore(teamId);
-    const rhythm = global.PPPulse ? global.PPPulse.rhythmFromLevel(health.level) : (health.level === "green" ? "strong" : health.level === "yellow" ? "weak" : "critical");
-    return { rhythm, score: health.score, level: health.level, reasons: health.reasons, streakDays: team.streakDays || 0, lastActivityDate: team.lastActivityDate };
+    return { rhythm: health.level, score: health.score, level: health.level, reasons: health.reasons, streakDays: team.streakDays || 0, lastActivityDate: team.lastActivityDate };
   }
 
   // ตราความสำเร็จ — เป็นรางวัลด้านพฤติกรรมเท่านั้น ห้ามสื่อว่าผลงานมีคุณภาพหรือผ่านการประเมินแล้ว
@@ -3031,7 +3392,7 @@ textarea.input { resize: vertical; min-height: 88px; }
         const wt = STATE.waitingTasks && STATE.waitingTasks[teamId];
         return !!(wt && wt.items.filter((i) => i.done).length >= 2);
       } },
-    { key: "back_on_track", icon: "💓", label: "กลับมาเข้าจังหวะ", test: (teamId) => ["red", "yellow"].includes(getTeam(teamId).health) && computeHealthScore(teamId).level === "green" },
+    { key: "back_on_track", icon: "💓", label: "กลับมาเข้าจังหวะ", test: (teamId) => ["red", "yellow"].includes(getTeam(teamId).health) && ["strong", "steady"].includes(computeHealthScore(teamId).level) },
   ];
   function getBadges(teamId) {
     return BADGE_DEFS.filter((b) => b.test(teamId)).map((b) => ({ key: b.key, icon: b.icon, label: b.label }));
@@ -3205,8 +3566,9 @@ textarea.input { resize: vertical; min-height: 88px; }
       return "งานอยู่ในคิวตรวจ ระหว่างรอคุณยังเตรียมขั้นตอนต่อไปได้";
     }
     const health = computeHealthScore(teamId);
-    if (health.level === "green") return "จังหวะดี ไปต่อภารกิจถัดไป";
-    if (health.level === "yellow") return "ชีพจรเริ่มแผ่ว เลือกงานเล็ก 1 งานให้เสร็จวันนี้";
+    if (health.level === "strong") return "จังหวะดี ไปต่อภารกิจถัดไป";
+    if (health.level === "steady") return "อยู่ในจังหวะที่ดี ทำต่อไปได้เลย";
+    if (health.level === "weak") return "ชีพจรเริ่มแผ่ว เลือกงานเล็ก 1 งานให้เสร็จวันนี้";
     return "งานหลุดจากแผนแล้ว เริ่มแผนกู้จังหวะ 15 นาที";
   }
 
@@ -3585,7 +3947,7 @@ textarea.input { resize: vertical; min-height: 88px; }
     const avgFeedbackWait = waits.length ? Math.round((waits.reduce((a, b) => a + b, 0) / waits.length) * 10) / 10 : 0;
     const completionRate = Math.round((teams.filter((t) => getMilestones(t.id).every((m) => ["passed", "done"].includes(m.status))).length / teams.length) * 100);
     const overdueFeedbackCount = STATE.submissions.filter((s) => ["submitted", "reviewing"].includes(s.status) && TD.diffDays(new Date(), s.submittedAt) > STATE.courseSettings.feedbackSlaDays).length;
-    const recoveredCount = teams.filter((t) => ["red", "yellow"].includes(t.health) && computeHealthScore(t.id).level === "green").length;
+    const recoveredCount = teams.filter((t) => ["red", "yellow"].includes(t.health) && ["strong", "steady"].includes(computeHealthScore(t.id).level)).length;
     return {
       teamsCount: teams.length,
       avgMilestonesCompletedPct: avgCompleted,
@@ -3639,17 +4001,13 @@ textarea.input { resize: vertical; min-height: 88px; }
  * ย้ำ: ใช้เพื่อสร้างแรงจูงใจเท่านั้น ไม่มีผลต่อคะแนนหรือการประเมินผลทางวิชาการใด ๆ
  */
 (function (global) {
+  // Project Pulse — 4 ระดับ: Strong / Steady / Weak / Dormant เสมอแสดงไอคอน+สี+ข้อความ (ไม่ใช้สีอย่างเดียว)
   const RHYTHM_META = {
-    strong: { bpm: 78, duration: "1.1s", color: "var(--pp-green-600)", label: "ชีพจรแข็งแรง เดินหน้าตามจังหวะ", faceEmoji: "💚" },
-    weak: { bpm: 54, duration: "2.2s", color: "#d3a300", label: "เลือกงานเล็ก ๆ 1 อย่างให้เสร็จวันนี้", faceEmoji: "💛" },
-    critical: { bpm: 28, duration: "4s", color: "var(--pp-red-700)", label: "เริ่มใหม่จากงานเล็ก ๆ ได้เสมอ — ลองแผนกู้จังหวะ 15 นาที", faceEmoji: "💔" },
+    strong: { bpm: 82, duration: "1s", color: "var(--pp-green-600)", label: "Strong — ahead of schedule", faceEmoji: "⬆️" },
+    steady: { bpm: 68, duration: "1.6s", color: "var(--pp-yellow-700)", label: "Steady — on track", faceEmoji: "➡️" },
+    weak: { bpm: 50, duration: "2.6s", color: "var(--pp-orange-700)", label: "Weak — behind schedule", faceEmoji: "⬇️" },
+    dormant: { bpm: 22, duration: "4.5s", color: "var(--pp-red-700)", label: "Dormant — no recent activity", faceEmoji: "⏸" },
   };
-
-  function rhythmFromLevel(level) {
-    if (level === "green") return "strong";
-    if (level === "yellow") return "weak";
-    return "critical";
-  }
 
   function buildEcgPath(amplitude, cycles) {
     const segW = 100;
@@ -3661,7 +4019,7 @@ textarea.input { resize: vertical; min-height: 88px; }
     return d;
   }
 
-  const AMPLITUDE_BY_RHYTHM = { strong: 15, weak: 8, critical: 2.5 };
+  const AMPLITUDE_BY_RHYTHM = { strong: 15, steady: 10, weak: 6, dormant: 2 };
 
   // การ์ตูนกราฟชีพจรแบบ ECG ที่ scroll วนไม่รู้จบ ความเร็ว/แอมพลิจูดเปลี่ยนตามระดับสุขภาพโครงงาน
   function heartbeatSVG(rhythm, opts = {}) {
@@ -3724,7 +4082,7 @@ textarea.input { resize: vertical; min-height: 88px; }
     setTimeout(() => el.remove(), 1400);
   }
 
-  global.PPPulse = { RHYTHM_META, rhythmFromLevel, heartbeatSVG, pulseSummary, badgeRow, burst };
+  global.PPPulse = { RHYTHM_META, heartbeatSVG, pulseSummary, badgeRow, burst };
 })(window);
 </script>
 
@@ -3736,49 +4094,35 @@ textarea.input { resize: vertical; min-height: 88px; }
      rebuilding, so it stays safe to call on every route change)
    ============================================================ */
 (function (global) {
-  const STUDENT_NAV = [
-    { key: "student-dashboard", label: "แดชบอร์ดของฉัน", icon: "🧭", href: "#student-dashboard" },
-    { key: "workload-map", label: "ปฏิทินภาระงานทั้งเทอม", icon: "🗓️", href: "#workload-map" },
-    { key: "free-time-planner", label: "แผนเวลาว่างอัจฉริยะ", icon: "⏱️", href: "#free-time-planner" },
-    { key: "project-timeline", label: "ไทม์ไลน์ & Milestone", icon: "🧩", href: "#project-timeline" },
-    { key: "task-detail", label: "งานและไฟล์ส่ง", icon: "📎", href: "#task-detail" },
-    { key: "feedback-to-task", label: "Feedback → งานแก้ไข", icon: "✅", href: "#feedback-to-task" },
-    { key: "team-workload", label: "ภาระงานในทีม", icon: "👥", href: "#team-workload" },
-    { key: "achievements", label: "ตราความสำเร็จของฉัน", icon: "🏅", href: "#achievements" },
-    { key: "notifications", label: "ศูนย์การแจ้งเตือน", icon: "🔔", href: "#notifications" },
-    { key: "weekly-report", label: "รายงานรายสัปดาห์", icon: "📊", href: "#weekly-report" },
-    { key: "settings", label: "ตั้งค่า", icon: "⚙️", href: "#settings" },
-  ];
-  const ADVISOR_NAV = [
-    { key: "advisor-dashboard", label: "แดชบอร์ดอาจารย์", icon: "🧭", href: "#advisor-dashboard" },
-    { key: "feedback-queue", label: "คิวงานรอตรวจ", icon: "📥", href: "#feedback-queue" },
-    { key: "review-feedback", label: "ตรวจงาน / ให้ Feedback", icon: "✍️", href: "#review-feedback", hidden: true },
-    { key: "team-workload", label: "ภาระงานทีม", icon: "👥", href: "#team-workload" },
-    { key: "notifications", label: "ศูนย์การแจ้งเตือน", icon: "🔔", href: "#notifications" },
-    { key: "weekly-report", label: "รายงานความก้าวหน้า", icon: "📊", href: "#weekly-report" },
-    { key: "settings", label: "ตั้งค่ากรอบเวลา Feedback", icon: "⚙️", href: "#settings" },
+  // เมนูหลักรวมเป็นชุดเดียวกันทั้งสองบทบาท (Dashboard/Projects/Review Queue/Calendar/Notifications/Profile)
+  // ปลายทาง (href) ต่างกันตามบทบาท แต่ label/icon/ตำแหน่งเมนูเหมือนกันเสมอ — เนื้อหาภายในหน้าเป็นตัวปรับตามบทบาทแทน
+  const NAV_ITEMS = [
+    { key: "dashboard", label: "Dashboard", icon: "🧭", href: { student: "#student-dashboard", advisor: "#advisor-dashboard" } },
+    { key: "projects", label: "Projects", icon: "🗂️", href: { student: "#projects", advisor: "#projects" } },
+    { key: "review-queue", label: "Review Queue", icon: "📥", href: { student: "#feedback-queue", advisor: "#feedback-queue" } },
+    { key: "calendar", label: "Calendar", icon: "🗓️", href: { student: "#workload-map", advisor: "#workload-map" } },
+    { key: "notifications", label: "Notifications", icon: "🔔", href: { student: "#notifications", advisor: "#notifications" } },
+    { key: "profile", label: "Profile", icon: "👤", href: { student: "#profile", advisor: "#profile" } },
   ];
 
-  const BOTTOM_NAV = {
-    student: [
-      { key: "student-dashboard", label: "หน้าหลัก", icon: "🏠", href: "#student-dashboard" },
-      { key: "project-timeline", label: "แผนงาน", icon: "🧩", href: "#project-timeline" },
-      { key: "workload-map", label: "ปฏิทิน", icon: "🗓️", href: "#workload-map" },
-      { key: "notifications", label: "แจ้งเตือน", icon: "🔔", href: "#notifications" },
-      { key: "settings", label: "โปรไฟล์", icon: "⚙️", href: "#settings" },
-    ],
-    advisor: [
-      { key: "advisor-dashboard", label: "หน้าหลัก", icon: "🏠", href: "#advisor-dashboard" },
-      { key: "feedback-queue", label: "แผนงาน", icon: "📥", href: "#feedback-queue" },
-      { key: "team-workload", label: "ปฏิทิน", icon: "🗓️", href: "#team-workload" },
-      { key: "notifications", label: "แจ้งเตือน", icon: "🔔", href: "#notifications" },
-      { key: "settings", label: "โปรไฟล์", icon: "⚙️", href: "#settings" },
-    ],
+  // หน้าเดิมที่ไม่ได้ขึ้นเป็นเมนูหลักแล้ว (เข้าถึงจาก Project Detail/Profile แทน) — ยัง map ไปยังเมนูหลักที่ใกล้เคียงที่สุด
+  // เพื่อให้แถบเมนูด้านซ้าย highlight ตำแหน่งที่ถูกต้องเมื่อผู้ใช้เปิดหน้าเหล่านี้ตรง ๆ (เช่น จากลิงก์ใน Project Detail)
+  const ACTIVE_KEY_ALIAS = {
+    "student-dashboard": "dashboard", "advisor-dashboard": "dashboard",
+    "projects": "projects", "project-detail": "projects",
+    "project-timeline": "projects", "task-detail": "projects", "team-workload": "projects",
+    "feedback-queue": "review-queue", "review-feedback": "review-queue", "feedback-to-task": "review-queue",
+    "workload-map": "calendar", "free-time-planner": "calendar",
+    "notifications": "notifications",
+    "profile": "profile", "settings": "profile", "achievements": "profile", "weekly-report": "profile",
   };
-  function buildBottomNav(user, activeKey) {
-    const items = BOTTOM_NAV[user.role] || BOTTOM_NAV.student;
+
+  // Bottom Navigation (มือถือ) — เข้าถึงหน้าหลักที่ใช้บ่อยได้เร็ว เสริมจากเมนู hamburger เดิม ไม่ได้แทนที่ ใช้ 5 จาก 6 เมนูหลัก
+  const BOTTOM_NAV_KEYS = ["dashboard", "projects", "calendar", "notifications", "profile"];
+  function buildBottomNav(user, activeParentKey) {
+    const items = NAV_ITEMS.filter((i) => BOTTOM_NAV_KEYS.includes(i.key));
     return `<nav class="bottom-nav" aria-label="เมนูหลัก (มือถือ)">${items.map((i) => `
-      <a class="bottom-nav__item ${i.key === activeKey ? "is-active" : ""}" href="${i.href}">
+      <a class="bottom-nav__item ${i.key === activeParentKey ? "is-active" : ""}" href="${i.href[user.role] || i.href.student}">
         <span class="bottom-nav__icon">${i.icon}</span><span>${i.label}</span>
       </a>`).join("")}</nav>`;
   }
@@ -3852,9 +4196,9 @@ textarea.input { resize: vertical; min-height: 88px; }
     <header class="app-header">
       <div class="flex items-center gap-3">
         <button class="app-header__menu-btn" id="btnToggleSidebar" aria-label="เปิดเมนู">☰</button>
-        <a href="#login" class="app-header__brand" style="color:#fff;text-decoration:none;">
+        <a href="#login" class="app-header__brand" style="text-decoration:none;">
           <span class="pulse-dot"></span>
-          <span>ProjectPulse<span class="brand-text" style="font-weight:500;opacity:.85;"> · ติดตามโครงงาน</span></span>
+          <span class="brand-wordmark">ProjectPulse</span><span class="brand-text text-muted" style="font-weight:500;"> · ติดตามโครงงาน</span>
         </a>
       </div>
       <div class="app-header__right">
@@ -3866,7 +4210,7 @@ textarea.input { resize: vertical; min-height: 88px; }
         <button class="icon-btn" id="btnNotifBell" aria-label="การแจ้งเตือน" title="การแจ้งเตือน">
           🔔${unread > 0 ? `<span class="badge-dot">${unread > 9 ? "9+" : unread}</span>` : ""}
         </button>
-        <button class="user-chip" id="btnUserChip" style="background:transparent;border:none;cursor:pointer;color:#fff;" title="เปลี่ยนผู้ใช้งาน Demo">
+        <button class="user-chip" id="btnUserChip" style="background:transparent;border:none;cursor:pointer;" title="เปลี่ยนผู้ใช้งาน Demo">
           <span class="user-chip__avatar">${escapeHtml(initials(name))}</span>
           <span class="flex flex-col" style="align-items:flex-start;">
             <span class="user-chip__name">${escapeHtml(name)}</span>
@@ -3896,10 +4240,9 @@ textarea.input { resize: vertical; min-height: 88px; }
     </div>`;
   }
 
-  function buildSidebar(user, activeKey) {
-    const items = user.role === "student" ? STUDENT_NAV : ADVISOR_NAV;
-    const links = items.filter((i) => !i.hidden).map((i) => `
-      <a class="nav-link ${i.key === activeKey ? "is-active" : ""}" href="${i.href}">
+  function buildSidebar(user, activeParentKey) {
+    const links = NAV_ITEMS.map((i) => `
+      <a class="nav-link ${i.key === activeParentKey ? "is-active" : ""}" href="${i.href[user.role] || i.href.student}">
         <span class="nav-icon">${i.icon}</span><span>${i.label}</span>
       </a>`).join("");
     return `
@@ -3908,6 +4251,21 @@ textarea.input { resize: vertical; min-height: 88px; }
       ${links}
     </nav>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>`;
+  }
+
+  function buildFooter() {
+    return `
+    <footer class="app-footer">
+      <div class="app-footer__brand"><span class="brand-wordmark">ProjectPulse</span></div>
+      <nav class="app-footer__links" aria-label="Footer">
+        <a href="#help">Help Center</a>
+        <a href="#user-guide">User Guide</a>
+        <a href="#privacy">Privacy</a>
+        <a href="#terms">Terms</a>
+        <a href="#contact">Contact</a>
+      </nav>
+      <div>© ${new Date().getFullYear()} ProjectPulse · University of Phayao</div>
+    </footer>`;
   }
 
   function notifIcon(type) {
@@ -3939,10 +4297,13 @@ textarea.input { resize: vertical; min-height: 88px; }
 
   function mount(activeKey) {
     const user = PP.getCurrentUser();
+    const activeParentKey = ACTIVE_KEY_ALIAS[activeKey] || activeKey;
     const shell = document.getElementById("appShell");
 
-    // ลบ header/sidebar เดิม (ถ้ามี) ก่อนสร้างใหม่ทุกครั้ง — จำเป็นสำหรับโหมด SPA
+    // ลบ header/sidebar/footer เดิม (ถ้ามี) ก่อนสร้างใหม่ทุกครั้ง — จำเป็นสำหรับโหมด SPA
     // ที่เรียก mount() ซ้ำทุกครั้งที่เปลี่ยนหน้า/สลับผู้ใช้งาน เพื่อไม่ให้ event ผูกซ้ำซ้อน
+    // (แหล่งต้นทางใช้เงื่อนไข "สร้าง footer ครั้งเดียวถ้ายังไม่มี" เพราะแต่ละหน้าโหลดใหม่ทั้งหน้าอยู่แล้ว
+    // แต่บันเดิลนี้ต้อง mount() ซ้ำในหน้าเดียวกันทุกครั้งที่เปลี่ยน route จึงลบของเดิมทิ้งก่อนสร้างใหม่แทน)
     const oldHeader = shell.querySelector(".app-header");
     if (oldHeader) oldHeader.remove();
     const oldNotifBackdrop = document.getElementById("notifPanelBackdrop");
@@ -3953,20 +4314,29 @@ textarea.input { resize: vertical; min-height: 88px; }
     if (oldSidebar) oldSidebar.remove();
     const oldOverlay = document.getElementById("sidebarOverlay");
     if (oldOverlay) oldOverlay.remove();
+    const oldFooter = document.querySelector(".app-footer");
+    if (oldFooter) oldFooter.remove();
     const oldBottomNav = document.querySelector(".bottom-nav");
     if (oldBottomNav) oldBottomNav.remove();
 
     const headerWrap = document.createElement("div");
     headerWrap.innerHTML = buildHeader(user);
     const sidebarWrap = document.createElement("div");
-    sidebarWrap.innerHTML = buildSidebar(user, activeKey);
+    sidebarWrap.innerHTML = buildSidebar(user, activeParentKey);
 
     shell.prepend(...Array.from(headerWrap.childNodes));
     const body = document.getElementById("appBody");
     body.prepend(...Array.from(sidebarWrap.childNodes));
 
+    const pageContent = document.getElementById("pageContent");
+    if (pageContent && pageContent.parentElement) {
+      const footerWrap = document.createElement("div");
+      footerWrap.innerHTML = buildFooter();
+      pageContent.insertAdjacentElement("afterend", footerWrap.firstElementChild);
+    }
+
     const bottomNavWrap = document.createElement("div");
-    bottomNavWrap.innerHTML = buildBottomNav(user, activeKey);
+    bottomNavWrap.innerHTML = buildBottomNav(user, activeParentKey);
     document.body.appendChild(bottomNavWrap.firstElementChild);
     enhanceModals();
     enhanceToggleButtons();
@@ -4044,7 +4414,7 @@ textarea.input { resize: vertical; min-height: 88px; }
     setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity .3s"; setTimeout(() => el.remove(), 300); }, 3200);
   }
 
-  global.PPNav = { mount, STUDENT_NAV, ADVISOR_NAV, escapeHtml, initials, notifIcon, renderNotifList };
+  global.PPNav = { mount, NAV_ITEMS, escapeHtml, initials, notifIcon, renderNotifList };
   global.PPToast = { show: toast };
 })(window);
 </script>
@@ -4083,9 +4453,10 @@ function mountStudentDashboard() {
   const esc = PPNav.escapeHtml;
 
   const PULSE_LEVEL_META = {
-    green: { icon: "🟢", label: "ตามแผน — ชีพจรปกติ" },
-    yellow: { icon: "🟡", label: "เริ่มเสี่ยง — ชีพจรแผ่ว" },
-    red: { icon: "🔴", label: "ล่าช้า — ชีพจรวิกฤต" },
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule", cls: "strong" },
+    steady: { icon: "➡️", label: "Steady — on track", cls: "steady" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule", cls: "weak" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity", cls: "dormant" },
   };
 
   function renderAll() {
@@ -4189,10 +4560,10 @@ function mountStudentDashboard() {
 
   function renderRecoveryPanel(health) {
     const slot = document.getElementById("recoveryPanelSlot");
-    if (health.level === "green") { slot.innerHTML = ""; return; }
+    if (["strong", "steady"].includes(health.level)) { slot.innerHTML = ""; return; }
     const meta = PULSE_LEVEL_META[health.level];
     slot.innerHTML = `
-      <div class="card" style="border-color:${health.level === "red" ? "var(--pp-red-700)" : "#f0dd9a"};">
+      <div class="card" style="border-color:${health.level === "dormant" ? "var(--pp-red-700)" : "#f0dd9a"};">
         <div class="card-hd">
           <div>
             <h3>🧭 แผนกู้จังหวะ</h3>
@@ -4206,7 +4577,7 @@ function mountStudentDashboard() {
         </ol>
         <div class="flex gap-2" style="flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" id="btnStartRecovery">▶️ เริ่มกู้จังหวะ</button>
-          <a href="#free-time-planner" class="btn btn-outline btn-sm">🗓️ จัดเวลาใหม่</a>
+          <a href="#workload-map?tab=free-time" class="btn btn-outline btn-sm">🗓️ จัดเวลาใหม่</a>
           <button class="btn btn-outline btn-sm" id="btnReportObstacle">🚧 แจ้งอุปสรรค</button>
           <button class="btn btn-ghost btn-sm" id="btnAskAdvisor">🙋 ขอคำปรึกษา</button>
         </div>
@@ -4229,7 +4600,7 @@ function mountStudentDashboard() {
   function renderRecoveryBanner(health) {
     const slot = document.getElementById("recoveryBannerSlot");
     const lastSeen = team.lastPulseLevelSeen;
-    if (health.level === "green" && (lastSeen === "yellow" || lastSeen === "red")) {
+    if (["strong", "steady"].includes(health.level) && (lastSeen === "weak" || lastSeen === "dormant")) {
       slot.innerHTML = `
         <div class="alert alert-success">
           <div class="alert__icon">💓</div>
@@ -4296,7 +4667,7 @@ function mountStudentDashboard() {
           <div class="text-sm">สัปดาห์นี้คุณมีงาน ${collision.items.length} ชิ้นกำหนดส่งภายใน ${collision.windowHours} ชั่วโมง และต้องใช้เวลารวมประมาณ ${collision.totalHours} ชั่วโมง (${esc(itemsText)}) งานโครงงานมีความเสี่ยงที่จะล่าช้า ควรจัดสรรเวลาโครงงานล่วงหน้า</div>
           <ul>${collision.suggestions.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>
           <div class="flex gap-2" style="margin-top:8px;flex-wrap:wrap;">
-            <a href="#free-time-planner" class="btn btn-sm btn-outline">⏱️ จองช่วงเวลาทำงานล่วงหน้า</a>
+            <a href="#workload-map?tab=free-time" class="btn btn-sm btn-outline">⏱️ จองช่วงเวลาทำงานล่วงหน้า</a>
             <a href="#project-timeline" class="btn btn-sm btn-outline">🧩 แบ่งงานใหญ่เป็นงานย่อย</a>
             <a href="#team-workload" class="btn btn-sm btn-outline">👥 กระจายงานให้ทีม</a>
           </div>
@@ -4305,8 +4676,9 @@ function mountStudentDashboard() {
   }
 
   function healthNote(level) {
-    if (level === "green") return "โครงงานของคุณดำเนินไปตามแผน";
-    if (level === "yellow") return "เริ่มมีสัญญาณความเสี่ยง ควรติดตามใกล้ชิด";
+    if (level === "strong") return "โครงงานของคุณดำเนินไปตามแผน";
+    if (level === "steady") return "อยู่ในจังหวะที่ดี ไปต่อได้เลย";
+    if (level === "weak") return "เริ่มมีสัญญาณความเสี่ยง ควรติดตามใกล้ชิด";
     return "มีความเสี่ยงสูงที่จะล่าช้า ควรดำเนินการทันที";
   }
 
@@ -4367,7 +4739,7 @@ function mountStudentDashboard() {
           <div class="slot-card__reason">${esc(s.taskSuggestion)}</div>
           <div class="slot-card__actions">
             <button class="btn btn-success btn-sm" data-confirm="${s.id}">✓ ยืนยัน</button>
-            <a href="#free-time-planner" class="btn btn-outline btn-sm">เปลี่ยน/แบ่งช่วง</a>
+            <a href="#workload-map?tab=free-time" class="btn btn-outline btn-sm">เปลี่ยน/แบ่งช่วง</a>
           </div>
         </div>`).join("");
     }
@@ -4847,8 +5219,6 @@ function mountAdvisorDashboard() {
   let filterStatus = "";
   let filterRisk = "";
 
-  function teamProgressPct(teamId) { return PP.computeProgressPct(teamId); }
-
   function urgencyChipClass(u) {
     if (u === "เกินกำหนด") return "chip-red";
     if (u === "ใกล้เกินกำหนด") return "chip-orange";
@@ -4862,9 +5232,10 @@ function mountAdvisorDashboard() {
   }
 
   const PULSE_LEVEL_META = {
-    green: { icon: "🟢", label: "ตามแผน — ชีพจรปกติ" },
-    yellow: { icon: "🟡", label: "เริ่มเสี่ยง — ชีพจรแผ่ว" },
-    red: { icon: "🔴", label: "ล่าช้า — ชีพจรวิกฤต" },
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule" },
+    steady: { icon: "➡️", label: "Steady — on track" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity" },
   };
 
   function renderAll() {
@@ -4880,7 +5251,6 @@ function mountAdvisorDashboard() {
     renderAdvisorWorkload();
     populateStatusFilter(queue);
     renderReviewQueue(queue);
-    renderTeamsOverview(teams);
     renderUrgentNotifs();
 
     document.getElementById("btnReviewNext").disabled = !queue.length;
@@ -4893,29 +5263,37 @@ function mountAdvisorDashboard() {
   }
 
   function renderStatCards(teams, queue) {
-    const slaRisk = queue.filter((r) => r.urgency === "ใกล้เกินกำหนด" || r.urgency === "เกินกำหนด").length;
-    const redTeams = teams.filter((t) => PP.computeHealthScore(t.id).level === "red").length;
+    // Project Overview — 5 tiles ตามสเปกใหม่ (คำนวณจาก Project Pulse ที่คำนวณสดของแต่ละทีม)
+    const healths = teams.map((t) => PP.computeHealthScore(t.id));
+    const onTrack = healths.filter((h) => ["strong", "steady"].includes(h.level)).length;
+    const atRisk = healths.filter((h) => h.level === "weak").length;
+    const overdue = healths.filter((h) => h.level === "dormant").length;
 
     document.getElementById("statCards").innerHTML = `
       <div class="card card-stat">
-        <span class="card-stat__label">ทีมที่ดูแล</span>
+        <span class="card-stat__label">Total Projects</span>
         <span class="card-stat__value">${teams.length}</span>
         <span class="card-stat__hint">ทีมทั้งหมดในความรับผิดชอบ</span>
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">งานรอตรวจทั้งหมด</span>
+        <span class="card-stat__label">On Track</span>
+        <span class="card-stat__value">${onTrack}</span>
+        <span class="card-stat__hint">Pulse: Strong หรือ Steady</span>
+      </div>
+      <div class="card card-stat">
+        <span class="card-stat__label">Awaiting Review</span>
         <span class="card-stat__value">${queue.length}</span>
         <span class="card-stat__hint">อยู่ในคิว Feedback ขณะนี้</span>
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">ใกล้/เกินกรอบเวลา Feedback (7 วัน)</span>
-        <span class="card-stat__value">${slaRisk}</span>
-        ${slaRisk > 0 ? `<span class="chip chip-red">ควรตรวจก่อนเป็นลำดับแรก</span>` : `<span class="card-stat__hint">ยังไม่มีงานเสี่ยงเกินกำหนด</span>`}
+        <span class="card-stat__label">At Risk</span>
+        <span class="card-stat__value">${atRisk}</span>
+        ${atRisk > 0 ? `<span class="chip chip-orange">⬇️ Pulse: Weak</span>` : `<span class="card-stat__hint">ไม่มีทีมความเสี่ยงในขณะนี้</span>`}
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">ทีม Health เสี่ยงสูง (แดง)</span>
-        <span class="card-stat__value">${redTeams}</span>
-        ${redTeams > 0 ? `<span class="chip chip-red">ต้องติดตามใกล้ชิด</span>` : `<span class="card-stat__hint">ไม่มีทีมความเสี่ยงสูงในขณะนี้</span>`}
+        <span class="card-stat__label">Overdue</span>
+        <span class="card-stat__value">${overdue}</span>
+        ${overdue > 0 ? `<span class="chip chip-red">⏸️ Pulse: Dormant — ต้องติดตามใกล้ชิด</span>` : `<span class="card-stat__hint">ไม่มีทีมหยุดนิ่งในขณะนี้</span>`}
       </div>`;
   }
 
@@ -5077,38 +5455,6 @@ function mountAdvisorDashboard() {
     renderAll();
   });
 
-  function renderTeamsOverview(teams) {
-    const box = document.getElementById("teamsOverview");
-    if (!teams.length) {
-      box.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🗂️</div>ยังไม่มีทีมในความดูแล</div>`;
-      return;
-    }
-    box.innerHTML = `<table class="pp-table"><thead><tr>
-        <th>ทีม</th><th>โครงงาน</th><th>Milestone ปัจจุบัน</th><th>ความก้าวหน้า</th><th>Project Health</th>
-      </tr></thead><tbody>
-      ${teams.map((t) => {
-        const current = PP.getCurrentMilestone(t.id);
-        const meta = PP.statusMeta(current.status);
-        const pct = teamProgressPct(t.id);
-        const barClass = pct >= 70 ? "green" : pct >= 40 ? "yellow" : "orange";
-        const health = PP.computeHealthScore(t.id);
-        return `<tr>
-          <td><a href="#team-workload?team=${esc(t.id)}" class="font-bold">${esc(t.name)}</a></td>
-          <td>${esc(t.projectName)}<div class="text-xs text-muted">${esc(t.projectType)}</div></td>
-          <td><span class="chip ${meta.chip}">${meta.label}</span><div class="text-xs text-muted" style="margin-top:4px;">${esc(current.name)}</div></td>
-          <td style="min-width:150px;">
-            <div class="progress-row"><div class="progress"><div class="progress__bar ${barClass}" style="width:${pct}%;"></div></div><span class="progress-row__pct">${pct}%</span></div>
-          </td>
-          <td style="min-width:180px;">
-            <span class="health-badge ${health.level}"><span class="health-dot"></span>${health.score} / 100</span>
-            ${t.streakDays > 0 ? ` <span class="text-xs" title="ทำงานต่อเนื่อง">🔥${t.streakDays}</span>` : ` <span class="text-xs text-muted" title="ยังไม่มีความเคลื่อนไหวต่อเนื่องในสัปดาห์นี้">🌱</span>`}
-            <div class="text-xs text-muted" style="margin-top:4px;">${esc((health.level !== "green" && health.reasons.length > 1 ? health.reasons[1] : health.reasons[0]) || "")}</div>
-          </td>
-        </tr>`;
-      }).join("")}
-      </tbody></table>`;
-  }
-
   function renderUrgentNotifs() {
     const box = document.getElementById("urgentNotifBox");
     const list = PP.getNotificationsFor("advisor", advisorId)
@@ -5136,20 +5482,21 @@ function mountAdvisorDashboard() {
 
 <script>
 /* ============================================================
-   free-time-planner.js -> mountFreeTimePlanner()
+   free-time-tab.js -> mountFreeTimeTab()
+   ย้ายมาจาก free-time-planner.js เดิม (เคยเป็นหน้าแยก #free-time-planner) — ตอนนี้ render
+   เข้าไปในแท็บที่สองของหน้าปฏิทิน (#workload-map) แทน ตรรกะ/พฤติกรรมเดิมทุกจุดคงไว้ไม่เปลี่ยน
+   เฉพาะบทบาทนิสิตเท่านั้น (อาจารย์ไม่มีความหมายของ "เวลาว่างส่วนตัว" ให้วางแผน)
+   เรียกจาก ROUTES["workload-map"].mount ต่อจาก mountWorkloadMap() เสมอ (ดู router ท้ายไฟล์)
    ============================================================ */
-function mountFreeTimePlanner() {
+function mountFreeTimeTab() {
   const esc = PPNav.escapeHtml;
   const user = PP.getCurrentUser();
 
+  // แท็บนี้มีความหมายเฉพาะบทบาทนิสิตเท่านั้น — ไม่สร้างทั้งปุ่มแท็บและเนื้อหาเลยสำหรับอาจารย์
+  // (ไม่ใช่แค่ซ่อนด้วย CSS: เอา placeholder panel ออกจาก DOM ไปเลย)
   if (user.role !== "student") {
-    document.getElementById("plannerContent").style.display = "none";
-    document.getElementById("roleGuardSlot").innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state__icon">🔒</div>
-        หน้านี้ใช้สำหรับบทบาทนิสิตเท่านั้น
-        <div style="margin-top:10px;"><a href="#advisor-dashboard" class="btn btn-primary btn-sm">กลับไปแดชบอร์ดอาจารย์</a></div>
-      </div>`;
+    const panel = document.getElementById("tabPanelFreeTime");
+    if (panel) panel.remove();
     return;
   }
 
@@ -5162,10 +5509,62 @@ function mountFreeTimePlanner() {
     split: { icon: "✂️", label: "แบ่งเป็นช่วงสั้นแล้ว" },
   };
 
+  // ---------------------------------------------------------------------
+  // ประกอบปุ่มแท็บ + เนื้อหาแท็บเข้ากับโครง tabs/tab-panel ที่มีอยู่แล้วในหน้า (จาก tpl-workload-map)
+  // ---------------------------------------------------------------------
+  const tabsEl = document.getElementById("calendarTabs");
+  const tabBtnFreeTime = document.createElement("button");
+  tabBtnFreeTime.type = "button";
+  tabBtnFreeTime.className = "tab-btn";
+  tabBtnFreeTime.id = "tabBtnFreeTime";
+  tabBtnFreeTime.dataset.tab = "free-time";
+  tabBtnFreeTime.textContent = "⏱️ แผนเวลาว่างอัจฉริยะ";
+  tabsEl.appendChild(tabBtnFreeTime);
+
+  const panel = document.getElementById("tabPanelFreeTime");
+  panel.innerHTML = `
+    <div class="card">
+      <div class="card-hd"><h3>ระบบพิจารณาช่วงเวลาว่างจากอะไรบ้าง</h3></div>
+      <div class="callout-muted">
+        ระบบไม่ได้สรุปเวลาว่างจากกำหนดส่งงานเพียงอย่างเดียว แต่พิจารณาร่วมกันจาก
+        ตารางเรียน, เวลานอน/เวลาส่วนตัว, งานประจำ/กิจกรรมของทีม, กำหนดส่งงานวิชาอื่น,
+        จำนวนชั่วโมงที่แต่ละงานต้องใช้ และช่วงเวลาที่ทีมทำงานได้อย่างมีประสิทธิภาพที่สุด
+        (เวอร์ชัน demo นี้ไม่ต้องกรอกระดับพลังงาน/สมาธิจริงของผู้ใช้)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div>
+          <h3>⏱️ ช่วงเวลาแนะนำในสัปดาห์นี้</h3>
+          <div class="card-hd__sub">เลือกยืนยัน เปลี่ยนเวลา แบ่งเป็นช่วงสั้น หรือแจ้งว่าไม่สะดวกได้ทันที</div>
+        </div>
+      </div>
+      <div id="pendingSlots" class="grid grid-auto"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><h3>📜 ประวัติช่วงเวลาที่เคยพิจารณาแล้ว</h3></div>
+      <div id="historySlots" class="flex flex-col gap-2"></div>
+    </div>`;
+
+  // ---------------------------------------------------------------------
+  // สลับแท็บ Calendar <-> Smart Free-Time
+  // ---------------------------------------------------------------------
+  function selectTab(tab) {
+    document.querySelectorAll("#calendarTabs .tab-btn").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
+    document.querySelectorAll("#mapContent > .tab-panel").forEach((p) => p.classList.toggle("is-active", p.dataset.tabPanel === tab));
+  }
+  document.getElementById("tabBtnCalendar").addEventListener("click", () => selectTab("calendar"));
+  tabBtnFreeTime.addEventListener("click", () => selectTab("free-time"));
+
+  // เปิดแท็บนี้ทันทีถ้ามาจากลิงก์ ?tab=free-time (เช่นจากแดชบอร์ด/แจ้งเตือน/ปุ่มลิงก์ "จัดเวลาใหม่")
+  if (getRouteQuery().get("tab") === "free-time") selectTab("free-time");
+
+  // ---------------------------------------------------------------------
+  // ตรรกะเดิมจาก free-time-planner.js — ย้ายมาทั้งหมดโดยไม่เปลี่ยนพฤติกรรม
+  // ---------------------------------------------------------------------
   function renderAll() {
-    const advisor = PP.getAdvisor(team.advisorId);
-    document.getElementById("pageDesc").textContent =
-      `${team.name} · ${team.projectType} "${team.projectName}" · อาจารย์ที่ปรึกษา: ${advisor.name}`;
     renderPending();
     renderHistory();
   }
@@ -6449,17 +6848,22 @@ function mountFeedbackToTask() {
 
 <script>
 /* ============================================================
-   team-workload.js -> mountTeamWorkload()
+   team-workload.js -> shared render helpers, exposed globally at load time as
+   PPTeamWorkload (mirrors the real file's top-level "(function (global) {...})(window)"
+   IIFE, which now runs unconditionally so pages/project-detail.html can load
+   team-workload.js + call PPTeamWorkload.renderInto() even without ever visiting
+   the team-workload page first). This is a deliberate structural split from the
+   bundle's usual single named mountXxx() pattern: mountTeamWorkload() below still
+   supplies the per-visit team-selector/renderAll wiring for the #team-workload
+   route itself, but now calls into these same shared helpers instead of
+   duplicating them, exactly like the real project-detail.js does via
+   PPTeamWorkload.renderInto().
    (unassigned items branch on item.feedbackId presence, since
    milestone-subtask items in PP.teamWorkload().unassigned don't
    carry a `source` field — see original file's comment)
    ============================================================ */
-function mountTeamWorkload() {
+(function (global) {
   const esc = PPNav.escapeHtml;
-  const user = PP.getCurrentUser();
-  const isAdvisor = user.role === "advisor";
-  const teams = isAdvisor ? PP.getTeamsByAdvisor(user.advisorId) : [];
-  let currentTeamId = isAdvisor ? (getRouteQuery().get("team") || (teams[0] ? teams[0].id : null)) : user.teamId;
 
   const DOW_NAMES = ["อาทิตย์", "จันทร์", "อังคาร", "พุธ", "พฤหัสบดี", "ศุกร์", "เสาร์"];
 
@@ -6485,52 +6889,12 @@ function mountTeamWorkload() {
     return "ตารางค่อนข้างแน่นทั้งสัปดาห์ ควรนัดเวลาล่วงหน้า";
   }
 
-  function renderAll() {
-    if (isAdvisor && !teams.length) {
-      document.getElementById("pageDesc").textContent = "คุณยังไม่มีทีมในความดูแล";
-      document.getElementById("teamSelectorSlot").innerHTML = "";
-      document.getElementById("imbalanceSlot").innerHTML = "";
-      document.getElementById("membersGrid").innerHTML = `<div class="empty-state"><div class="empty-state__icon">👥</div>ยังไม่มีทีมในความดูแลของคุณ</div>`;
-      document.getElementById("unassignedList").innerHTML = "";
-      return;
-    }
-
-    const team = PP.getTeam(currentTeamId);
-    const students = PP.getStudentsByTeam(currentTeamId);
-    const workload = PP.teamWorkload(currentTeamId);
-    const advisor = PP.getAdvisor(team.advisorId);
-
-    document.getElementById("pageDesc").textContent =
-      `${team.name} · ${team.projectType} "${team.projectName}"` + (isAdvisor ? "" : ` · อาจารย์ที่ปรึกษา: ${advisor.name}`);
-
-    renderTeamSelector();
-    renderImbalance(workload);
-    renderMembers(workload, currentTeamId);
-    renderUnassigned(workload, students);
-  }
-
-  function renderTeamSelector() {
-    const slot = document.getElementById("teamSelectorSlot");
-    if (!isAdvisor) { slot.innerHTML = ""; return; }
-    slot.innerHTML = `
-      <div class="card">
-        <div class="field" style="max-width:360px;">
-          <label for="teamPicker">เลือกทีมที่ต้องการดูภาระงาน</label>
-          <select id="teamPicker" class="input">
-            ${teams.map((t) => `<option value="${esc(t.id)}" ${t.id === currentTeamId ? "selected" : ""}>${esc(t.name)} — ${esc(t.projectName)}</option>`).join("")}
-          </select>
-        </div>
-      </div>`;
-    document.getElementById("teamPicker").addEventListener("change", (e) => {
-      currentTeamId = e.target.value;
-      renderAll();
-    });
-  }
-
-  function renderImbalance(workload) {
-    const slot = document.getElementById("imbalanceSlot");
-    if (!workload.imbalance) { slot.innerHTML = ""; return; }
-    slot.innerHTML = `
+  // --- ส่วน render ที่ใช้ร่วมกัน (คืนค่าเป็น HTML string ล้วน ๆ ไม่ผูกกับ id ของหน้าใดหน้าหนึ่ง) ---
+  // แยกออกมาเพื่อให้หน้า team-workload (ผ่าน mountTeamWorkload ด้านล่าง) และหน้าอื่น ๆ
+  // (เช่น Project Detail ผ่าน PPTeamWorkload.renderInto) ใช้ตรรกะการแสดงผลชุดเดียวกันได้ ไม่ต้อง duplicate โค้ด
+  function imbalanceHtml(workload) {
+    if (!workload.imbalance) return "";
+    return `
       <div class="alert alert-warn">
         <div class="alert__icon">⚖️</div>
         <div>
@@ -6540,14 +6904,12 @@ function mountTeamWorkload() {
       </div>`;
   }
 
-  function renderMembers(workload, teamId) {
+  function memberCardsHtml(workload, teamId) {
     const hint = freeTimeHint(teamId);
-    const box = document.getElementById("membersGrid");
     if (!workload.members.length) {
-      box.innerHTML = `<div class="empty-state">ทีมนี้ยังไม่มีสมาชิก</div>`;
-      return;
+      return `<div class="empty-state">ทีมนี้ยังไม่มีสมาชิก</div>`;
     }
-    box.innerHTML = workload.members.map((m) => {
+    return workload.members.map((m) => {
       const pct = m.totalTasks ? Math.round((m.done / m.totalTasks) * 100) : 0;
       const barClass = pct >= 70 ? "green" : pct >= 40 ? "yellow" : "orange";
       return `
@@ -6572,14 +6934,11 @@ function mountTeamWorkload() {
     }).join("");
   }
 
-  function renderUnassigned(workload, students) {
-    const wrap = document.getElementById("unassignedList");
-    const list = workload.unassigned;
+  function unassignedListHtml(list, students) {
     if (!list.length) {
-      wrap.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🎉</div>ไม่มีงานที่ค้างมอบหมายในขณะนี้</div>`;
-      return;
+      return `<div class="empty-state"><div class="empty-state__icon">🎉</div>ไม่มีงานที่ค้างมอบหมายในขณะนี้</div>`;
     }
-    wrap.innerHTML = list.map((item, idx) => {
+    return list.map((item, idx) => {
       const isFeedbackItem = !!item.feedbackId;
       let contextLabel = "";
       if (isFeedbackItem) {
@@ -6604,7 +6963,11 @@ function mountTeamWorkload() {
         </div>
       </div>`;
     }).join("");
+  }
 
+  // ผูก event ปุ่ม "มอบหมาย" ของรายการที่ยังไม่มีผู้รับผิดชอบ — ใช้ร่วมกันทั้งหน้า team-workload และ renderInto()
+  // `afterChange` คือ callback ให้ re-render ส่วนที่เรียก (แต่ละหน้ามีขอบเขต DOM ที่ต้องรีเฟรชต่างกัน)
+  function bindUnassignedEvents(wrap, list, afterChange) {
     wrap.querySelectorAll("[data-assign-btn]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = btn.closest(".task-row");
@@ -6624,9 +6987,94 @@ function mountTeamWorkload() {
           PP.commit();
         }
         PPToast.show("มอบหมายงานเรียบร้อยแล้ว", "success");
-        renderAll();
+        afterChange();
       });
     });
+  }
+
+  // ---------------------------------------------------------------------
+  // Reusable export — ใช้โดยหน้าอื่น (เช่น Project Detail's Team Activity tab) เพื่อแสดงตาราง
+  // ภาระงานรายบุคคลของทีมเดียวชุดเดียวกับที่หน้า team-workload ใช้ โดยไม่ต้อง duplicate ตรรกะ
+  // ไม่รวม UI ส่วนเลือกทีมสำหรับอาจารย์ (เป็นเรื่องเฉพาะของหน้า team-workload เท่านั้น)
+  // ---------------------------------------------------------------------
+  function renderInto(container, teamId) {
+    const workload = PP.teamWorkload(teamId);
+    const teamStudents = PP.getStudentsByTeam(teamId);
+    container.innerHTML = `
+      <div data-pp-imbalance></div>
+      <div class="grid grid-auto" data-pp-members style="margin-top:12px;"></div>
+      <div class="font-bold text-sm" style="margin-top:20px;margin-bottom:6px;">❗ งานที่ยังไม่มีผู้รับผิดชอบ</div>
+      <div class="flex flex-col gap-2" data-pp-unassigned></div>`;
+    container.querySelector("[data-pp-imbalance]").innerHTML = imbalanceHtml(workload);
+    container.querySelector("[data-pp-members]").innerHTML = memberCardsHtml(workload, teamId);
+    const wrap = container.querySelector("[data-pp-unassigned]");
+    wrap.innerHTML = unassignedListHtml(workload.unassigned, teamStudents);
+    bindUnassignedEvents(wrap, workload.unassigned, () => renderInto(container, teamId));
+  }
+
+  global.PPTeamWorkload = { renderInto, imbalanceHtml, memberCardsHtml, unassignedListHtml, bindUnassignedEvents };
+})(window);
+</script>
+
+<script>
+/* ============================================================
+   team-workload.js -> mountTeamWorkload()
+   (per-visit wiring for the #team-workload route itself — shared render
+   helpers now live in PPTeamWorkload, set up in the script block above)
+   ============================================================ */
+function mountTeamWorkload() {
+  const esc = PPNav.escapeHtml;
+  const user = PP.getCurrentUser();
+  const isAdvisor = user.role === "advisor";
+  const teams = isAdvisor ? PP.getTeamsByAdvisor(user.advisorId) : [];
+  let currentTeamId = isAdvisor ? (getRouteQuery().get("team") || (teams[0] ? teams[0].id : null)) : user.teamId;
+
+  function renderAll() {
+    if (isAdvisor && !teams.length) {
+      document.getElementById("pageDesc").textContent = "คุณยังไม่มีทีมในความดูแล";
+      document.getElementById("teamSelectorSlot").innerHTML = "";
+      document.getElementById("imbalanceSlot").innerHTML = "";
+      document.getElementById("membersGrid").innerHTML = `<div class="empty-state"><div class="empty-state__icon">👥</div>ยังไม่มีทีมในความดูแลของคุณ</div>`;
+      document.getElementById("unassignedList").innerHTML = "";
+      return;
+    }
+
+    const team = PP.getTeam(currentTeamId);
+    const students = PP.getStudentsByTeam(currentTeamId);
+    const workload = PP.teamWorkload(currentTeamId);
+    const advisor = PP.getAdvisor(team.advisorId);
+
+    document.getElementById("pageDesc").textContent =
+      `${team.name} · ${team.projectType} "${team.projectName}"` + (isAdvisor ? "" : ` · อาจารย์ที่ปรึกษา: ${advisor.name}`);
+
+    renderTeamSelector();
+    document.getElementById("imbalanceSlot").innerHTML = PPTeamWorkload.imbalanceHtml(workload);
+    document.getElementById("membersGrid").innerHTML = PPTeamWorkload.memberCardsHtml(workload, currentTeamId);
+    renderUnassigned(workload, students);
+  }
+
+  function renderTeamSelector() {
+    const slot = document.getElementById("teamSelectorSlot");
+    if (!isAdvisor) { slot.innerHTML = ""; return; }
+    slot.innerHTML = `
+      <div class="card">
+        <div class="field" style="max-width:360px;">
+          <label for="teamPicker">เลือกทีมที่ต้องการดูภาระงาน</label>
+          <select id="teamPicker" class="input">
+            ${teams.map((t) => `<option value="${esc(t.id)}" ${t.id === currentTeamId ? "selected" : ""}>${esc(t.name)} — ${esc(t.projectName)}</option>`).join("")}
+          </select>
+        </div>
+      </div>`;
+    document.getElementById("teamPicker").addEventListener("change", (e) => {
+      currentTeamId = e.target.value;
+      renderAll();
+    });
+  }
+
+  function renderUnassigned(workload, students) {
+    const wrap = document.getElementById("unassignedList");
+    wrap.innerHTML = PPTeamWorkload.unassignedListHtml(workload.unassigned, students);
+    PPTeamWorkload.bindUnassignedEvents(wrap, workload.unassigned, renderAll);
   }
 
   renderAll();
@@ -6752,7 +7200,7 @@ function mountNotifications() {
       case "collision":
         return "workload-map";
       case "free_time_found":
-        return "free-time-planner";
+        return "workload-map?tab=free-time";
       case "team_imbalance":
       case "unassigned_task":
         return "team-workload";
@@ -7469,6 +7917,716 @@ function mountSettings() {
 
 <script>
 /* ============================================================
+   projects.js -> mountProjects()
+   ============================================================ */
+function mountProjects() {
+  const user = PP.getCurrentUser();
+  const esc = PPNav.escapeHtml;
+
+  // Project Pulse — 4 levels, always shown as icon + text label (never color alone).
+  // Exact strings reused from dashboard-student.js's PULSE_LEVEL_META for consistency.
+  const PULSE_LEVEL_META = {
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule", cls: "strong" },
+    steady: { icon: "➡️", label: "Steady — on track", cls: "steady" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule", cls: "weak" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity", cls: "dormant" },
+  };
+
+  const DEADLINE_BUCKETS = [
+    { key: "overdue", label: "Overdue" },
+    { key: "this_week", label: "Due this week" },
+    { key: "two_weeks", label: "Due in 2 weeks" },
+    { key: "later", label: "Later" },
+    { key: "none", label: "No upcoming deadline" },
+  ];
+
+  // ---------------------------------------------------------------------
+  // 1) Resolve which teams this user can see
+  // ---------------------------------------------------------------------
+  function myTeams() {
+    if (user.role === "student") {
+      const team = PP.getTeam(user.teamId);
+      return team ? [team] : [];
+    }
+    return PP.getTeamsByAdvisor(user.advisorId);
+  }
+
+  // ---------------------------------------------------------------------
+  // 2) Build one enriched "project" record per team
+  // ---------------------------------------------------------------------
+  function nearestDeadlineMilestone(teamId) {
+    const open = PP.getMilestones(teamId).filter((m) => !["passed", "done"].includes(m.status));
+    if (!open.length) return null;
+    return open.reduce((a, b) => (new Date(a.dueDate) < new Date(b.dueDate) ? a : b));
+  }
+
+  function deadlineBucketFor(dueDate) {
+    if (!dueDate) return "none";
+    const diff = ThaiDate.diffDays(dueDate, new Date());
+    if (diff < 0) return "overdue";
+    if (diff <= 7) return "this_week";
+    if (diff <= 14) return "two_weeks";
+    return "later";
+  }
+
+  function buildProjects(teams) {
+    return teams.map((team) => {
+      const progressPct = PP.computeProgressPct(team.id);
+      const health = PP.computeHealthScore(team.id);
+      const current = PP.getCurrentMilestone(team.id);
+      const phaseName = PP.getCurrentPhaseName(team.id);
+      const reviewMeta = PP.statusMeta(current.status);
+      const deadlineMilestone = nearestDeadlineMilestone(team.id);
+      const deadlineBucket = deadlineBucketFor(deadlineMilestone ? deadlineMilestone.dueDate : null);
+      const members = PP.getStudentsByTeam(team.id);
+      return { team, progressPct, health, current, phaseName, reviewMeta, deadlineMilestone, deadlineBucket, members };
+    });
+  }
+
+  // ---------------------------------------------------------------------
+  // 3) Filter bar — options are built once from the full visible dataset
+  // ---------------------------------------------------------------------
+  const state = { search: "", phase: "", pulse: "", deadline: "", team: "", review: "" };
+
+  function fillSelect(select, options, allLabel) {
+    select.innerHTML = [`<option value="">${esc(allLabel)}</option>`]
+      .concat(options.map((o) => `<option value="${esc(o.value)}">${esc(o.label)}</option>`))
+      .join("");
+  }
+
+  function uniqueBy(arr, keyFn, labelFn) {
+    const seen = new Map();
+    arr.forEach((item) => {
+      const key = keyFn(item);
+      if (key && !seen.has(key)) seen.set(key, labelFn(item));
+    });
+    return Array.from(seen.entries()).map(([value, label]) => ({ value, label }));
+  }
+
+  function setupFilterBar(projects) {
+    const course = PP.getCourse();
+    const courseSelect = document.getElementById("filterCourse");
+    courseSelect.innerHTML = `<option>${esc(course.code)} — ${esc(course.name)}</option>`;
+
+    fillSelect(document.getElementById("filterPhase"), uniqueBy(projects, (p) => p.phaseName, (p) => p.phaseName), "All phases");
+
+    fillSelect(document.getElementById("filterPulse"), Object.keys(PULSE_LEVEL_META).map((key) => ({
+      value: key, label: `${PULSE_LEVEL_META[key].icon} ${key[0].toUpperCase()}${key.slice(1)}`,
+    })), "All Pulse statuses");
+
+    fillSelect(document.getElementById("filterDeadline"), DEADLINE_BUCKETS.map((b) => ({ value: b.key, label: b.label })), "All deadlines");
+
+    fillSelect(document.getElementById("filterTeam"), uniqueBy(projects, (p) => p.team.id, (p) => p.team.name), "All teams");
+
+    fillSelect(document.getElementById("filterReview"), uniqueBy(projects, (p) => p.current.status, (p) => p.reviewMeta.label), "All review statuses");
+
+    document.getElementById("filterSearch").addEventListener("input", (e) => { state.search = e.target.value.trim().toLowerCase(); renderGrid(projects); });
+    document.getElementById("filterPhase").addEventListener("change", (e) => { state.phase = e.target.value; renderGrid(projects); });
+    document.getElementById("filterPulse").addEventListener("change", (e) => { state.pulse = e.target.value; renderGrid(projects); });
+    document.getElementById("filterDeadline").addEventListener("change", (e) => { state.deadline = e.target.value; renderGrid(projects); });
+    document.getElementById("filterTeam").addEventListener("change", (e) => { state.team = e.target.value; renderGrid(projects); });
+    document.getElementById("filterReview").addEventListener("change", (e) => { state.review = e.target.value; renderGrid(projects); });
+
+    const clearFilters = () => {
+      state.search = ""; state.phase = ""; state.pulse = ""; state.deadline = ""; state.team = ""; state.review = "";
+      document.getElementById("filterSearch").value = "";
+      ["filterPhase", "filterPulse", "filterDeadline", "filterTeam", "filterReview"].forEach((id) => (document.getElementById(id).value = ""));
+      renderGrid(projects);
+    };
+    document.getElementById("btnClearFilters").addEventListener("click", clearFilters);
+    document.getElementById("btnEmptyClear").addEventListener("click", clearFilters);
+  }
+
+  function matchesFilters(p) {
+    if (state.phase && p.phaseName !== state.phase) return false;
+    if (state.pulse && p.health.level !== state.pulse) return false;
+    if (state.deadline && p.deadlineBucket !== state.deadline) return false;
+    if (state.team && p.team.id !== state.team) return false;
+    if (state.review && p.current.status !== state.review) return false;
+    if (state.search) {
+      const haystack = `${p.team.name} ${p.team.projectName || ""}`.toLowerCase();
+      if (!haystack.includes(state.search)) return false;
+    }
+    return true;
+  }
+
+  // ---------------------------------------------------------------------
+  // 4) Card rendering
+  // ---------------------------------------------------------------------
+  function avatarStack(members) {
+    if (!members.length) return "";
+    const shown = members.slice(0, 4);
+    const extra = members.length - shown.length;
+    return `<div class="avatar-stack" aria-hidden="true">
+      ${shown.map((m) => `<span class="avatar" title="${esc(m.name)}">${esc(PPNav.initials(m.name))}</span>`).join("")}
+      ${extra > 0 ? `<span class="avatar" style="background:var(--pp-surface-muted);color:var(--pp-text-700);">+${extra}</span>` : ""}
+    </div>`;
+  }
+
+  function deadlineText(p) {
+    if (!p.deadlineMilestone) return "All milestones complete";
+    return `${esc(p.deadlineMilestone.name)} · ${ThaiDate.formatThaiShort(p.deadlineMilestone.dueDate)}`;
+  }
+
+  function cardHtml(p, idx) {
+    const pulse = PULSE_LEVEL_META[p.health.level];
+    const moreId = `projCardMore-${idx}`;
+    return `
+    <a class="project-card" href="#project-detail?team=${encodeURIComponent(p.team.id)}" aria-describedby="${moreId}">
+      <div class="project-card__hd">
+        <div>
+          <div class="project-card__name">${esc(p.team.projectName || p.team.name)}</div>
+          <div class="project-card__team">${esc(p.team.name)}</div>
+        </div>
+        <span class="health-badge ${pulse.cls}"><span class="health-dot"></span>${pulse.icon} ${esc(pulse.label.split(" — ")[0])}</span>
+      </div>
+
+      ${avatarStack(p.members)}
+
+      <div class="project-card__meta-row">
+        <span>Phase: <strong>${esc(p.phaseName)}</strong></span>
+        <span>Progress: <strong>${p.progressPct}%</strong></span>
+        <span>Nearest deadline: <strong>${deadlineText(p)}</strong></span>
+        <span>Last activity: <strong>${p.team.lastActivityDate ? ThaiDate.formatThaiShort(p.team.lastActivityDate) : "—"}</strong></span>
+        <span>Review status: <span class="chip ${p.reviewMeta.chip}">${esc(p.reviewMeta.label)}</span></span>
+      </div>
+
+      <div class="project-card__more" id="${moreId}">
+        <div>${esc(pulse.icon)} ${esc(pulse.label)}</div>
+        <div>${esc(p.health.reasons[0] || "")}</div>
+        <div>${esc(p.team.projectType || "")}</div>
+      </div>
+    </a>`;
+  }
+
+  // Hover already expands .project-card__more via CSS (:hover). Keyboard users tabbing onto the
+  // card (it's a real <a>, no nested interactive control) get the same expand via focus, delegated
+  // once on the grid container so it keeps working across re-renders.
+  function bindExpandOnFocus(grid) {
+    if (grid.dataset.expandBound) return;
+    grid.dataset.expandBound = "1";
+    grid.addEventListener("focusin", (e) => {
+      const card = e.target.closest(".project-card");
+      if (card) card.classList.add("is-expanded");
+    });
+    grid.addEventListener("focusout", (e) => {
+      const card = e.target.closest(".project-card");
+      if (card) card.classList.remove("is-expanded");
+    });
+  }
+
+  function renderGrid(projects) {
+    const filtered = projects.filter(matchesFilters);
+    const grid = document.getElementById("projectsGrid");
+    const empty = document.getElementById("projectsEmpty");
+    document.getElementById("resultCount").textContent =
+      `Showing ${filtered.length} of ${projects.length} project${projects.length === 1 ? "" : "s"}`;
+
+    bindExpandOnFocus(grid);
+
+    if (!filtered.length) {
+      grid.hidden = true; grid.innerHTML = "";
+      empty.hidden = false;
+      return;
+    }
+    empty.hidden = true;
+    grid.hidden = false;
+    grid.innerHTML = filtered.map(cardHtml).join("");
+  }
+
+  // ---------------------------------------------------------------------
+  // 5) Skeleton loading state, then real render
+  //    (data is actually synchronous from localStorage — this fakes a brief
+  //     realistic loading state, as done elsewhere in the app)
+  // ---------------------------------------------------------------------
+  function renderSkeleton(count) {
+    const box = document.getElementById("projectsSkeleton");
+    box.innerHTML = Array.from({ length: count }).map(() => `
+      <div class="card skeleton-card">
+        <div class="skeleton skeleton-line w-60"></div>
+        <div class="skeleton skeleton-line w-40"></div>
+        <div class="skeleton skeleton-line w-80"></div>
+      </div>`).join("");
+  }
+
+  function init() {
+    const teams = myTeams();
+
+    if (!teams.length) {
+      document.getElementById("projectsSkeleton").hidden = true;
+      document.getElementById("projectsContent").innerHTML = `
+        <div class="empty-state">
+          <div class="empty-state__icon">🗂️</div>
+          ${user.role === "student" ? "You are not part of a team yet." : "You are not advising any teams yet."}
+        </div>`;
+      return;
+    }
+
+    renderSkeleton(Math.min(teams.length, 6));
+
+    setTimeout(() => {
+      const projects = buildProjects(teams);
+      setupFilterBar(projects);
+      renderGrid(projects);
+      document.getElementById("projectsSkeleton").hidden = true;
+      document.getElementById("projectsSkeleton").innerHTML = "";
+    }, 300);
+  }
+
+  init();
+}
+</script>
+
+<script>
+/* ============================================================
+   project-detail.js -> mountProjectDetail()
+   ============================================================ */
+function mountProjectDetail() {
+  const esc = PPNav.escapeHtml;
+  const user = PP.getCurrentUser();
+
+  // เส้นทางโครงการ (6 ระยะตามสเปก): Pre-production/Production/Post-production/Submission/
+  // Revision/Completion — mapping ระดับ "milestone key" โดยตรง (ไม่ใช้ PP.getProjectPhases()'s 6 กลุ่ม
+  // เดิมของ store.js เพราะกลุ่มเดิมมี label ภายในของตัวเอง เช่น "Testing"/"Presentation" ที่ไม่ตรงกับสเปกนี้)
+  // เป็นเพียง label/การจัดกลุ่มสำหรับแสดงผลหน้านี้เท่านั้น ไม่แก้ไข PHASE_DEFS/getProjectPhases() ใน store.js
+  const SPEC_PHASES = ["Pre-production", "Production", "Post-production", "Revision", "Submission", "Completion"];
+  const MILESTONE_TO_PHASE = {
+    topic_approval: "Pre-production", concept: "Pre-production", proposal: "Pre-production", tools_prep: "Pre-production",
+    produce: "Production",
+    edit: "Post-production", qc: "Post-production",
+    revise_feedback: "Revision",
+    final_submit: "Submission",
+    present_prep: "Completion",
+  };
+
+  // คัดลอกจาก dashboard-student.js ทุกตัวอักษร (ตามกติกา "ชุดเดียวกันทั้งระบบ")
+  const PULSE_LEVEL_META = {
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule", cls: "strong" },
+    steady: { icon: "➡️", label: "Steady — on track", cls: "steady" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule", cls: "weak" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity", cls: "dormant" },
+  };
+
+  function resolveTeamId() {
+    const qp = getRouteQuery().get("team");
+    if (qp) return qp;
+    // ไม่มี query param — ใช้ทีมของผู้ใช้ที่ล็อกอินอยู่ (เฉพาะบทบาทนิสิตที่มีทีมของตัวเอง)
+    return user.role === "student" ? user.teamId : null;
+  }
+
+  const teamId = resolveTeamId();
+  const team = teamId ? PP.getTeam(teamId) : null;
+
+  if (!team) {
+    document.getElementById("roleGuardSlot").innerHTML = `
+      <div class="card">
+        <div class="empty-state">
+          <div class="empty-state__icon">🚫</div>
+          ไม่พบทีม/โครงงานที่ต้องการดู
+          <div style="margin-top:12px;"><a href="#projects" class="btn btn-primary btn-sm">กลับไปหน้า Projects</a></div>
+        </div>
+      </div>`;
+    document.getElementById("projectDetailContent").innerHTML = "";
+    return;
+  }
+
+  document.title = `${team.projectName} — Project Detail — ProjectPulse`;
+  document.getElementById("pageTitle").textContent = team.projectName;
+  document.getElementById("pageDesc").textContent = `${team.name} · ${team.projectType}`;
+
+  // -----------------------------------------------------------------------
+  // Helpers
+  // -----------------------------------------------------------------------
+  function nearestDeadline() {
+    const pending = PP.getMilestones(teamId).filter((m) => !["passed", "done"].includes(m.status));
+    if (!pending.length) return null;
+    return pending.slice().sort((a, b) => new Date(a.dueDate) - new Date(b.dueDate))[0].dueDate;
+  }
+
+  // -----------------------------------------------------------------------
+  // Header — สรุปโครงงาน/ทีม/ชีพจร/ความคืบหน้า/กำหนดส่งที่ใกล้ที่สุด/กิจกรรมล่าสุด
+  // -----------------------------------------------------------------------
+  function renderHeader() {
+    const health = PP.computeHealthScore(teamId);
+    const current = PP.getCurrentMilestone(teamId);
+    const progressPct = PP.computeProgressPct(teamId);
+    const advisor = PP.getAdvisor(team.advisorId);
+    const phaseLabel = MILESTONE_TO_PHASE[current.key] || current.name;
+    const deadline = nearestDeadline();
+    const meta = PULSE_LEVEL_META[health.level];
+    const progressBarClass = progressPct >= 70 ? "green" : progressPct >= 40 ? "yellow" : "orange";
+
+    return `
+    <div class="card" style="margin-bottom:20px;">
+      <div class="card-hd">
+        <div>
+          <h3>🗂️ ${esc(team.projectName)}</h3>
+          <div class="card-hd__sub">${esc(team.name)} · ${esc(team.projectType)} · Advisor: ${esc(advisor ? advisor.name : "—")}</div>
+        </div>
+        <span class="health-badge ${meta.cls}"><span class="health-dot"></span>${meta.icon} ${esc(meta.label)}</span>
+      </div>
+      <div class="grid grid-4">
+        <div class="card card-stat">
+          <span class="card-stat__label">Progress</span>
+          <span class="card-stat__value">${progressPct}%</span>
+          <div class="progress"><div class="progress__bar ${progressBarClass}" style="width:${progressPct}%;"></div></div>
+          <span class="card-stat__hint">Health score ${health.score} / 100</span>
+        </div>
+        <div class="card card-stat">
+          <span class="card-stat__label">Current Milestone / Phase</span>
+          <span class="card-stat__value" style="font-size:1.05rem;">${esc(current.name)}</span>
+          <span class="chip ${PP.statusMeta(current.status).chip}">${PP.statusMeta(current.status).label}</span>
+          <span class="card-stat__hint">Phase: ${esc(phaseLabel)}</span>
+        </div>
+        <div class="card card-stat">
+          <span class="card-stat__label">Nearest Deadline</span>
+          <span class="card-stat__value" style="font-size:1.05rem;">${deadline ? ThaiDate.formatThaiDate(deadline) : "—"}</span>
+          <span class="card-stat__hint">${deadline ? ThaiDate.relativeDaysLabel(deadline, new Date()) : "All milestones completed"}</span>
+        </div>
+        <div class="card card-stat">
+          <span class="card-stat__label">Last Activity</span>
+          <span class="card-stat__value" style="font-size:1.05rem;">${team.lastActivityDate ? ThaiDate.formatThaiDate(team.lastActivityDate) : "—"}</span>
+          <span class="card-stat__hint">Streak: ${team.streakDays || 0} day(s)</span>
+        </div>
+      </div>
+    </div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  // Tabs shell
+  // -----------------------------------------------------------------------
+  const TABS = [
+    { key: "milestones", icon: "🗺️", label: "Milestones & Timeline" },
+    { key: "tasks", icon: "✅", label: "Task Checklist" },
+    { key: "submissions", icon: "📤", label: "Submission History" },
+    { key: "feedback", icon: "💬", label: "Lecturer Feedback" },
+    { key: "activity", icon: "👥", label: "Team Activity" },
+    { key: "files", icon: "📎", label: "Files" },
+  ];
+
+  function renderTabsShell() {
+    return `
+    <div class="card" style="margin-bottom:16px;">
+      <div class="tabs" id="pdTabs">
+        ${TABS.map((t, i) => `<button type="button" class="tab-btn ${i === 0 ? "is-active" : ""}" data-tab="${t.key}">${t.icon} ${t.label}</button>`).join("")}
+      </div>
+    </div>
+    ${TABS.map((t, i) => `<div class="tab-panel ${i === 0 ? "is-active" : ""}" data-tab-panel="${t.key}" id="tabPanel-${t.key}"></div>`).join("")}`;
+  }
+
+  function bindTabs() {
+    const btns = Array.from(document.querySelectorAll("#pdTabs .tab-btn"));
+    btns.forEach((btn) => btn.addEventListener("click", () => {
+      btns.forEach((b) => b.classList.remove("is-active"));
+      btn.classList.add("is-active");
+      document.querySelectorAll(".tab-panel").forEach((p) => p.classList.remove("is-active"));
+      const panel = document.getElementById(`tabPanel-${btn.dataset.tab}`);
+      if (panel) panel.classList.add("is-active");
+    }));
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 1 — Milestones & Timeline (จัดกลุ่ม 10 milestone ตาม 6 ระยะของสเปกนี้โดยตรง ผ่าน MILESTONE_TO_PHASE
+  // — ไม่ใช้ PP.getProjectPhases() ตรงๆ เพราะกลุ่ม/label ภายในของ store.js ไม่ตรงกับ 6 ชื่อระยะของสเปกนี้)
+  // -----------------------------------------------------------------------
+  function renderMilestonesTab() {
+    const allMs = PP.getMilestones(teamId);
+    const current = PP.getCurrentMilestone(teamId);
+    const feedbacks = PP.getFeedbacksByTeam(teamId);
+    const phases = SPEC_PHASES.map((name) => {
+      const milestones = allMs.filter((m) => MILESTONE_TO_PHASE[m.key] === name);
+      const completedCount = milestones.filter((m) => ["passed", "done"].includes(m.status)).length;
+      const feedbackToFixCount = milestones.reduce((n, m) => n + feedbacks.filter((f) => f.milestoneId === m.id && !f.confirmedAt).length, 0);
+      const dueDate = milestones.length ? milestones[milestones.length - 1].dueDate : null;
+      return { name, milestones, completedCount, feedbackToFixCount, dueDate };
+    }).filter((p) => p.milestones.length > 0);
+
+    const body = phases.map((p, i) => {
+      const isLast = i === phases.length - 1;
+      const isCurrentPhase = p.milestones.some((m) => m.id === current.id);
+      const allDone = p.completedCount === p.milestones.length;
+      const dotClass = allDone ? "done" : isCurrentPhase ? "current" : "";
+      const msRows = p.milestones.map((m) => {
+        const meta = PP.statusMeta(m.status);
+        return `
+        <div class="task-row ${["passed", "done"].includes(m.status) ? "is-done" : ""}">
+          <div class="task-row__title">${esc(m.name)}</div>
+          <div class="task-row__meta">Due ${ThaiDate.formatThaiDate(m.dueDate)} · <span class="chip ${meta.chip}">${meta.label}</span></div>
+        </div>`;
+      }).join("");
+      return `
+      <div class="timeline-item">
+        <div class="timeline-item__rail">
+          <div class="timeline-item__dot ${dotClass}">${i + 1}</div>
+          ${isLast ? "" : `<div class="timeline-item__line"></div>`}
+        </div>
+        <div class="timeline-item__body">
+          <div class="timeline-item__hd">
+            <span class="timeline-item__title">${esc(p.name)}</span>
+            ${p.feedbackToFixCount > 0 ? `<span class="chip chip-revise">${p.feedbackToFixCount} feedback item(s) to fix</span>` : ""}
+          </div>
+          <div class="timeline-item__meta">Completed ${p.completedCount} / ${p.milestones.length} milestone(s)${p.dueDate ? ` · due ${ThaiDate.formatThaiDate(p.dueDate)}` : ""}</div>
+          <div class="timeline-item__tasks">${msRows}</div>
+        </div>
+      </div>`;
+    }).join("");
+
+    document.getElementById("tabPanel-milestones").innerHTML = `
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <h3>🗺️ Milestones & Timeline</h3>
+            <div class="card-hd__sub">Pre-production → Production → Post-production → Submission → Revision → Completion</div>
+          </div>
+        </div>
+        <div class="timeline">${body}</div>
+      </div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 2 — Task Checklist (งานย่อยของ Milestone ปัจจุบัน + checklist ค้างจาก Feedback)
+  // -----------------------------------------------------------------------
+  function taskRowHtml(title, done, meta) {
+    return `
+    <div class="task-row ${done ? "is-done" : ""}">
+      <span class="checkbox ${done ? "is-checked" : ""}" aria-hidden="true" title="Read-only — use Submit Work / Address Feedback Checklist to change this">✓</span>
+      <div class="task-row__title">${esc(title)}</div>
+      <div class="task-row__meta">${meta}</div>
+    </div>`;
+  }
+
+  function renderTasksTab() {
+    const current = PP.getCurrentMilestone(teamId);
+    const pending = PP.getPendingWork(teamId);
+
+    const subtaskRows = current.subtasks.length
+      ? current.subtasks.map((st) => taskRowHtml(st.title, st.done, esc((PP.getStudent(st.assigneeId) || {}).name || "Unassigned"))).join("")
+      : `<div class="callout-muted">No subtasks for the current milestone yet.</div>`;
+
+    const checklistRows = pending.checklist.length
+      ? pending.checklist.map((c) => taskRowHtml(
+          c.title, c.done,
+          `${esc((PP.getStudent(c.assigneeId) || {}).name || "Unassigned")}${c.dueDate ? " · due " + ThaiDate.formatThaiShort(c.dueDate) : ""}`
+        )).join("")
+      : `<div class="empty-state"><div class="empty-state__icon">🎉</div>No pending feedback checklist items.</div>`;
+
+    document.getElementById("tabPanel-tasks").innerHTML = `
+      <div class="card" style="margin-bottom:16px;">
+        <div class="card-hd"><div><h3>✅ Current Milestone Subtasks</h3><div class="card-hd__sub">${esc(current.name)} — read-only view</div></div></div>
+        <div class="flex flex-col gap-2">${subtaskRows}</div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div><h3>📋 Pending Feedback Checklist</h3><div class="card-hd__sub">Items not yet addressed from advisor feedback — read-only view</div></div></div>
+        <div class="flex flex-col gap-2">${checklistRows}</div>
+        <div class="flex gap-2" style="margin-top:14px;flex-wrap:wrap;">
+          <a href="#task-detail" class="btn btn-primary btn-sm">📨 Submit Work</a>
+          <a href="#feedback-to-task" class="btn btn-secondary btn-sm">🛠️ Address Feedback Checklist</a>
+        </div>
+        <div class="text-xs text-muted" style="margin-top:8px;">Note: these links open Task Detail / Feedback-to-Task for your own currently logged-in team — they don't yet support jumping straight into another team's queue from here.</div>
+      </div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 3 — Submission History
+  // -----------------------------------------------------------------------
+  function renderSubmissionsTab() {
+    const subs = PP.getSubmissionsByTeam(teamId).slice().sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt));
+    const rows = subs.map((s) => `
+      <tr>
+        <td>${esc(s.milestoneName)}</td>
+        <td>${ThaiDate.formatThaiDateTime(s.submittedAt)}</td>
+        <td><span class="chip ${PP.statusMeta(s.status).chip}">${PP.statusMeta(s.status).label}</span></td>
+        <td>${s.revisionRound || 0}</td>
+        <td>${esc(s.fileName || "—")}</td>
+        <td>${["submitted", "reviewing"].includes(s.status)
+          ? `<a href="#review-feedback?sub=${encodeURIComponent(s.id)}" class="btn btn-secondary btn-sm">✍️ Write Feedback</a>`
+          : ""}</td>
+      </tr>`).join("");
+
+    document.getElementById("tabPanel-submissions").innerHTML = `
+      <div class="card">
+        <div class="card-hd"><div><h3>📤 Submission History</h3><div class="card-hd__sub">${subs.length} submission(s), most recent first</div></div></div>
+        ${subs.length
+          ? `<div class="table-wrap"><table class="pp-table"><thead><tr><th>Milestone</th><th>Submitted At</th><th>Status</th><th>Revision Round</th><th>File</th><th></th></tr></thead><tbody>${rows}</tbody></table></div>`
+          : `<div class="empty-state"><div class="empty-state__icon">📭</div>No submissions yet.</div>`}
+      </div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 4 — Lecturer Feedback
+  // -----------------------------------------------------------------------
+  const DECISION_META = {
+    passed: { label: "Passed", cls: "chip-passed" },
+    revise: { label: "Revise", cls: "chip-revise" },
+    need_info: { label: "Need Info", cls: "chip-info" },
+  };
+
+  function renderFeedbackTab() {
+    const fbs = PP.getFeedbacksByTeam(teamId).slice().sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
+    const cards = fbs.map((f) => {
+      const dm = DECISION_META[f.decision] || { label: f.decision, cls: "chip-neutral" };
+      const ms = PP.getMilestone(f.milestoneId);
+      const doneCount = f.checklist.filter((c) => c.done).length;
+      return `
+      <div class="card">
+        <div class="card-hd">
+          <div>
+            <h3>${esc(ms ? ms.name : "Feedback")}</h3>
+            <div class="card-hd__sub">${ThaiDate.formatThaiDateTime(f.createdAt)}</div>
+          </div>
+          <span class="chip ${dm.cls}">${dm.label}</span>
+        </div>
+        <div class="text-sm" style="white-space:pre-wrap;">${esc(f.rawText)}</div>
+        ${f.checklist.length ? `
+        <div style="margin-top:12px;">
+          <div class="font-bold text-sm" style="margin-bottom:6px;">Checklist (${doneCount}/${f.checklist.length} done)</div>
+          <div class="flex flex-col gap-2">${f.checklist.map((c) => taskRowHtml(c.title, c.done, "")).join("")}</div>
+        </div>` : ""}
+        ${(!f.confirmedAt && f.checklist.length) ? `<div style="margin-top:12px;"><a href="#feedback-to-task" class="btn btn-secondary btn-sm">🛠️ Address Feedback Checklist</a></div>` : ""}
+      </div>`;
+    }).join("");
+
+    document.getElementById("tabPanel-feedback").innerHTML = fbs.length
+      ? `<div class="flex flex-col gap-4">${cards}</div>`
+      : `<div class="card"><div class="empty-state"><div class="empty-state__icon">💬</div>No lecturer feedback yet.</div></div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 5 — Team Activity (ใช้ PPTeamWorkload.renderInto ที่ extract มาจาก team-workload.js)
+  // -----------------------------------------------------------------------
+  function renderActivityTab() {
+    document.getElementById("tabPanel-activity").innerHTML = `
+      <div class="card">
+        <div class="card-hd"><div><h3>👥 Team Activity</h3><div class="card-hd__sub">Per-member workload for this team</div></div></div>
+        <div id="teamActivityBox"></div>
+      </div>`;
+    PPTeamWorkload.renderInto(document.getElementById("teamActivityBox"), teamId);
+  }
+
+  // -----------------------------------------------------------------------
+  // Tab 6 — Files (attachments ของทุก Milestone จัดกลุ่มตาม Milestone)
+  // -----------------------------------------------------------------------
+  function renderFilesTab() {
+    const ms = PP.getMilestones(teamId).filter((m) => m.attachments.length);
+    const groups = ms.map((m) => `
+      <div style="margin-bottom:16px;">
+        <div class="font-bold text-sm" style="margin-bottom:6px;">${esc(m.name)}</div>
+        <div class="flex flex-col gap-2">
+          ${m.attachments.map((a) => `
+          <div class="task-row">
+            <div class="task-row__title">📄 ${esc(a.name)}</div>
+            <div class="task-row__meta">Uploaded ${ThaiDate.formatThaiDate(a.uploadedAt)}</div>
+          </div>`).join("")}
+        </div>
+      </div>`).join("");
+
+    document.getElementById("tabPanel-files").innerHTML = `
+      <div class="card">
+        <div class="card-hd"><div><h3>📎 Files</h3><div class="card-hd__sub">Attachments across all milestones</div></div></div>
+        ${groups || `<div class="empty-state"><div class="empty-state__icon">🗃️</div>No files attached yet.</div>`}
+      </div>`;
+  }
+
+  // -----------------------------------------------------------------------
+  function renderAll() {
+    document.getElementById("projectDetailContent").innerHTML = renderHeader() + renderTabsShell();
+    renderMilestonesTab();
+    renderTasksTab();
+    renderSubmissionsTab();
+    renderFeedbackTab();
+    renderActivityTab();
+    renderFilesTab();
+    bindTabs();
+  }
+
+  renderAll();
+}
+</script>
+
+<script>
+/* ============================================================
+   profile.js -> mountProfile()
+   ============================================================ */
+function mountProfile() {
+  const user = PP.getCurrentUser();
+  const esc = PPNav.escapeHtml;
+  const isStudent = user.role === "student";
+
+  document.getElementById("pageDesc").textContent =
+    "Your account summary and quick links to account-related pages.";
+
+  function summaryCardHTML() {
+    if (isStudent) {
+      const student = PP.getStudent(user.studentId);
+      const team = PP.getTeam(user.teamId);
+      const name = (student || {}).name || team.name;
+      return `
+        <div class="card">
+          <div class="flex items-center gap-3">
+            <span class="avatar" style="width:56px;height:56px;font-size:1.1rem;">${esc(PPNav.initials(name))}</span>
+            <div>
+              <div class="font-bold" style="font-size:1.15rem;">${esc(name)}</div>
+              <div class="text-sm text-muted">Student · Team ${esc(team.name)} · ${esc(team.projectName)}</div>
+            </div>
+          </div>
+        </div>`;
+    }
+    const advisor = PP.getAdvisor(user.advisorId);
+    const teamCount = PP.getTeamsByAdvisor(user.advisorId).length;
+    return `
+      <div class="card">
+        <div class="flex items-center gap-3">
+          <span class="avatar" style="width:56px;height:56px;font-size:1.1rem;">${esc(PPNav.initials(advisor.name))}</span>
+          <div>
+            <div class="font-bold" style="font-size:1.15rem;">${esc(advisor.name)}</div>
+            <div class="text-sm text-muted">Advisor · Advising ${teamCount} team${teamCount === 1 ? "" : "s"}</div>
+          </div>
+        </div>
+      </div>`;
+  }
+
+  function linkCard({ href, icon, title, desc }) {
+    return `
+      <a class="project-card" href="${href}">
+        <div class="project-card__hd">
+          <span style="font-size:1.6rem;">${icon}</span>
+          <span class="project-card__name">${esc(title)}</span>
+        </div>
+        <div class="project-card__team">${esc(desc)}</div>
+      </a>`;
+  }
+
+  function linksHTML() {
+    const cards = [
+      { href: "#settings", icon: "⚙️", title: "Account & Settings", desc: "Feedback timeframes, notification preferences, and account options." },
+    ];
+    if (isStudent) {
+      cards.push({ href: "#achievements", icon: "🏅", title: "Achievements & Streaks", desc: "Badges earned and your pulse point history." });
+    }
+    cards.push({ href: "#weekly-report", icon: "📊", title: "Weekly Report", desc: "Your weekly progress summary against course targets." });
+
+    return `<div class="grid grid-3" style="margin-top:var(--pp-space-4);">${cards.map(linkCard).join("")}</div>`;
+  }
+
+  document.getElementById("profileContent").innerHTML = summaryCardHTML() + linksHTML();
+}
+</script>
+
+<script>
+/* ============================================================
+   help.html / user-guide.html / privacy.html / terms.html / contact.html
+   -> trivial mount functions (no page-specific JS beyond the page shell/nav
+   mount, same as the multi-file source — these pages are static content)
+   ============================================================ */
+function mountHelp() {}
+function mountUserGuide() {}
+function mountPrivacy() {}
+function mountTerms() {}
+function mountContact() {}
+</script>
+
+<script>
+/* ============================================================
    index.html's inline script -> initLoginView()
    Login view is a permanent (not per-route-recreated) DOM section,
    so static listeners are bound exactly once via loginViewBound;
@@ -7476,9 +8634,9 @@ function mountSettings() {
    own button listeners are safely recreated with the grid HTML).
    ============================================================ */
 let loginViewBound = false;
-const HEALTH_LABEL = { green: "Pulse On Track", yellow: "Pulse Warning", red: "Pulse Critical" };
-const HEALTH_HEART = { green: "💚", yellow: "💛", red: "❤️" };
-const HEALTH_CHIP = { green: "chip-green", yellow: "chip-yellow", red: "chip-red" };
+const HEALTH_LABEL = { strong: "Strong", steady: "Steady", weak: "Weak", dormant: "Dormant" };
+const HEALTH_HEART = { strong: "⬆️", steady: "➡️", weak: "⬇️", dormant: "⏸️" };
+const HEALTH_CHIP = { strong: "chip-green", steady: "chip-yellow", weak: "chip-orange", dormant: "chip-red" };
 let loginMode = "student";
 let selectedTeam = null, selectedAdvisor = null;
 
@@ -7546,6 +8704,16 @@ function initLoginView() {
 
   if (loginViewBound) return;
   loginViewBound = true;
+
+  document.getElementById("footerYear").textContent = new Date().getFullYear();
+
+  // "View Dashboard" — ไปยัง dashboard ของ identity ล่าสุดที่ระบบจำไว้ (ข้อมูล demo มี identity เริ่มต้นเสมอ)
+  document.getElementById("btnHeroViewDashboard").addEventListener("click", () => {
+    const user = PP.getCurrentUser();
+    location.hash = user.role === "advisor" ? "advisor-dashboard" : "student-dashboard";
+  });
+  document.getElementById("btnHeroCreateProject").addEventListener("click", () => openCreateTeamModal());
+  document.getElementById("btnCtaCreateProject").addEventListener("click", () => openCreateTeamModal());
 
   document.getElementById("tabStudent").addEventListener("click", () => {
     loginMode = "student";
@@ -7690,8 +8858,10 @@ function initLoginView() {
 const ROUTES = {
   "student-dashboard": { title: "แดชบอร์ดของฉัน", tpl: "tpl-student-dashboard", mount: mountStudentDashboard },
   "advisor-dashboard": { title: "แดชบอร์ดอาจารย์", tpl: "tpl-advisor-dashboard", mount: mountAdvisorDashboard },
-  "workload-map": { title: "ปฏิทินภาระงานทั้งเทอม", tpl: "tpl-workload-map", mount: mountWorkloadMap },
-  "free-time-planner": { title: "แผนเวลาว่างอัจฉริยะ", tpl: "tpl-free-time-planner", mount: mountFreeTimePlanner },
+  // "workload-map" mounts both the calendar (mountWorkloadMap, unchanged from workload-map.js) and the
+  // Smart Free-Time tab (mountFreeTimeTab, moved out of the retired free-time-planner.js/#free-time-planner
+  // route below) — mirrors the real page loading both workload-map.js and free-time-tab.js as separate scripts.
+  "workload-map": { title: "ปฏิทินภาระงาน และแผนเวลาว่างอัจฉริยะ", tpl: "tpl-workload-map", mount: () => { mountWorkloadMap(); mountFreeTimeTab(); } },
   "project-timeline": { title: "ไทม์ไลน์โครงงาน", tpl: "tpl-project-timeline", mount: mountProjectTimeline },
   "task-detail": { title: "รายละเอียดงานและการส่งไฟล์", tpl: "tpl-task-detail", mount: mountTaskDetail },
   "feedback-queue": { title: "คิวงานรอตรวจ", tpl: "tpl-feedback-queue", mount: mountFeedbackQueue },
@@ -7702,6 +8872,14 @@ const ROUTES = {
   "notifications": { title: "ศูนย์การแจ้งเตือน", tpl: "tpl-notifications", mount: mountNotifications },
   "weekly-report": { title: "รายงานความก้าวหน้ารายสัปดาห์", tpl: "tpl-weekly-report", mount: mountWeeklyReport },
   "settings": { title: "ตั้งค่า", tpl: "tpl-settings", mount: mountSettings },
+  "projects": { title: "Projects", tpl: "tpl-projects", mount: mountProjects },
+  "project-detail": { title: "Project Detail", tpl: "tpl-project-detail", mount: mountProjectDetail },
+  "profile": { title: "Profile", tpl: "tpl-profile", mount: mountProfile },
+  "help": { title: "Help Center", tpl: "tpl-help", mount: mountHelp },
+  "user-guide": { title: "User Guide", tpl: "tpl-user-guide", mount: mountUserGuide },
+  "privacy": { title: "Privacy", tpl: "tpl-privacy", mount: mountPrivacy },
+  "terms": { title: "Terms", tpl: "tpl-terms", mount: mountTerms },
+  "contact": { title: "Contact", tpl: "tpl-contact", mount: mountContact },
 };
 
 function currentRouteInfo() {
@@ -7719,6 +8897,13 @@ function renderRoute() {
     document.getElementById("appShell").style.display = "none";
     document.title = "ProjectPulse — เข้าสู่ระบบ (Demo)";
     initLoginView();
+    return;
+  }
+
+  // หน้านี้ถูกยุบรวมเข้าเป็นแท็บ "แผนเวลาว่างอัจฉริยะ" ในหน้าปฏิทิน (#workload-map) แล้ว — route นี้เหลือไว้
+  // เป็นแค่ทางเปลี่ยนเส้นทาง (redirect) กันลิงก์เก่า/บุ๊กมาร์กเดิมพัง (มิเรอร์ pages/free-time-planner.html จริง)
+  if (route === "free-time-planner") {
+    location.hash = "workload-map?tab=free-time";
     return;
   }
 

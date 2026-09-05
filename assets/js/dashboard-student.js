@@ -21,11 +21,12 @@
   const team = PP.getTeam(user.teamId);
   const esc = PPNav.escapeHtml;
 
-  // สถานะชีพจร 3 ระดับ — แสดงด้วยไอคอน+สี+ข้อความเสมอ (ไม่ใช้สีอย่างเดียว เพื่อรองรับ Accessibility)
+  // Project Pulse — 4 ระดับ: แสดงด้วยไอคอน+สี+ข้อความเสมอ (ไม่ใช้สีอย่างเดียว เพื่อรองรับ Accessibility)
   const PULSE_LEVEL_META = {
-    green: { icon: "🟢", label: "ตามแผน — ชีพจรปกติ", cls: "green" },
-    yellow: { icon: "🟡", label: "เริ่มเสี่ยง — ชีพจรแผ่ว", cls: "yellow" },
-    red: { icon: "🔴", label: "ล่าช้า — ชีพจรวิกฤต", cls: "red" },
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule", cls: "strong" },
+    steady: { icon: "➡️", label: "Steady — on track", cls: "steady" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule", cls: "weak" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity", cls: "dormant" },
   };
 
   function renderAll() {
@@ -135,10 +136,10 @@
   // -----------------------------------------------------------------------
   function renderRecoveryPanel(health) {
     const slot = document.getElementById("recoveryPanelSlot");
-    if (health.level === "green") { slot.innerHTML = ""; return; }
+    if (["strong", "steady"].includes(health.level)) { slot.innerHTML = ""; return; }
     const meta = PULSE_LEVEL_META[health.level];
     slot.innerHTML = `
-      <div class="card" style="border-color:${health.level === "red" ? "var(--pp-red-700)" : "#f0dd9a"};">
+      <div class="card" style="border-color:${health.level === "dormant" ? "var(--pp-red-700)" : "#f0dd9a"};">
         <div class="card-hd">
           <div>
             <h3>🧭 แผนกู้จังหวะ</h3>
@@ -152,7 +153,7 @@
         </ol>
         <div class="flex gap-2" style="flex-wrap:wrap;">
           <button class="btn btn-primary btn-sm" id="btnStartRecovery">▶️ เริ่มกู้จังหวะ</button>
-          <a href="free-time-planner.html" class="btn btn-outline btn-sm">🗓️ จัดเวลาใหม่</a>
+          <a href="workload-map.html?tab=free-time" class="btn btn-outline btn-sm">🗓️ จัดเวลาใหม่</a>
           <button class="btn btn-outline btn-sm" id="btnReportObstacle">🚧 แจ้งอุปสรรค</button>
           <button class="btn btn-ghost btn-sm" id="btnAskAdvisor">🙋 ขอคำปรึกษา</button>
         </div>
@@ -176,7 +177,7 @@
   function renderRecoveryBanner(health) {
     const slot = document.getElementById("recoveryBannerSlot");
     const lastSeen = team.lastPulseLevelSeen;
-    if (health.level === "green" && (lastSeen === "yellow" || lastSeen === "red")) {
+    if (["strong", "steady"].includes(health.level) && (lastSeen === "weak" || lastSeen === "dormant")) {
       slot.innerHTML = `
         <div class="alert alert-success">
           <div class="alert__icon">💓</div>
@@ -249,7 +250,7 @@
           <div class="text-sm">สัปดาห์นี้คุณมีงาน ${collision.items.length} ชิ้นกำหนดส่งภายใน ${collision.windowHours} ชั่วโมง และต้องใช้เวลารวมประมาณ ${collision.totalHours} ชั่วโมง (${esc(itemsText)}) งานโครงงานมีความเสี่ยงที่จะล่าช้า ควรจัดสรรเวลาโครงงานล่วงหน้า</div>
           <ul>${collision.suggestions.map((s) => `<li>${esc(s)}</li>`).join("")}</ul>
           <div class="flex gap-2" style="margin-top:8px;flex-wrap:wrap;">
-            <a href="free-time-planner.html" class="btn btn-sm btn-outline">⏱️ จองช่วงเวลาทำงานล่วงหน้า</a>
+            <a href="workload-map.html?tab=free-time" class="btn btn-sm btn-outline">⏱️ จองช่วงเวลาทำงานล่วงหน้า</a>
             <a href="project-timeline.html" class="btn btn-sm btn-outline">🧩 แบ่งงานใหญ่เป็นงานย่อย</a>
             <a href="team-workload.html" class="btn btn-sm btn-outline">👥 กระจายงานให้ทีม</a>
           </div>
@@ -258,8 +259,9 @@
   }
 
   function healthNote(level) {
-    if (level === "green") return "โครงงานของคุณดำเนินไปตามแผน";
-    if (level === "yellow") return "เริ่มมีสัญญาณความเสี่ยง ควรติดตามใกล้ชิด";
+    if (level === "strong") return "โครงงานของคุณดำเนินไปตามแผน";
+    if (level === "steady") return "อยู่ในจังหวะที่ดี ไปต่อได้เลย";
+    if (level === "weak") return "เริ่มมีสัญญาณความเสี่ยง ควรติดตามใกล้ชิด";
     return "มีความเสี่ยงสูงที่จะล่าช้า ควรดำเนินการทันที";
   }
 
@@ -323,7 +325,7 @@
           <div class="slot-card__reason">${esc(s.taskSuggestion)}</div>
           <div class="slot-card__actions">
             <button class="btn btn-success btn-sm" data-confirm="${s.id}">✓ ยืนยัน</button>
-            <a href="free-time-planner.html" class="btn btn-outline btn-sm">เปลี่ยน/แบ่งช่วง</a>
+            <a href="workload-map.html?tab=free-time" class="btn btn-outline btn-sm">เปลี่ยน/แบ่งช่วง</a>
           </div>
         </div>`).join("");
     }

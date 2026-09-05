@@ -4,50 +4,35 @@
  * เพื่อประกอบ header/sidebar ล้อมรอบเนื้อหาที่อยู่ใน <div id="pageContent">
  */
 (function (global) {
-  const STUDENT_NAV = [
-    { key: "student-dashboard", label: "แดชบอร์ดของฉัน", icon: "🧭", href: "student-dashboard.html" },
-    { key: "workload-map", label: "ปฏิทินภาระงานทั้งเทอม", icon: "🗓️", href: "workload-map.html" },
-    { key: "free-time-planner", label: "แผนเวลาว่างอัจฉริยะ", icon: "⏱️", href: "free-time-planner.html" },
-    { key: "project-timeline", label: "ไทม์ไลน์ & Milestone", icon: "🧩", href: "project-timeline.html" },
-    { key: "task-detail", label: "งานและไฟล์ส่ง", icon: "📎", href: "task-detail.html" },
-    { key: "feedback-to-task", label: "Feedback → งานแก้ไข", icon: "✅", href: "feedback-to-task.html" },
-    { key: "team-workload", label: "ภาระงานในทีม", icon: "👥", href: "team-workload.html" },
-    { key: "achievements", label: "ตราความสำเร็จของฉัน", icon: "🏅", href: "achievements.html" },
-    { key: "notifications", label: "ศูนย์การแจ้งเตือน", icon: "🔔", href: "notifications.html" },
-    { key: "weekly-report", label: "รายงานรายสัปดาห์", icon: "📊", href: "weekly-report.html" },
-    { key: "settings", label: "ตั้งค่า", icon: "⚙️", href: "settings.html" },
-  ];
-  const ADVISOR_NAV = [
-    { key: "advisor-dashboard", label: "แดชบอร์ดอาจารย์", icon: "🧭", href: "advisor-dashboard.html" },
-    { key: "feedback-queue", label: "คิวงานรอตรวจ", icon: "📥", href: "feedback-queue.html" },
-    { key: "review-feedback", label: "ตรวจงาน / ให้ Feedback", icon: "✍️", href: "review-feedback.html", hidden: true },
-    { key: "team-workload", label: "ภาระงานทีม", icon: "👥", href: "team-workload.html" },
-    { key: "notifications", label: "ศูนย์การแจ้งเตือน", icon: "🔔", href: "notifications.html" },
-    { key: "weekly-report", label: "รายงานความก้าวหน้า", icon: "📊", href: "weekly-report.html" },
-    { key: "settings", label: "ตั้งค่ากรอบเวลา Feedback", icon: "⚙️", href: "settings.html" },
+  // เมนูหลักรวมเป็นชุดเดียวกันทั้งสองบทบาท (Dashboard/Projects/Review Queue/Calendar/Notifications/Profile)
+  // ปลายทาง (href) ต่างกันตามบทบาท แต่ label/icon/ตำแหน่งเมนูเหมือนกันเสมอ — เนื้อหาภายในหน้าเป็นตัวปรับตามบทบาทแทน
+  const NAV_ITEMS = [
+    { key: "dashboard", label: "Dashboard", icon: "🧭", href: { student: "student-dashboard.html", advisor: "advisor-dashboard.html" } },
+    { key: "projects", label: "Projects", icon: "🗂️", href: { student: "projects.html", advisor: "projects.html" } },
+    { key: "review-queue", label: "Review Queue", icon: "📥", href: { student: "feedback-queue.html", advisor: "feedback-queue.html" } },
+    { key: "calendar", label: "Calendar", icon: "🗓️", href: { student: "workload-map.html", advisor: "workload-map.html" } },
+    { key: "notifications", label: "Notifications", icon: "🔔", href: { student: "notifications.html", advisor: "notifications.html" } },
+    { key: "profile", label: "Profile", icon: "👤", href: { student: "profile.html", advisor: "profile.html" } },
   ];
 
-  // Bottom Navigation (มือถือ) — เข้าถึงหน้าหลักที่ใช้บ่อยได้เร็ว เสริมจากเมนู hamburger เดิม ไม่ได้แทนที่
-  const BOTTOM_NAV = {
-    student: [
-      { key: "student-dashboard", label: "หน้าหลัก", icon: "🏠", href: "student-dashboard.html" },
-      { key: "project-timeline", label: "แผนงาน", icon: "🧩", href: "project-timeline.html" },
-      { key: "workload-map", label: "ปฏิทิน", icon: "🗓️", href: "workload-map.html" },
-      { key: "notifications", label: "แจ้งเตือน", icon: "🔔", href: "notifications.html" },
-      { key: "settings", label: "โปรไฟล์", icon: "⚙️", href: "settings.html" },
-    ],
-    advisor: [
-      { key: "advisor-dashboard", label: "หน้าหลัก", icon: "🏠", href: "advisor-dashboard.html" },
-      { key: "feedback-queue", label: "แผนงาน", icon: "📥", href: "feedback-queue.html" },
-      { key: "team-workload", label: "ปฏิทิน", icon: "🗓️", href: "team-workload.html" },
-      { key: "notifications", label: "แจ้งเตือน", icon: "🔔", href: "notifications.html" },
-      { key: "settings", label: "โปรไฟล์", icon: "⚙️", href: "settings.html" },
-    ],
+  // หน้าเดิมที่ไม่ได้ขึ้นเป็นเมนูหลักแล้ว (เข้าถึงจาก Project Detail/Profile แทน) — ยัง map ไปยังเมนูหลักที่ใกล้เคียงที่สุด
+  // เพื่อให้แถบเมนูด้านซ้าย highlight ตำแหน่งที่ถูกต้องเมื่อผู้ใช้เปิดหน้าเหล่านี้ตรง ๆ (เช่น จากลิงก์ใน Project Detail)
+  const ACTIVE_KEY_ALIAS = {
+    "student-dashboard": "dashboard", "advisor-dashboard": "dashboard",
+    "projects": "projects", "project-detail": "projects",
+    "project-timeline": "projects", "task-detail": "projects", "team-workload": "projects",
+    "feedback-queue": "review-queue", "review-feedback": "review-queue", "feedback-to-task": "review-queue",
+    "workload-map": "calendar", "free-time-planner": "calendar",
+    "notifications": "notifications",
+    "profile": "profile", "settings": "profile", "achievements": "profile", "weekly-report": "profile",
   };
-  function buildBottomNav(user, activeKey) {
-    const items = BOTTOM_NAV[user.role] || BOTTOM_NAV.student;
+
+  // Bottom Navigation (มือถือ) — เข้าถึงหน้าหลักที่ใช้บ่อยได้เร็ว เสริมจากเมนู hamburger เดิม ไม่ได้แทนที่ ใช้ 5 จาก 6 เมนูหลัก
+  const BOTTOM_NAV_KEYS = ["dashboard", "projects", "calendar", "notifications", "profile"];
+  function buildBottomNav(user, activeParentKey) {
+    const items = NAV_ITEMS.filter((i) => BOTTOM_NAV_KEYS.includes(i.key));
     return `<nav class="bottom-nav" aria-label="เมนูหลัก (มือถือ)">${items.map((i) => `
-      <a class="bottom-nav__item ${i.key === activeKey ? "is-active" : ""}" href="${i.href}">
+      <a class="bottom-nav__item ${i.key === activeParentKey ? "is-active" : ""}" href="${i.href[user.role] || i.href.student}">
         <span class="bottom-nav__icon">${i.icon}</span><span>${i.label}</span>
       </a>`).join("")}</nav>`;
   }
@@ -125,9 +110,9 @@
     <header class="app-header">
       <div class="flex items-center gap-3">
         <button class="app-header__menu-btn" id="btnToggleSidebar" aria-label="เปิดเมนู">☰</button>
-        <a href="../index.html" class="app-header__brand" style="color:#fff;text-decoration:none;">
+        <a href="../index.html" class="app-header__brand" style="text-decoration:none;">
           <span class="pulse-dot"></span>
-          <span>ProjectPulse<span class="brand-text" style="font-weight:500;opacity:.85;"> · ติดตามโครงงาน</span></span>
+          <span class="brand-wordmark">ProjectPulse</span><span class="brand-text text-muted" style="font-weight:500;"> · ติดตามโครงงาน</span>
         </a>
       </div>
       <div class="app-header__right">
@@ -139,7 +124,7 @@
         <button class="icon-btn" id="btnNotifBell" aria-label="การแจ้งเตือน" title="การแจ้งเตือน">
           🔔${unread > 0 ? `<span class="badge-dot">${unread > 9 ? "9+" : unread}</span>` : ""}
         </button>
-        <button class="user-chip" id="btnUserChip" style="background:transparent;border:none;cursor:pointer;color:#fff;" title="เปลี่ยนผู้ใช้งาน Demo">
+        <button class="user-chip" id="btnUserChip" style="background:transparent;border:none;cursor:pointer;" title="เปลี่ยนผู้ใช้งาน Demo">
           <span class="user-chip__avatar">${escapeHtml(initials(name))}</span>
           <span class="flex flex-col" style="align-items:flex-start;">
             <span class="user-chip__name">${escapeHtml(name)}</span>
@@ -169,18 +154,32 @@
     </div>`;
   }
 
-  function buildSidebar(user, activeKey) {
-    const items = user.role === "student" ? STUDENT_NAV : ADVISOR_NAV;
-    const links = items.filter((i) => !i.hidden).map((i) => `
-      <a class="nav-link ${i.key === activeKey ? "is-active" : ""}" href="${i.href}">
+  function buildSidebar(user, activeParentKey) {
+    const links = NAV_ITEMS.map((i) => `
+      <a class="nav-link ${i.key === activeParentKey ? "is-active" : ""}" href="${i.href[user.role] || i.href.student}">
         <span class="nav-icon">${i.icon}</span><span>${i.label}</span>
       </a>`).join("");
     return `
     <nav class="app-sidebar" id="appSidebar" aria-label="เมนูหลัก">
-      <div class="app-sidebar__section-title">เมนูหลัก</div>
+      <div class="app-sidebar__section-title">Menu</div>
       ${links}
     </nav>
     <div class="sidebar-overlay" id="sidebarOverlay"></div>`;
+  }
+
+  function buildFooter() {
+    return `
+    <footer class="app-footer">
+      <div class="app-footer__brand"><span class="brand-wordmark">ProjectPulse</span></div>
+      <nav class="app-footer__links" aria-label="Footer">
+        <a href="help.html">Help Center</a>
+        <a href="user-guide.html">User Guide</a>
+        <a href="privacy.html">Privacy</a>
+        <a href="terms.html">Terms</a>
+        <a href="contact.html">Contact</a>
+      </nav>
+      <div>© ${new Date().getFullYear()} ProjectPulse · University of Phayao</div>
+    </footer>`;
   }
 
   function notifIcon(type) {
@@ -212,19 +211,27 @@
 
   function mount(activeKey) {
     const user = PP.getCurrentUser();
+    const activeParentKey = ACTIVE_KEY_ALIAS[activeKey] || activeKey;
     const shell = document.getElementById("appShell");
     const headerWrap = document.createElement("div");
     headerWrap.innerHTML = buildHeader(user);
     const sidebarWrap = document.createElement("div");
-    sidebarWrap.innerHTML = buildSidebar(user, activeKey);
+    sidebarWrap.innerHTML = buildSidebar(user, activeParentKey);
 
     shell.prepend(...Array.from(headerWrap.childNodes));
     const body = document.getElementById("appBody");
     body.prepend(...Array.from(sidebarWrap.childNodes));
 
+    const pageContent = document.getElementById("pageContent");
+    if (pageContent && pageContent.parentElement && !document.querySelector(".app-footer")) {
+      const footerWrap = document.createElement("div");
+      footerWrap.innerHTML = buildFooter();
+      pageContent.insertAdjacentElement("afterend", footerWrap.firstElementChild);
+    }
+
     if (!document.querySelector(".bottom-nav")) {
       const bottomNavWrap = document.createElement("div");
-      bottomNavWrap.innerHTML = buildBottomNav(user, activeKey);
+      bottomNavWrap.innerHTML = buildBottomNav(user, activeParentKey);
       document.body.appendChild(bottomNavWrap.firstElementChild);
     }
     enhanceModals();
@@ -307,6 +314,6 @@
     setTimeout(() => { el.style.opacity = "0"; el.style.transition = "opacity .3s"; setTimeout(() => el.remove(), 300); }, 3200);
   }
 
-  global.PPNav = { mount, STUDENT_NAV, ADVISOR_NAV, escapeHtml, initials, notifIcon, renderNotifList };
+  global.PPNav = { mount, NAV_ITEMS, escapeHtml, initials, notifIcon, renderNotifList };
   global.PPToast = { show: toast };
 })(window);

@@ -6,38 +6,43 @@
 <title>ProjectPulse — เข้าสู่ระบบ (Demo)</title>
 <link rel="stylesheet" href="assets/css/style.css" />
 <style>
-  body { background: var(--pp-gradient-pulse); min-height: 100vh; }
-  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: var(--pp-space-6) var(--pp-space-4); }
-  .login-hero { text-align: center; color: #fff; max-width: 640px; margin-bottom: var(--pp-space-6); }
-  .login-hero h1 { color: #fff; font-size: 2rem; display: flex; align-items: center; justify-content: center; gap: 12px; }
-  .login-hero p { color: rgba(255,255,255,.88); }
-  .login-card { background: #fff; border-radius: var(--pp-radius-lg); padding: var(--pp-space-5); width: 100%; max-width: 880px; box-shadow: var(--pp-shadow-lg); }
+  body { background: var(--pp-bg); min-height: 100vh; }
+  .login-wrap { min-height: 100vh; display: flex; flex-direction: column; align-items: center; padding: var(--pp-space-6) var(--pp-space-4); gap: var(--pp-space-6); max-width: 960px; margin: 0 auto; }
+  .login-wrap > * { width: 100%; }
+  .login-wrap .app-footer { margin-top: 0; }
+  .login-card { background: #fff; border-radius: var(--pp-radius-lg); padding: var(--pp-space-5); width: 100%; max-width: 880px; box-shadow: var(--pp-shadow-lg); border: 1px solid var(--pp-border); }
   .role-tabs { display: flex; gap: 8px; background: var(--pp-surface-muted); padding: 4px; border-radius: 999px; margin-bottom: var(--pp-space-5); }
   .role-tabs button { flex: 1; border: none; background: transparent; padding: 12px; border-radius: 999px; font-weight: 800; cursor: pointer; color: var(--pp-text-500); }
-  .role-tabs button.is-active { background: var(--pp-gradient-pulse); color: #fff; }
+  .role-tabs button.is-active { background: var(--pp-navy-900); color: #fff; }
   .id-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; max-height: 420px; overflow-y: auto; padding: 2px; }
   @media (max-width: 640px) { .id-grid { grid-template-columns: 1fr; } }
   .id-card { border: 2px solid var(--pp-border); border-radius: var(--pp-radius-md); padding: 14px; cursor: pointer; text-align: left; background: #fff; }
   .id-card:hover { border-color: var(--pp-purple-500); }
-  .id-card.is-selected { border-color: var(--pp-purple-600); background: var(--pp-purple-100); }
+  .id-card.is-selected { border-color: var(--pp-navy-800); background: var(--pp-purple-100); }
   .id-card__title { font-weight: 800; color: var(--pp-navy-900); }
   .id-card__sub { color: var(--pp-text-500); font-size: .82rem; margin-top: 2px; }
   .login-footer { display: flex; align-items: center; justify-content: space-between; margin-top: var(--pp-space-5); flex-wrap: wrap; gap: 12px; }
-  .pulse-legend { display:flex; gap: 14px; flex-wrap: wrap; color: rgba(255,255,255,.85); font-size:.8rem; margin-top: var(--pp-space-4);}
-  .pulse-legend span { display:flex; align-items:center; gap:6px; }
 </style>
 </head>
 <body>
   <div class="login-wrap">
-    <div class="login-hero">
-      <h1><span class="pulse-dot" style="width:20px;height:20px;"></span> ProjectPulse</h1>
-      <p>ระบบติดตามความก้าวหน้ารายวิชาโครงงาน สาขาวิชาการสื่อสารสื่อใหม่ มหาวิทยาลัยพะเยา — เห็นภาระงานทั้งเทอม ไม่พลาดกำหนดส่ง และรู้เสมอว่าควรทำอะไรต่อ</p>
-      <div class="pulse-legend">
-        <span>💚 Pulse On Track</span>
-        <span>💛 Pulse Warning</span>
-        <span>❤️ Pulse Critical</span>
+    <section class="hero">
+      <div class="hero__content">
+        <div class="hero__eyebrow"><span class="pulse-dot"></span> Project management for lecturers &amp; students</div>
+        <h1 class="hero__title"><span class="brand-wordmark">ProjectPulse</span> — Keep Every Project Moving</h1>
+        <p class="hero__desc">ระบบติดตามความก้าวหน้ารายวิชาโครงงาน สาขาวิชาการสื่อสารสื่อใหม่ มหาวิทยาลัยพะเยา — เห็นภาระงานทั้งเทอม ไม่พลาดกำหนดส่ง และรู้เสมอว่าควรทำอะไรต่อ</p>
+        <div class="hero__actions">
+          <button class="btn btn-primary" id="btnHeroViewDashboard">View Dashboard →</button>
+          <button class="btn btn-outline" id="btnHeroCreateProject">➕ Create Project</button>
+        </div>
+        <div class="hero__legend">
+          <span>⬆️ Strong — ahead of schedule</span>
+          <span>➡️ Steady — on track</span>
+          <span>⬇️ Weak — behind schedule</span>
+          <span>⏸️ Dormant — no recent activity</span>
+        </div>
       </div>
-    </div>
+    </section>
 
     <div class="login-card">
       <div class="role-tabs">
@@ -62,6 +67,27 @@
         <button class="btn btn-primary" id="btnEnter" disabled>เข้าสู่ระบบ →</button>
       </div>
     </div>
+
+    <section class="final-cta">
+      <h2>Ready to move your project forward?</h2>
+      <p>Start a new project, or jump straight into the work that's waiting for you.</p>
+      <div class="hero__actions">
+        <button class="btn btn-primary" id="btnCtaCreateProject">➕ Create Project</button>
+        <a href="pages/feedback-queue.html" class="btn btn-outline">📥 Review Pending Work</a>
+      </div>
+    </section>
+
+    <footer class="app-footer">
+      <div class="app-footer__brand"><span class="brand-wordmark">ProjectPulse</span></div>
+      <nav class="app-footer__links" aria-label="Footer">
+        <a href="pages/help.html">Help Center</a>
+        <a href="pages/user-guide.html">User Guide</a>
+        <a href="pages/privacy.html">Privacy</a>
+        <a href="pages/terms.html">Terms</a>
+        <a href="pages/contact.html">Contact</a>
+      </nav>
+      <div>© <span id="footerYear"></span> ProjectPulse · University of Phayao</div>
+    </footer>
   </div>
 
   <div class="modal-backdrop" id="createTeamBackdrop">
@@ -144,9 +170,9 @@
 <script src="assets/js/seed-data.js"></script>
 <script src="assets/js/store.js"></script>
 <script>
-  const HEALTH_LABEL = { green: "Pulse On Track", yellow: "Pulse Warning", red: "Pulse Critical" };
-  const HEALTH_HEART = { green: "💚", yellow: "💛", red: "❤️" };
-  const HEALTH_CHIP = { green: "chip-green", yellow: "chip-yellow", red: "chip-red" };
+  const HEALTH_LABEL = { strong: "Strong", steady: "Steady", weak: "Weak", dormant: "Dormant" };
+  const HEALTH_HEART = { strong: "⬆️", steady: "➡️", weak: "⬇️", dormant: "⏸️" };
+  const HEALTH_CHIP = { strong: "chip-green", steady: "chip-yellow", weak: "chip-orange", dormant: "chip-red" };
   let mode = "student";
   let selectedTeam = null, selectedAdvisor = null;
 
@@ -213,6 +239,15 @@
 
   renderTeams();
   renderAdvisors();
+  document.getElementById("footerYear").textContent = new Date().getFullYear();
+
+  // "View Dashboard" — ไปยัง dashboard ของ identity ล่าสุดที่ระบบจำไว้ (ข้อมูล demo มี identity เริ่มต้นเสมอ)
+  document.getElementById("btnHeroViewDashboard").addEventListener("click", () => {
+    const user = PP.getCurrentUser();
+    window.location.href = user.role === "advisor" ? "pages/advisor-dashboard.html" : "pages/student-dashboard.html";
+  });
+  document.getElementById("btnHeroCreateProject").addEventListener("click", () => openCreateTeamModal());
+  document.getElementById("btnCtaCreateProject").addEventListener("click", () => openCreateTeamModal());
 
   // ---------------------------------------------------------------------
   // สร้างทีมโครงงานของตัวเอง (สำหรับนิสิตที่ต้องการใช้ข้อมูลจริงของทีมตัวเอง แทนทีมตัวอย่าง)

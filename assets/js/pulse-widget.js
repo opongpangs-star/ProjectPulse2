@@ -4,17 +4,13 @@
  * ย้ำ: ใช้เพื่อสร้างแรงจูงใจเท่านั้น ไม่มีผลต่อคะแนนหรือการประเมินผลทางวิชาการใด ๆ
  */
 (function (global) {
+  // Project Pulse — 4 ระดับ: Strong / Steady / Weak / Dormant เสมอแสดงไอคอน+สี+ข้อความ (ไม่ใช้สีอย่างเดียว)
   const RHYTHM_META = {
-    strong: { bpm: 78, duration: "1.1s", color: "var(--pp-green-600)", label: "ชีพจรแข็งแรง เดินหน้าตามจังหวะ", faceEmoji: "💚" },
-    weak: { bpm: 54, duration: "2.2s", color: "#d3a300", label: "เลือกงานเล็ก ๆ 1 อย่างให้เสร็จวันนี้", faceEmoji: "💛" },
-    critical: { bpm: 28, duration: "4s", color: "var(--pp-red-700)", label: "เริ่มใหม่จากงานเล็ก ๆ ได้เสมอ — ลองแผนกู้จังหวะ 15 นาที", faceEmoji: "💔" },
+    strong: { bpm: 82, duration: "1s", color: "var(--pp-green-600)", label: "Strong — ahead of schedule", faceEmoji: "⬆️" },
+    steady: { bpm: 68, duration: "1.6s", color: "var(--pp-yellow-700)", label: "Steady — on track", faceEmoji: "➡️" },
+    weak: { bpm: 50, duration: "2.6s", color: "var(--pp-orange-700)", label: "Weak — behind schedule", faceEmoji: "⬇️" },
+    dormant: { bpm: 22, duration: "4.5s", color: "var(--pp-red-700)", label: "Dormant — no recent activity", faceEmoji: "⏸" },
   };
-
-  function rhythmFromLevel(level) {
-    if (level === "green") return "strong";
-    if (level === "yellow") return "weak";
-    return "critical";
-  }
 
   function buildEcgPath(amplitude, cycles) {
     const segW = 100;
@@ -26,7 +22,7 @@
     return d;
   }
 
-  const AMPLITUDE_BY_RHYTHM = { strong: 15, weak: 8, critical: 2.5 };
+  const AMPLITUDE_BY_RHYTHM = { strong: 15, steady: 10, weak: 6, dormant: 2 };
 
   // การ์ตูนกราฟชีพจรแบบ ECG ที่ scroll วนไม่รู้จบ ความเร็ว/แอมพลิจูดเปลี่ยนตามระดับสุขภาพโครงงาน
   function heartbeatSVG(rhythm, opts = {}) {
@@ -89,5 +85,5 @@
     setTimeout(() => el.remove(), 1400);
   }
 
-  global.PPPulse = { RHYTHM_META, rhythmFromLevel, heartbeatSVG, pulseSummary, badgeRow, burst };
+  global.PPPulse = { RHYTHM_META, heartbeatSVG, pulseSummary, badgeRow, burst };
 })(window);

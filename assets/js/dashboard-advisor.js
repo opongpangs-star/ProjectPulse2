@@ -22,8 +22,6 @@
   let filterStatus = "";
   let filterRisk = "";
 
-  function teamProgressPct(teamId) { return PP.computeProgressPct(teamId); }
-
   function urgencyChipClass(u) {
     if (u === "เกินกำหนด") return "chip-red";
     if (u === "ใกล้เกินกำหนด") return "chip-orange";
@@ -36,11 +34,12 @@
     return "chip-green";
   }
 
-  // สถานะชีพจร 3 ระดับ — แสดงด้วยไอคอน+สี+ข้อความเสมอ (ไม่ใช้สีอย่างเดียว)
+  // Project Pulse — 4 ระดับ: แสดงด้วยไอคอน+สี+ข้อความเสมอ (ไม่ใช้สีอย่างเดียว)
   const PULSE_LEVEL_META = {
-    green: { icon: "🟢", label: "ตามแผน — ชีพจรปกติ" },
-    yellow: { icon: "🟡", label: "เริ่มเสี่ยง — ชีพจรแผ่ว" },
-    red: { icon: "🔴", label: "ล่าช้า — ชีพจรวิกฤต" },
+    strong: { icon: "⬆️", label: "Strong — ahead of schedule" },
+    steady: { icon: "➡️", label: "Steady — on track" },
+    weak: { icon: "⬇️", label: "Weak — behind schedule" },
+    dormant: { icon: "⏸️", label: "Dormant — no recent activity" },
   };
 
   function renderAll() {
@@ -56,7 +55,6 @@
     renderAdvisorWorkload();
     populateStatusFilter(queue);
     renderReviewQueue(queue);
-    renderTeamsOverview(teams);
     renderUrgentNotifs();
 
     document.getElementById("btnReviewNext").disabled = !queue.length;
@@ -69,29 +67,37 @@
   }
 
   function renderStatCards(teams, queue) {
-    const slaRisk = queue.filter((r) => r.urgency === "ใกล้เกินกำหนด" || r.urgency === "เกินกำหนด").length;
-    const redTeams = teams.filter((t) => PP.computeHealthScore(t.id).level === "red").length;
+    // Project Overview — 5 tiles ตามสเปกใหม่ (คำนวณจาก Project Pulse ที่คำนวณสดของแต่ละทีม)
+    const healths = teams.map((t) => PP.computeHealthScore(t.id));
+    const onTrack = healths.filter((h) => ["strong", "steady"].includes(h.level)).length;
+    const atRisk = healths.filter((h) => h.level === "weak").length;
+    const overdue = healths.filter((h) => h.level === "dormant").length;
 
     document.getElementById("statCards").innerHTML = `
       <div class="card card-stat">
-        <span class="card-stat__label">ทีมที่ดูแล</span>
+        <span class="card-stat__label">Total Projects</span>
         <span class="card-stat__value">${teams.length}</span>
         <span class="card-stat__hint">ทีมทั้งหมดในความรับผิดชอบ</span>
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">งานรอตรวจทั้งหมด</span>
+        <span class="card-stat__label">On Track</span>
+        <span class="card-stat__value">${onTrack}</span>
+        <span class="card-stat__hint">Pulse: Strong หรือ Steady</span>
+      </div>
+      <div class="card card-stat">
+        <span class="card-stat__label">Awaiting Review</span>
         <span class="card-stat__value">${queue.length}</span>
         <span class="card-stat__hint">อยู่ในคิว Feedback ขณะนี้</span>
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">ใกล้/เกินกรอบเวลา Feedback (7 วัน)</span>
-        <span class="card-stat__value">${slaRisk}</span>
-        ${slaRisk > 0 ? `<span class="chip chip-red">ควรตรวจก่อนเป็นลำดับแรก</span>` : `<span class="card-stat__hint">ยังไม่มีงานเสี่ยงเกินกำหนด</span>`}
+        <span class="card-stat__label">At Risk</span>
+        <span class="card-stat__value">${atRisk}</span>
+        ${atRisk > 0 ? `<span class="chip chip-orange">⬇️ Pulse: Weak</span>` : `<span class="card-stat__hint">ไม่มีทีมความเสี่ยงในขณะนี้</span>`}
       </div>
       <div class="card card-stat">
-        <span class="card-stat__label">ทีม Health เสี่ยงสูง (แดง)</span>
-        <span class="card-stat__value">${redTeams}</span>
-        ${redTeams > 0 ? `<span class="chip chip-red">ต้องติดตามใกล้ชิด</span>` : `<span class="card-stat__hint">ไม่มีทีมความเสี่ยงสูงในขณะนี้</span>`}
+        <span class="card-stat__label">Overdue</span>
+        <span class="card-stat__value">${overdue}</span>
+        ${overdue > 0 ? `<span class="chip chip-red">⏸️ Pulse: Dormant — ต้องติดตามใกล้ชิด</span>` : `<span class="card-stat__hint">ไม่มีทีมหยุดนิ่งในขณะนี้</span>`}
       </div>`;
   }
 
@@ -264,38 +270,6 @@
     PPToast.show("จัดลำดับคิวใหม่แล้ว", "success");
     renderAll();
   });
-
-  function renderTeamsOverview(teams) {
-    const box = document.getElementById("teamsOverview");
-    if (!teams.length) {
-      box.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🗂️</div>ยังไม่มีทีมในความดูแล</div>`;
-      return;
-    }
-    box.innerHTML = `<table class="pp-table"><thead><tr>
-        <th>ทีม</th><th>โครงงาน</th><th>Milestone ปัจจุบัน</th><th>ความก้าวหน้า</th><th>Project Health</th>
-      </tr></thead><tbody>
-      ${teams.map((t) => {
-        const current = PP.getCurrentMilestone(t.id);
-        const meta = PP.statusMeta(current.status);
-        const pct = teamProgressPct(t.id);
-        const barClass = pct >= 70 ? "green" : pct >= 40 ? "yellow" : "orange";
-        const health = PP.computeHealthScore(t.id);
-        return `<tr>
-          <td><a href="team-workload.html?team=${esc(t.id)}" class="font-bold">${esc(t.name)}</a></td>
-          <td>${esc(t.projectName)}<div class="text-xs text-muted">${esc(t.projectType)}</div></td>
-          <td><span class="chip ${meta.chip}">${meta.label}</span><div class="text-xs text-muted" style="margin-top:4px;">${esc(current.name)}</div></td>
-          <td style="min-width:150px;">
-            <div class="progress-row"><div class="progress"><div class="progress__bar ${barClass}" style="width:${pct}%;"></div></div><span class="progress-row__pct">${pct}%</span></div>
-          </td>
-          <td style="min-width:180px;">
-            <span class="health-badge ${health.level}"><span class="health-dot"></span>${health.score} / 100</span>
-            ${t.streakDays > 0 ? ` <span class="text-xs" title="ทำงานต่อเนื่อง">🔥${t.streakDays}</span>` : ` <span class="text-xs text-muted" title="ยังไม่มีความเคลื่อนไหวต่อเนื่องในสัปดาห์นี้">🌱</span>`}
-            <div class="text-xs text-muted" style="margin-top:4px;">${esc((health.level !== "green" && health.reasons.length > 1 ? health.reasons[1] : health.reasons[0]) || "")}</div>
-          </td>
-        </tr>`;
-      }).join("")}
-      </tbody></table>`;
-  }
 
   function renderUrgentNotifs() {
     const box = document.getElementById("urgentNotifBox");

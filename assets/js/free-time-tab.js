@@ -1,20 +1,18 @@
 /*
- * free-time-planner.js — ตรรกะหน้า Smart Free-Time Planner (บทบาทนิสิต)
- * โครงสร้างและ convention ยึดตาม assets/js/dashboard-student.js
+ * free-time-tab.js — ตรรกะแท็บ "Smart Free-Time" ภายในหน้าปฏิทิน (pages/workload-map.html)
+ * ย้ายมาจาก assets/js/free-time-planner.js เดิม (เคยเป็นหน้าแยก pages/free-time-planner.html)
+ * เพื่อ render เข้าไปในแท็บที่สองของหน้าปฏิทินแทน — ตรรกะ/พฤติกรรมเดิมทุกจุดคงไว้ไม่เปลี่ยน
+ * เฉพาะบทบาทนิสิตเท่านั้น (อาจารย์ไม่มีความหมายของ "เวลาว่างส่วนตัว" ให้วางแผน)
  */
 (function () {
   const esc = PPNav.escapeHtml;
   const user = PP.getCurrentUser();
 
-  // กันบทบาทผิด: หน้านี้สำหรับนิสิตเท่านั้น
+  // แท็บนี้มีความหมายเฉพาะบทบาทนิสิตเท่านั้น — ไม่สร้างทั้งปุ่มแท็บและเนื้อหาเลยสำหรับอาจารย์
+  // (ไม่ใช่แค่ซ่อนด้วย CSS: เอา placeholder panel ออกจาก DOM ไปเลย)
   if (user.role !== "student") {
-    document.getElementById("plannerContent").style.display = "none";
-    document.getElementById("roleGuardSlot").innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state__icon">🔒</div>
-        หน้านี้ใช้สำหรับบทบาทนิสิตเท่านั้น
-        <div style="margin-top:10px;"><a href="advisor-dashboard.html" class="btn btn-primary btn-sm">กลับไปแดชบอร์ดอาจารย์</a></div>
-      </div>`;
+    const panel = document.getElementById("tabPanelFreeTime");
+    if (panel) panel.remove();
     return;
   }
 
@@ -29,10 +27,62 @@
     split: { icon: "✂️", label: "แบ่งเป็นช่วงสั้นแล้ว" },
   };
 
+  // ---------------------------------------------------------------------
+  // ประกอบปุ่มแท็บ + เนื้อหาแท็บเข้ากับโครง tabs/tab-panel ที่มีอยู่แล้วในหน้า
+  // ---------------------------------------------------------------------
+  const tabsEl = document.getElementById("calendarTabs");
+  const tabBtnFreeTime = document.createElement("button");
+  tabBtnFreeTime.type = "button";
+  tabBtnFreeTime.className = "tab-btn";
+  tabBtnFreeTime.id = "tabBtnFreeTime";
+  tabBtnFreeTime.dataset.tab = "free-time";
+  tabBtnFreeTime.textContent = "⏱️ แผนเวลาว่างอัจฉริยะ";
+  tabsEl.appendChild(tabBtnFreeTime);
+
+  const panel = document.getElementById("tabPanelFreeTime");
+  panel.innerHTML = `
+    <div class="card">
+      <div class="card-hd"><h3>ระบบพิจารณาช่วงเวลาว่างจากอะไรบ้าง</h3></div>
+      <div class="callout-muted">
+        ระบบไม่ได้สรุปเวลาว่างจากกำหนดส่งงานเพียงอย่างเดียว แต่พิจารณาร่วมกันจาก
+        ตารางเรียน, เวลานอน/เวลาส่วนตัว, งานประจำ/กิจกรรมของทีม, กำหนดส่งงานวิชาอื่น,
+        จำนวนชั่วโมงที่แต่ละงานต้องใช้ และช่วงเวลาที่ทีมทำงานได้อย่างมีประสิทธิภาพที่สุด
+        (เวอร์ชัน demo นี้ไม่ต้องกรอกระดับพลังงาน/สมาธิจริงของผู้ใช้)
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd">
+        <div>
+          <h3>⏱️ ช่วงเวลาแนะนำในสัปดาห์นี้</h3>
+          <div class="card-hd__sub">เลือกยืนยัน เปลี่ยนเวลา แบ่งเป็นช่วงสั้น หรือแจ้งว่าไม่สะดวกได้ทันที</div>
+        </div>
+      </div>
+      <div id="pendingSlots" class="grid grid-auto"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-hd"><h3>📜 ประวัติช่วงเวลาที่เคยพิจารณาแล้ว</h3></div>
+      <div id="historySlots" class="flex flex-col gap-2"></div>
+    </div>`;
+
+  // ---------------------------------------------------------------------
+  // สลับแท็บ Calendar <-> Smart Free-Time
+  // ---------------------------------------------------------------------
+  function selectTab(tab) {
+    document.querySelectorAll("#calendarTabs .tab-btn").forEach((b) => b.classList.toggle("is-active", b.dataset.tab === tab));
+    document.querySelectorAll("#mapContent > .tab-panel").forEach((p) => p.classList.toggle("is-active", p.dataset.tabPanel === tab));
+  }
+  document.getElementById("tabBtnCalendar").addEventListener("click", () => selectTab("calendar"));
+  tabBtnFreeTime.addEventListener("click", () => selectTab("free-time"));
+
+  // เปิดแท็บนี้ทันทีถ้ามาจากลิงก์ ?tab=free-time (เช่นจากแดชบอร์ด/แจ้งเตือน/หน้า redirect เดิม)
+  if (new URLSearchParams(location.search).get("tab") === "free-time") selectTab("free-time");
+
+  // ---------------------------------------------------------------------
+  // ตรรกะเดิมจาก free-time-planner.js — ย้ายมาทั้งหมดโดยไม่เปลี่ยนพฤติกรรม
+  // ---------------------------------------------------------------------
   function renderAll() {
-    const advisor = PP.getAdvisor(team.advisorId);
-    document.getElementById("pageDesc").textContent =
-      `${team.name} · ${team.projectType} "${team.projectName}" · อาจารย์ที่ปรึกษา: ${advisor.name}`;
     renderPending();
     renderHistory();
   }

@@ -21,7 +21,7 @@
       case "collision":
         return "workload-map.html";
       case "free_time_found":
-        return "free-time-planner.html";
+        return "workload-map.html?tab=free-time";
       case "team_imbalance":
       case "unassigned_task":
         return "team-workload.html";

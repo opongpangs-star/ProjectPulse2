@@ -489,7 +489,7 @@
 
       // riskLevel มาจากชีพจรที่คำนวณสด (computeHealthScore) เสมอ ไม่ใช่ค่า team.health แบบ seed ที่นิ่งค้างไว้
       const health = computeHealthScore(team.id);
-      const riskLevel = health.level === "red" ? "สูง" : health.level === "yellow" ? "ปานกลาง" : "ต่ำ";
+      const riskLevel = health.level === "dormant" ? "สูง" : health.level === "weak" ? "ปานกลาง" : "ต่ำ";
       const priorityScore = waitDays * 10 + (team.blocksNext ? 15 : 0) + (riskLevel === "สูง" ? 8 : riskLevel === "ปานกลาง" ? 4 : 0) - TD.diffDays(nextMilestone ? nextMilestone.dueDate : TD.addDays(now, 30), now) * 0.2;
       const override = overrides[sub.id];
 
@@ -665,13 +665,12 @@
     }
 
     score = Math.max(0, Math.min(100, Math.round(score)));
-    let level = "green";
-    if (score < 55) level = "red"; else if (score < 78) level = "yellow";
-    // สถานะ 4 ระดับ (เพิ่มเติมจาก level เดิม ไม่แทนที่) — ใช้ label ภาษาไทยตามที่ผู้ใช้ยืนยัน พร้อมผู้รับผิดชอบขั้นตอนถัดไป
+    // Project Pulse — 4 ระดับ (Dormant/Weak/Steady/Strong) คำนวณจาก threshold เดียวกับ statusTier ที่มีอยู่เดิม
+    let level = "dormant";
     let statusTier = 0, statusLabel = "ต้องช่วยเหลือทันที";
-    if (score >= 90) { statusTier = 3; statusLabel = "เดินหน้าได้ดี"; }
-    else if (score >= 78) { statusTier = 2; statusLabel = "อยู่ในจังหวะ"; }
-    else if (score >= 55) { statusTier = 1; statusLabel = "ต้องเฝ้าระวัง"; }
+    if (score >= 90) { statusTier = 3; statusLabel = "เดินหน้าได้ดี"; level = "strong"; }
+    else if (score >= 78) { statusTier = 2; statusLabel = "อยู่ในจังหวะ"; level = "steady"; }
+    else if (score >= 55) { statusTier = 1; statusLabel = "ต้องเฝ้าระวัง"; level = "weak"; }
     const nextStepOwner = isAwaitingReview ? "advisor" : "student";
     if (reasons.length === 0) reasons.push("ยังไม่พบความเสี่ยงในขณะนี้");
     return { score, level, statusTier, statusLabel, nextStepOwner, reasons };
@@ -857,8 +856,7 @@
   function getPulseState(teamId) {
     const team = getTeam(teamId);
     const health = computeHealthScore(teamId);
-    const rhythm = global.PPPulse ? global.PPPulse.rhythmFromLevel(health.level) : (health.level === "green" ? "strong" : health.level === "yellow" ? "weak" : "critical");
-    return { rhythm, score: health.score, level: health.level, reasons: health.reasons, streakDays: team.streakDays || 0, lastActivityDate: team.lastActivityDate };
+    return { rhythm: health.level, score: health.score, level: health.level, reasons: health.reasons, streakDays: team.streakDays || 0, lastActivityDate: team.lastActivityDate };
   }
 
   // ตราความสำเร็จ — เป็นรางวัลด้านพฤติกรรมเท่านั้น ห้ามสื่อว่าผลงานมีคุณภาพหรือผ่านการประเมินแล้ว
@@ -878,7 +876,7 @@
         const wt = STATE.waitingTasks && STATE.waitingTasks[teamId];
         return !!(wt && wt.items.filter((i) => i.done).length >= 2);
       } },
-    { key: "back_on_track", icon: "💓", label: "กลับมาเข้าจังหวะ", test: (teamId) => ["red", "yellow"].includes(getTeam(teamId).health) && computeHealthScore(teamId).level === "green" },
+    { key: "back_on_track", icon: "💓", label: "กลับมาเข้าจังหวะ", test: (teamId) => ["red", "yellow"].includes(getTeam(teamId).health) && ["strong", "steady"].includes(computeHealthScore(teamId).level) },
   ];
   function getBadges(teamId) {
     return BADGE_DEFS.filter((b) => b.test(teamId)).map((b) => ({ key: b.key, icon: b.icon, label: b.label }));
@@ -1052,8 +1050,9 @@
       return "งานอยู่ในคิวตรวจ ระหว่างรอคุณยังเตรียมขั้นตอนต่อไปได้";
     }
     const health = computeHealthScore(teamId);
-    if (health.level === "green") return "จังหวะดี ไปต่อภารกิจถัดไป";
-    if (health.level === "yellow") return "ชีพจรเริ่มแผ่ว เลือกงานเล็ก 1 งานให้เสร็จวันนี้";
+    if (health.level === "strong") return "จังหวะดี ไปต่อภารกิจถัดไป";
+    if (health.level === "steady") return "อยู่ในจังหวะที่ดี ทำต่อไปได้เลย";
+    if (health.level === "weak") return "ชีพจรเริ่มแผ่ว เลือกงานเล็ก 1 งานให้เสร็จวันนี้";
     return "งานหลุดจากแผนแล้ว เริ่มแผนกู้จังหวะ 15 นาที";
   }
 
@@ -1432,7 +1431,7 @@
     const avgFeedbackWait = waits.length ? Math.round((waits.reduce((a, b) => a + b, 0) / waits.length) * 10) / 10 : 0;
     const completionRate = Math.round((teams.filter((t) => getMilestones(t.id).every((m) => ["passed", "done"].includes(m.status))).length / teams.length) * 100);
     const overdueFeedbackCount = STATE.submissions.filter((s) => ["submitted", "reviewing"].includes(s.status) && TD.diffDays(new Date(), s.submittedAt) > STATE.courseSettings.feedbackSlaDays).length;
-    const recoveredCount = teams.filter((t) => ["red", "yellow"].includes(t.health) && computeHealthScore(t.id).level === "green").length;
+    const recoveredCount = teams.filter((t) => ["red", "yellow"].includes(t.health) && ["strong", "steady"].includes(computeHealthScore(t.id).level)).length;
     return {
       teamsCount: teams.length,
       avgMilestonesCompletedPct: avgCompleted,

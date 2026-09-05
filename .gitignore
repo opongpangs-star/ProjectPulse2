@@ -1,3 +1,15 @@
 # Obsidian local editor state (not project content)
 .obsidian/workspace.json
 .obsidian/workspace-mobile.json
+
+# Secrets / credentials - never commit real keys, even if the repo is currently key-file-free.
+# (assets/js/firebase-config.js is NOT covered here on purpose - it's a Firebase client-side
+# web config, which Google's own docs say is safe to expose publicly; the real security boundary
+# is Firestore Security Rules, not this file. A real server secret or Admin SDK key would match
+# one of the patterns below and must never be committed.)
+.env
+.env.*
+*serviceAccount*.json
+*firebase-adminsdk*.json
+*.pem
+*.key

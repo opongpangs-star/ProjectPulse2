@@ -15,56 +15,61 @@
 
         <div class="page-head">
           <div class="page-head__title">
-            <span class="page-head__eyebrow">Semester Workload Map</span>
-            <h1 id="pageTitle">ปฏิทินภาระงานทั้งเทอม</h1>
+            <span class="page-head__eyebrow">Calendar</span>
+            <h1 id="pageTitle">ปฏิทินภาระงาน และแผนเวลาว่างอัจฉริยะ</h1>
             <p class="page-head__desc" id="pageDesc"></p>
-          </div>
-          <div class="page-head__actions">
-            <a href="free-time-planner.html" class="btn btn-secondary">⏱️ แผนเวลาว่างอัจฉริยะ</a>
           </div>
         </div>
 
         <div id="roleGuardSlot"></div>
 
         <div id="mapContent">
-          <div class="card">
-            <div class="card-hd">
-              <div>
-                <h3>📚 งานจากวิชาอื่นของฉัน</h3>
-                <div class="card-hd__sub">เพิ่มงาน/กำหนดส่งจากวิชาอื่นเอง ระบบจะคำนวณ Deadline Collision และช่วงเวลาว่างใหม่ให้ทันที</div>
-              </div>
-              <button class="btn btn-primary btn-sm" id="btnAddOtherCourseTask">+ เพิ่มงานจากวิชาอื่น</button>
-            </div>
-            <div id="otherCourseTaskList" class="table-wrap"></div>
+          <div class="tabs" id="calendarTabs">
+            <button type="button" class="tab-btn is-active" data-tab="calendar" id="tabBtnCalendar">🗓️ ปฏิทินภาระงานทั้งเทอม</button>
           </div>
 
-          <div class="card">
-            <div class="card-hd flex justify-between items-center" style="flex-wrap:wrap;gap:8px;">
-              <div class="flex items-center gap-2">
-                <button class="btn btn-outline btn-sm" id="btnPrevMonth" aria-label="เดือนก่อนหน้า">‹ เดือนก่อนหน้า</button>
-                <h3 id="calMonthLabel" style="min-width:180px;text-align:center;"></h3>
-                <button class="btn btn-outline btn-sm" id="btnNextMonth" aria-label="เดือนถัดไป">เดือนถัดไป ›</button>
+          <div class="tab-panel is-active" id="tabPanelCalendar" data-tab-panel="calendar">
+            <div class="card">
+              <div class="card-hd">
+                <div>
+                  <h3>📚 งานจากวิชาอื่นของฉัน</h3>
+                  <div class="card-hd__sub">เพิ่มงาน/กำหนดส่งจากวิชาอื่นเอง ระบบจะคำนวณ Deadline Collision และช่วงเวลาว่างใหม่ให้ทันที</div>
+                </div>
+                <button class="btn btn-primary btn-sm" id="btnAddOtherCourseTask">+ เพิ่มงานจากวิชาอื่น</button>
               </div>
-              <span class="text-xs text-muted" id="calRangeHint"></span>
+              <div id="otherCourseTaskList" class="table-wrap"></div>
             </div>
-            <div class="cal-grid" id="calDowRow" style="margin-bottom:6px;"></div>
-            <div class="cal-grid" id="calGrid"></div>
+
+            <div class="card">
+              <div class="card-hd flex justify-between items-center" style="flex-wrap:wrap;gap:8px;">
+                <div class="flex items-center gap-2">
+                  <button class="btn btn-outline btn-sm" id="btnPrevMonth" aria-label="เดือนก่อนหน้า">‹ เดือนก่อนหน้า</button>
+                  <h3 id="calMonthLabel" style="min-width:180px;text-align:center;"></h3>
+                  <button class="btn btn-outline btn-sm" id="btnNextMonth" aria-label="เดือนถัดไป">เดือนถัดไป ›</button>
+                </div>
+                <span class="text-xs text-muted" id="calRangeHint"></span>
+              </div>
+              <div class="cal-grid" id="calDowRow" style="margin-bottom:6px;"></div>
+              <div class="cal-grid" id="calGrid"></div>
+            </div>
+
+            <div class="card">
+              <div class="card-hd"><h3>คำอธิบายสัญลักษณ์</h3></div>
+              <div class="flex flex-col gap-3">
+                <div>
+                  <div class="text-sm font-bold" style="margin-bottom:6px;">ประเภทกิจกรรม</div>
+                  <div class="legend" id="legendTypes"></div>
+                </div>
+                <div class="divider"></div>
+                <div>
+                  <div class="text-sm font-bold" style="margin-bottom:6px;">ระดับภาระงานต่อวัน (Heatmap)</div>
+                  <div class="legend" id="legendLoad"></div>
+                </div>
+              </div>
+            </div>
           </div>
 
-          <div class="card">
-            <div class="card-hd"><h3>คำอธิบายสัญลักษณ์</h3></div>
-            <div class="flex flex-col gap-3">
-              <div>
-                <div class="text-sm font-bold" style="margin-bottom:6px;">ประเภทกิจกรรม</div>
-                <div class="legend" id="legendTypes"></div>
-              </div>
-              <div class="divider"></div>
-              <div>
-                <div class="text-sm font-bold" style="margin-bottom:6px;">ระดับภาระงานต่อวัน (Heatmap)</div>
-                <div class="legend" id="legendLoad"></div>
-              </div>
-            </div>
-          </div>
+          <div class="tab-panel" id="tabPanelFreeTime" data-tab-panel="free-time"></div>
         </div>
 
       </div>
@@ -130,5 +135,6 @@
 <script src="../assets/js/nav.js"></script>
 <script>PPNav.mount("workload-map");</script>
 <script src="../assets/js/workload-map.js"></script>
+<script src="../assets/js/free-time-tab.js"></script>
 </body>
 </html>

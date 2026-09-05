@@ -9,7 +9,7 @@
  * เพราะฟังก์ชัน teamWorkload ใน store.js ไม่ได้ติด source ให้กับฝั่ง milestone subtask
  * (ไม่ได้แก้ store.js ตามกติกา — ปรับตรรกะฝั่งนี้แทน)
  */
-(function () {
+(function (global) {
   const esc = PPNav.escapeHtml;
   const user = PP.getCurrentUser();
   const isAdvisor = user.role === "advisor";
@@ -84,10 +84,12 @@
     });
   }
 
-  function renderImbalance(workload) {
-    const slot = document.getElementById("imbalanceSlot");
-    if (!workload.imbalance) { slot.innerHTML = ""; return; }
-    slot.innerHTML = `
+  // --- ส่วน render ที่ใช้ร่วมกัน (คืนค่าเป็น HTML string ล้วน ๆ ไม่ผูกกับ id ของหน้าใดหน้าหนึ่ง) ---
+  // แยกออกมาเพื่อให้ pages/team-workload.html (ผ่าน renderAll ด้านล่าง) และหน้าอื่น ๆ
+  // (เช่น Project Detail ผ่าน PPTeamWorkload.renderInto) ใช้ตรรกะการแสดงผลชุดเดียวกันได้ ไม่ต้อง duplicate โค้ด
+  function imbalanceHtml(workload) {
+    if (!workload.imbalance) return "";
+    return `
       <div class="alert alert-warn">
         <div class="alert__icon">⚖️</div>
         <div>
@@ -97,14 +99,12 @@
       </div>`;
   }
 
-  function renderMembers(workload, teamId) {
+  function memberCardsHtml(workload, teamId) {
     const hint = freeTimeHint(teamId);
-    const box = document.getElementById("membersGrid");
     if (!workload.members.length) {
-      box.innerHTML = `<div class="empty-state">ทีมนี้ยังไม่มีสมาชิก</div>`;
-      return;
+      return `<div class="empty-state">ทีมนี้ยังไม่มีสมาชิก</div>`;
     }
-    box.innerHTML = workload.members.map((m) => {
+    return workload.members.map((m) => {
       const pct = m.totalTasks ? Math.round((m.done / m.totalTasks) * 100) : 0;
       const barClass = pct >= 70 ? "green" : pct >= 40 ? "yellow" : "orange";
       return `
@@ -129,14 +129,11 @@
     }).join("");
   }
 
-  function renderUnassigned(workload, students) {
-    const wrap = document.getElementById("unassignedList");
-    const list = workload.unassigned;
+  function unassignedListHtml(list, students) {
     if (!list.length) {
-      wrap.innerHTML = `<div class="empty-state"><div class="empty-state__icon">🎉</div>ไม่มีงานที่ค้างมอบหมายในขณะนี้</div>`;
-      return;
+      return `<div class="empty-state"><div class="empty-state__icon">🎉</div>ไม่มีงานที่ค้างมอบหมายในขณะนี้</div>`;
     }
-    wrap.innerHTML = list.map((item, idx) => {
+    return list.map((item, idx) => {
       const isFeedbackItem = !!item.feedbackId;
       let contextLabel = "";
       if (isFeedbackItem) {
@@ -161,7 +158,11 @@
         </div>
       </div>`;
     }).join("");
+  }
 
+  // ผูก event ปุ่ม "มอบหมาย" ของรายการที่ยังไม่มีผู้รับผิดชอบ — ใช้ร่วมกันทั้งหน้า team-workload.html และ renderInto()
+  // `afterChange` คือ callback ให้ re-render ส่วนที่เรียก (แต่ละหน้ามีขอบเขต DOM ที่ต้องรีเฟรชต่างกัน)
+  function bindUnassignedEvents(wrap, list, afterChange) {
     wrap.querySelectorAll("[data-assign-btn]").forEach((btn) => {
       btn.addEventListener("click", () => {
         const row = btn.closest(".task-row");
@@ -181,10 +182,50 @@
           PP.commit();
         }
         PPToast.show("มอบหมายงานเรียบร้อยแล้ว", "success");
-        renderAll();
+        afterChange();
       });
     });
   }
 
-  renderAll();
-})();
+  function renderImbalance(workload) {
+    document.getElementById("imbalanceSlot").innerHTML = imbalanceHtml(workload);
+  }
+
+  function renderMembers(workload, teamId) {
+    document.getElementById("membersGrid").innerHTML = memberCardsHtml(workload, teamId);
+  }
+
+  function renderUnassigned(workload, students) {
+    const wrap = document.getElementById("unassignedList");
+    wrap.innerHTML = unassignedListHtml(workload.unassigned, students);
+    bindUnassignedEvents(wrap, workload.unassigned, renderAll);
+  }
+
+  // หน้า team-workload.html เท่านั้นที่มี #membersGrid — สคริปต์นี้ถูกโหลดในหน้าอื่น (เช่น Project Detail) ด้วย
+  // จึงต้อง guard ไม่ให้ bootstrap เดิมทำงานทับ DOM ของหน้าอื่นโดยไม่ตั้งใจ
+  if (document.getElementById("membersGrid")) {
+    renderAll();
+  }
+
+  // ---------------------------------------------------------------------
+  // Reusable export — ใช้โดยหน้าอื่น (เช่น Project Detail's Team Activity tab) เพื่อแสดงตาราง
+  // ภาระงานรายบุคคลของทีมเดียวชุดเดียวกับที่หน้า team-workload.html ใช้ โดยไม่ต้อง duplicate ตรรกะ
+  // ไม่รวม UI ส่วนเลือกทีมสำหรับอาจารย์ (เป็นเรื่องเฉพาะของหน้า team-workload.html เท่านั้น)
+  // ---------------------------------------------------------------------
+  function renderInto(container, teamId) {
+    const workload = PP.teamWorkload(teamId);
+    const teamStudents = PP.getStudentsByTeam(teamId);
+    container.innerHTML = `
+      <div data-pp-imbalance></div>
+      <div class="grid grid-auto" data-pp-members style="margin-top:12px;"></div>
+      <div class="font-bold text-sm" style="margin-top:20px;margin-bottom:6px;">❗ งานที่ยังไม่มีผู้รับผิดชอบ</div>
+      <div class="flex flex-col gap-2" data-pp-unassigned></div>`;
+    container.querySelector("[data-pp-imbalance]").innerHTML = imbalanceHtml(workload);
+    container.querySelector("[data-pp-members]").innerHTML = memberCardsHtml(workload, teamId);
+    const wrap = container.querySelector("[data-pp-unassigned]");
+    wrap.innerHTML = unassignedListHtml(workload.unassigned, teamStudents);
+    bindUnassignedEvents(wrap, workload.unassigned, () => renderInto(container, teamId));
+  }
+
+  global.PPTeamWorkload = { renderInto };
+})(window);
