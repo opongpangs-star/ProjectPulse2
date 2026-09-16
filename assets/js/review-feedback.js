@@ -1,7 +1,9 @@
 /*
  * review-feedback.js — ตรรกะหน้า ตรวจงานและให้ Feedback (อาจารย์)
  * รับ submissionId จาก query string ?sub=<id> แสดงรายละเอียดงานที่ส่ง ให้อาจารย์พิมพ์ Feedback
- * ใช้ PP.draftChecklistFromText ช่วยร่าง checklist เป็นตารางที่แก้ไขได้ก่อนบันทึกจริงด้วย PP.giveFeedback
+ * ใช้ PPAI.chat (assets/js/ai-client.js, model google/gemini-2.5-flash-lite ผ่าน OpenRouter) ช่วยร่าง checklist
+ * จาก rawText — ถ้าไม่มีคีย์ AI (assets/js/ai-secrets.js ที่ .gitignore กันไว้) หรือเรียกไม่สำเร็จ/timeout จะ fallback
+ * กลับไปใช้ PP.draftChecklistFromText (ตัดบรรทัดในเครื่อง) โดยอัตโนมัติ ไม่ค้าง
  * สำคัญ: AI มีหน้าที่แค่ช่วย "ร่าง" checklist จากข้อความเท่านั้น ไม่ตัดสินคะแนน/ผ่านหรือไม่ผ่าน —
  * การตัดสินใจทั้งหมด (revise / need_info / passed) เป็นดุลยพินิจของอาจารย์ที่กดปุ่มเองเท่านั้น
  */
@@ -288,7 +290,33 @@
     renderChecklistTable();
   }
 
-  function onAiDraft() {
+  const AI_CHECKLIST_SYSTEM_PROMPT =
+    "คุณคือผู้ช่วยของอาจารย์ที่ปรึกษาโครงงานนิสิต หน้าที่ของคุณคือแยกข้อความ Feedback ที่อาจารย์พิมพ์ " +
+    "ออกเป็นรายการสิ่งที่นิสิตต้องแก้ไขทีละประเด็นสั้นๆ ห้ามเพิ่มความเห็น ห้ามตัดสินคะแนนหรือฟันธงว่าผ่าน/ไม่ผ่าน " +
+    "ตอบกลับเป็น JSON array ของ string เท่านั้น ไม่ต้องมีคำอธิบายอื่นล้อมรอบ เช่น [\"แก้ไข...\", \"เพิ่ม...\"]";
+
+  async function aiDraftChecklist(rawText) {
+    if (!PPAI.isAvailable()) return { items: PP.draftChecklistFromText(rawText), viaAI: false };
+    try {
+      const content = await PPAI.chat([
+        { role: "system", content: AI_CHECKLIST_SYSTEM_PROMPT },
+        { role: "user", content: rawText },
+      ]);
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      const arr = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+      const items = arr
+        .map((title) => String(title).trim())
+        .filter(Boolean)
+        .map((title) => ({ id: PP.uid("c"), title, assigneeId: null, dueDate: null, hours: null, relatedTo: "", needsRecheck: true, done: false }));
+      if (!items.length) throw new Error("AI ไม่ได้แยกรายการใดออกมา");
+      return { items, viaAI: true };
+    } catch (err) {
+      console.warn("เรียก AI แยก checklist ไม่สำเร็จ ใช้การตัดบรรทัดสำรองแทน:", err);
+      return { items: PP.draftChecklistFromText(rawText), viaAI: false };
+    }
+  }
+
+  async function onAiDraft() {
     const rawText = document.getElementById("rawTextInput").value.trim();
     if (!rawText) {
       PPToast.show("กรุณาพิมพ์ข้อความ Feedback ก่อน แล้วค่อยให้ AI ช่วยแยกประเด็น", "warn");
@@ -297,9 +325,21 @@
     if (checklist.length && !window.confirm("มีรายการ Checklist อยู่แล้ว ต้องการให้ AI แยกประเด็นจากข้อความปัจจุบันมาแทนที่รายการเดิมหรือไม่?")) {
       return;
     }
-    checklist = PP.draftChecklistFromText(rawText);
+    const btn = document.getElementById("btnAiDraft");
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "🤖 AI กำลังวิเคราะห์...";
+    const { items, viaAI } = await aiDraftChecklist(rawText);
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    checklist = items;
     renderChecklistTable();
-    PPToast.show("AI ร่าง Checklist จากข้อความแล้ว — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง", "info");
+    PPToast.show(
+      viaAI
+        ? "AI (Gemini) ร่าง Checklist จากข้อความแล้ว — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง"
+        : "เรียก AI ไม่สำเร็จ ใช้การแยกบรรทัดสำรองแทน — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง",
+      viaAI ? "info" : "warn"
+    );
   }
 
   function onDecision(decision) {

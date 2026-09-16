@@ -4421,6 +4421,47 @@ textarea.input { resize: vertical; min-height: 88px; }
 
 <script>
 /* ============================================================
+   PPAI — ตัวช่วยเรียก OpenRouter (google/gemini-2.5-flash-lite) แบบเบา (mirror ของ assets/js/ai-client.js)
+   bundle.html เป็นไฟล์เดียวที่ถูก commit ขึ้น GitHub จึงห้ามฝังคีย์ AI จริงไว้ในนี้ — window.PP_AI_KEY จะไม่ถูกตั้งค่า
+   ที่นี่โดยเจตนา ทำให้ทุกปุ่ม AI ใน bundle.html ตกไปใช้ fallback ในเครื่องเสมอ (ยังใช้งานได้ ไม่ค้าง แค่ไม่ใช่ AI จริง)
+   ส่วนเวอร์ชันหลายไฟล์ (pages/*.html) โหลดคีย์จาก assets/js/ai-secrets.js ที่ .gitignore กันไว้แยกต่างหาก
+   ============================================================ */
+(function (global) {
+  const ENDPOINT = "https://openrouter.ai/api/v1/chat/completions";
+  const MODEL = "google/gemini-2.5-flash-lite";
+  const TIMEOUT_MS = 15000;
+
+  function isAvailable() {
+    return !!global.PP_AI_KEY;
+  }
+
+  async function chat(messages, { temperature = 0.2 } = {}) {
+    if (!isAvailable()) throw new Error("ยังไม่ได้ตั้งค่าคีย์ AI");
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), TIMEOUT_MS);
+    try {
+      const res = await fetch(ENDPOINT, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${global.PP_AI_KEY}`, "Content-Type": "application/json" },
+        signal: controller.signal,
+        body: JSON.stringify({ model: MODEL, messages, temperature }),
+      });
+      if (!res.ok) throw new Error(`AI request failed: HTTP ${res.status}`);
+      const data = await res.json();
+      const content = data?.choices?.[0]?.message?.content;
+      if (!content) throw new Error("AI ไม่ตอบกลับเนื้อหา");
+      return content;
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  global.PPAI = { isAvailable, chat, MODEL };
+})(window);
+</script>
+
+<script>
+/* ============================================================
    Shared router helper: read query params from the hash fragment
    (e.g. "#review-feedback?sub=abc" -> get("sub") === "abc")
    ============================================================ */
@@ -6633,7 +6674,33 @@ function mountReviewFeedback() {
     renderChecklistTable();
   }
 
-  function onAiDraft() {
+  const AI_CHECKLIST_SYSTEM_PROMPT =
+    "คุณคือผู้ช่วยของอาจารย์ที่ปรึกษาโครงงานนิสิต หน้าที่ของคุณคือแยกข้อความ Feedback ที่อาจารย์พิมพ์ " +
+    "ออกเป็นรายการสิ่งที่นิสิตต้องแก้ไขทีละประเด็นสั้นๆ ห้ามเพิ่มความเห็น ห้ามตัดสินคะแนนหรือฟันธงว่าผ่าน/ไม่ผ่าน " +
+    "ตอบกลับเป็น JSON array ของ string เท่านั้น ไม่ต้องมีคำอธิบายอื่นล้อมรอบ เช่น [\"แก้ไข...\", \"เพิ่ม...\"]";
+
+  async function aiDraftChecklist(rawText) {
+    if (!PPAI.isAvailable()) return { items: PP.draftChecklistFromText(rawText), viaAI: false };
+    try {
+      const content = await PPAI.chat([
+        { role: "system", content: AI_CHECKLIST_SYSTEM_PROMPT },
+        { role: "user", content: rawText },
+      ]);
+      const jsonMatch = content.match(/\[[\s\S]*\]/);
+      const arr = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+      const items = arr
+        .map((title) => String(title).trim())
+        .filter(Boolean)
+        .map((title) => ({ id: PP.uid("c"), title, assigneeId: null, dueDate: null, hours: null, relatedTo: "", needsRecheck: true, done: false }));
+      if (!items.length) throw new Error("AI ไม่ได้แยกรายการใดออกมา");
+      return { items, viaAI: true };
+    } catch (err) {
+      console.warn("เรียก AI แยก checklist ไม่สำเร็จ ใช้การตัดบรรทัดสำรองแทน:", err);
+      return { items: PP.draftChecklistFromText(rawText), viaAI: false };
+    }
+  }
+
+  async function onAiDraft() {
     const rawText = document.getElementById("rawTextInput").value.trim();
     if (!rawText) {
       PPToast.show("กรุณาพิมพ์ข้อความ Feedback ก่อน แล้วค่อยให้ AI ช่วยแยกประเด็น", "warn");
@@ -6642,9 +6709,21 @@ function mountReviewFeedback() {
     if (checklist.length && !window.confirm("มีรายการ Checklist อยู่แล้ว ต้องการให้ AI แยกประเด็นจากข้อความปัจจุบันมาแทนที่รายการเดิมหรือไม่?")) {
       return;
     }
-    checklist = PP.draftChecklistFromText(rawText);
+    const btn = document.getElementById("btnAiDraft");
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "🤖 AI กำลังวิเคราะห์...";
+    const { items, viaAI } = await aiDraftChecklist(rawText);
+    btn.disabled = false;
+    btn.textContent = originalLabel;
+    checklist = items;
     renderChecklistTable();
-    PPToast.show("AI ร่าง Checklist จากข้อความแล้ว — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง", "info");
+    PPToast.show(
+      viaAI
+        ? "AI (Gemini) ร่าง Checklist จากข้อความแล้ว — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง"
+        : "เรียก AI ไม่สำเร็จ ใช้การแยกบรรทัดสำรองแทน — โปรดตรวจสอบ/แก้ไขก่อนบันทึกจริง",
+      viaAI ? "info" : "warn"
+    );
   }
 
   function onDecision(decision) {

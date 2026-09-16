@@ -147,9 +147,13 @@
             ${r.reasons.map((reason) => `<li class="text-xs text-muted">${esc(reason)}</li>`).join("")}
           </ul>
           ${blockedReason ? `<div class="alert alert-danger" style="margin-top:6px;padding:8px 10px;"><div class="alert__icon">🚧</div><div class="text-xs">อุปสรรคที่นิสิตแจ้ง: ${esc(blockedReason)}</div></div>` : ""}
+          ${r.team.aiSuggestion ? `<div class="callout-muted text-xs" style="margin-top:6px;">🤖 <strong>AI เคยแนะนำ:</strong> ${esc(r.team.aiSuggestion)}</div>` : ""}
         </div>
+        <button type="button" class="btn btn-outline btn-sm" data-ai-summary="${esc(r.team.id)}" style="flex-shrink:0;">🤖 AI สรุปภาพรวมทีม</button>
       </div>`;
     }).join("");
+
+    box.querySelectorAll("[data-ai-summary]").forEach((btn) => btn.addEventListener("click", () => onAiSummaryClick(btn.dataset.aiSummary, btn)));
   }
 
   // ---------------------------------------------------------------------
@@ -268,6 +272,103 @@
     PP.overrideQueueOrder(overrideTargetSubId, reason);
     closeOverrideModal();
     PPToast.show("จัดลำดับคิวใหม่แล้ว", "success");
+    renderAll();
+  });
+
+  // ---------------------------------------------------------------------
+  // AI สรุปภาพรวมทีม (agentic): อ่านหลายที่ -> สรุปให้อาจารย์อ่าน -> เขียนกลับเมื่อยืนยัน -> จดบันทึกลง Firestore
+  // ---------------------------------------------------------------------
+  const AI_SUMMARY_SYSTEM_PROMPT =
+    "คุณคือผู้ช่วยของอาจารย์ที่ปรึกษาโครงงานนิสิต จะได้รับข้อมูลสถานะของทีมหนึ่งทีมเป็น JSON " +
+    "หน้าที่ของคุณคือสรุปภาพรวมทีมนี้ให้อาจารย์อ่านได้เร็ว พร้อมข้อเสนอแนะสิ่งที่อาจารย์ควรทำต่อ " +
+    "ห้ามฟันธงเรื่องคะแนนหรือผ่าน/ไม่ผ่าน — เป็นเพียงข้อเสนอแนะให้อาจารย์ตัดสินใจเองเท่านั้น " +
+    "ตอบกลับเป็น JSON object เดียวเท่านั้น รูปแบบ {\"summary\":\"...\",\"reason\":\"...\",\"suggestedAction\":\"...\"} " +
+    "โดย summary คือสรุปภาพรวม 2-3 ประโยค, reason คือเหตุผล/สัญญาณที่พบจากข้อมูล, suggestedAction คือสิ่งที่ควรทำต่อ 1 ประโยค";
+
+  function gatherTeamContext(teamId) {
+    const team = PP.getTeam(teamId);
+    const health = PP.computeHealthScore(teamId);
+    const report = PP.weeklyReport(teamId);
+    const milestones = PP.getMilestones(teamId).map((m) => ({ name: m.name, status: m.status, dueDate: m.dueDate }));
+    const submissions = PP.getSubmissionsByTeam(teamId).map((s) => ({ status: s.status, submittedAt: s.submittedAt, reviewedAt: s.reviewedAt || null }));
+    const feedbacks = PP.getFeedbacksByTeam(teamId).map((f) => ({ decision: f.decision, createdAt: f.createdAt }));
+    const notifications = PP.getNotificationsFor("advisor", advisorId)
+      .filter((n) => n.teamId === teamId)
+      .slice(0, 8)
+      .map((n) => ({ type: n.type, severity: n.severity, title: n.title }));
+    return {
+      teamName: team.name, projectType: team.projectType, projectName: team.projectName,
+      healthLevel: health.level, healthScore: health.score,
+      milestonesCompletedPct: report.milestonesCompletedPct, onTimePct: report.onTimePct,
+      milestones, submissions, feedbacks, notifications,
+    };
+  }
+
+  let aiSummaryState = null; // { teamId, logId, result }
+
+  async function onAiSummaryClick(teamId, btn) {
+    const originalLabel = btn.textContent;
+    btn.disabled = true;
+    btn.textContent = "🤖 กำลังอ่านข้อมูลทีม...";
+    try {
+      const context = gatherTeamContext(teamId);
+      const content = await PPAI.chat([
+        { role: "system", content: AI_SUMMARY_SYSTEM_PROMPT },
+        { role: "user", content: JSON.stringify(context) },
+      ]);
+      const jsonMatch = content.match(/\{[\s\S]*\}/);
+      const result = JSON.parse(jsonMatch ? jsonMatch[0] : content);
+      if (!result.summary) throw new Error("AI ไม่ได้สรุปข้อมูลกลับมา");
+
+      let logId = null;
+      try {
+        logId = await window.PPFirestoreLog.logAIRun(teamId, {
+          advisorId, model: PPAI.MODEL,
+          summary: result.summary, reason: result.reason || "", suggestedAction: result.suggestedAction || "",
+        });
+      } catch (logErr) {
+        console.warn("บันทึก AI log ลง Firestore ไม่สำเร็จ (จะยังแสดงผลสรุปให้อาจารย์อ่านตามปกติ):", logErr);
+      }
+
+      aiSummaryState = { teamId, logId, result };
+      openAiSummaryModal(PP.getTeam(teamId), result);
+    } catch (err) {
+      console.warn("เรียก AI สรุปภาพรวมทีมไม่สำเร็จ:", err);
+      PPToast.show("เรียก AI ไม่สำเร็จ ลองใหม่อีกครั้ง (" + err.message + ")", "danger");
+    } finally {
+      btn.disabled = false;
+      btn.textContent = originalLabel;
+    }
+  }
+
+  function openAiSummaryModal(team, result) {
+    document.getElementById("aiSummaryModalBody").innerHTML = `
+      <div class="field"><label>ทีม</label><div class="font-bold">${esc(team.name)}</div></div>
+      <div class="field"><label>สรุปภาพรวม (AI ร่าง)</label><div class="callout-muted">${esc(result.summary)}</div></div>
+      ${result.reason ? `<div class="field"><label>เหตุผล/สัญญาณที่พบ</label><div class="text-sm">${esc(result.reason)}</div></div>` : ""}
+      ${result.suggestedAction ? `<div class="field"><label>ข้อเสนอแนะสิ่งที่ควรทำต่อ</label><div class="text-sm">${esc(result.suggestedAction)}</div></div>` : ""}
+    `;
+    document.getElementById("aiSummaryModalBackdrop").classList.add("is-open");
+  }
+
+  function closeAiSummaryModal() {
+    document.getElementById("aiSummaryModalBackdrop").classList.remove("is-open");
+    aiSummaryState = null;
+  }
+
+  document.getElementById("closeAiSummaryModal").addEventListener("click", closeAiSummaryModal);
+  document.getElementById("cancelAiSummaryModal").addEventListener("click", closeAiSummaryModal);
+  document.getElementById("aiSummaryModalBackdrop").addEventListener("click", (e) => { if (e.target === e.currentTarget) closeAiSummaryModal(); });
+  document.getElementById("confirmAiSummaryModal").addEventListener("click", async () => {
+    if (!aiSummaryState) return;
+    const { teamId, logId, result } = aiSummaryState;
+    PP.saveAITeamSummary(teamId, result);
+    if (logId) {
+      try { await window.PPFirestoreLog.confirmAIRun(teamId, logId); }
+      catch (err) { console.warn("อัปเดตสถานะยืนยันใน Firestore log ไม่สำเร็จ:", err); }
+    }
+    closeAiSummaryModal();
+    PPToast.show("บันทึกสรุปของ AI ลงในทีมนี้แล้ว", "success");
     renderAll();
   });
 

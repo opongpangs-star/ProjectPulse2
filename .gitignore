@@ -16,3 +16,7 @@
 *firebase-adminsdk*.json
 *.pem
 *.key
+
+# OpenRouter AI key for the "AI ช่วยแยกประเด็น Feedback" / advisor-dashboard AI features —
+# real secret (unlike firebase-config.js above), must never reach GitHub.
+assets/js/ai-secrets.js

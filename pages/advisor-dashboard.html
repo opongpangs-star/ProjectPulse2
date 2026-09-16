@@ -120,11 +120,90 @@
   </div>
 </div>
 
+<div class="modal-backdrop" id="aiSummaryModalBackdrop">
+  <div class="modal" style="max-width:520px;">
+    <div class="modal-hd"><h3>🤖 AI สรุปภาพรวมทีม</h3><button class="modal-close" id="closeAiSummaryModal">✕</button></div>
+    <div class="alert alert-info" style="margin-bottom:10px;">
+      <div class="alert__icon">ℹ️</div>
+      <div class="text-sm">ร่างโดย AI จากข้อมูลจริงของทีม (Milestone/งานที่ส่ง/Feedback/แจ้งเตือน) — <strong>อ่านทวนก่อนกดยืนยัน</strong> AI ไม่มีสิทธิ์ตัดสินแทนอาจารย์</div>
+    </div>
+    <div id="aiSummaryModalBody"></div>
+    <div class="modal-footer">
+      <button class="btn btn-ghost" id="cancelAiSummaryModal">ปิด (ไม่บันทึก)</button>
+      <button class="btn btn-primary" id="confirmAiSummaryModal">✅ ยืนยันบันทึกลงทีมนี้</button>
+    </div>
+  </div>
+</div>
+
 <script src="../assets/js/thai-date.js"></script>
 <script src="../assets/js/seed-data.js"></script>
 <script src="../assets/js/store.js"></script>
+<script src="../assets/js/ai-secrets.js"></script>
+<script src="../assets/js/ai-client.js"></script>
 <script src="../assets/js/nav.js"></script>
 <script>PPNav.mount("advisor-dashboard");</script>
+
+<!-- บันทึกการทำงานของ AI (agent log) ลง Firestore — collection แยกจาก teams/advisors เดิมที่ seed-firestore.html
+     ใช้ทดลอง (ป้องกันสับสนกับข้อมูลตัวอย่างชุดนั้น) ต้องล็อกอินก่อนเสมอตาม firestore.rules จึง sign in
+     แบบ anonymous ให้อัตโนมัติเบื้องหลัง — ไม่ต้องให้อาจารย์กรอกอะไรเพิ่ม -->
+<script type="module">
+  import { db, auth } from "../assets/js/firebase-config.js";
+  import { signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+  import { collection, addDoc, doc, updateDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+  function wait(ms) { return new Promise((resolve) => setTimeout(resolve, ms)); }
+
+  function waitForAuthState() {
+    return new Promise((resolve) => {
+      const unsub = onAuthStateChanged(auth, (user) => { unsub(); resolve(user); });
+    });
+  }
+
+  // เพิ่งโหลดหน้ามา SDK อาจยังไม่พร้อมยืนยันตัวตนแบบ anonymous ทันที (เจอ auth/admin-restricted-operation
+  // ชั่วคราวได้แม้เปิด provider ไว้ถูกต้องแล้ว — SDK ยังโหลด config ไม่เสร็จ) — retry พร้อม backoff ก่อนค่อยยอมแพ้
+  let ensureAuthPromise = null;
+  function ensureAuth() {
+    if (!ensureAuthPromise) ensureAuthPromise = doEnsureAuth();
+    return ensureAuthPromise;
+  }
+  async function doEnsureAuth() {
+    const existing = await waitForAuthState();
+    if (existing) return existing;
+    let lastErr;
+    for (let attempt = 0; attempt < 5; attempt++) {
+      try {
+        const cred = await signInAnonymously(auth);
+        return cred.user;
+      } catch (err) {
+        lastErr = err;
+        await wait(1000 * (attempt + 1));
+      }
+    }
+    ensureAuthPromise = null; // เผื่อ retry รอบถัดไป (เช่น กดปุ่ม AI อีกครั้ง) ไม่ต้องค้างกับความล้มเหลวเดิม
+    throw lastErr;
+  }
+  // เริ่ม sign-in เบื้องหลังทันทีที่หน้าโหลด เพื่อให้ SDK "อุ่นเครื่อง" เสร็จก่อนอาจารย์กดปุ่ม AI จริง
+  ensureAuth().catch((err) => console.warn("Firebase Auth (anonymous) เริ่มต้นไม่สำเร็จ:", err));
+
+  window.PPFirestoreLog = {
+    async logAIRun(teamId, data) {
+      const user = await Promise.race([
+        ensureAuth(),
+        new Promise((_, reject) => setTimeout(() => reject(new Error("หมดเวลารอเข้าสู่ระบบ Firebase")), 8000)),
+      ]);
+      const ref = await addDoc(collection(db, "aiTeamSummaries", teamId, "aiLog"), {
+        ...data, createdByUid: user.uid, createdAt: new Date().toISOString(), confirmed: false,
+      });
+      return ref.id;
+    },
+    async confirmAIRun(teamId, logId) {
+      await updateDoc(doc(db, "aiTeamSummaries", teamId, "aiLog", logId), {
+        confirmed: true, confirmedAt: new Date().toISOString(),
+      });
+    },
+  };
+</script>
+
 <script src="../assets/js/dashboard-advisor.js"></script>
 </body>
 </html>

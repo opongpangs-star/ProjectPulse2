@@ -187,6 +187,18 @@
     commit();
   }
 
+  // เก็บผลสรุป+ข้อเสนอแนะจาก AI (advisor-dashboard "AI สรุปภาพรวมทีม") ไว้ที่ทีม
+  // เขียนก็ต่อเมื่ออาจารย์กดยืนยันในหน้าเท่านั้น — AI ไม่เขียนเองอัตโนมัติ
+  function saveAITeamSummary(teamId, { summary, reason, suggestedAction }) {
+    const team = getTeam(teamId);
+    if (!team) return;
+    team.aiSummary = summary || "";
+    team.aiReason = reason || "";
+    team.aiSuggestion = suggestedAction || "";
+    team.aiSummaryUpdatedAt = new Date().toISOString();
+    commit();
+  }
+
   // ---------------------------------------------------------------------
   // ขอเปลี่ยนอาจารย์ที่ปรึกษา — ต้องให้อาจารย์ท่านใหม่อนุมัติก่อนจึงมีผลจริง
   // ---------------------------------------------------------------------
@@ -1449,7 +1461,7 @@
     getCourse, getCourseSettings, updateCourseSettings, getNotificationPrefs, updateNotificationPrefs,
     getAdvisors, getAdvisor, getTeams, getTeam, getTeamsByAdvisor,
     getStudentsByTeam, getStudent,
-    createTeam, updateTeamInfo, addTeamMember, removeTeamMember, updateStudent,
+    createTeam, updateTeamInfo, saveAITeamSummary, addTeamMember, removeTeamMember, updateStudent,
     requestAdvisorChange, respondAdvisorChangeRequest, getPendingAdvisorChangeRequests,
     getMilestoneDefs, getMilestones, getMilestone, getCurrentMilestone, statusMeta, getPendingWork, computeProgressPct,
     getSubmission, getSubmissionsByTeam, getFeedback, getFeedbackBySubmission, getFeedbacksByTeam,
