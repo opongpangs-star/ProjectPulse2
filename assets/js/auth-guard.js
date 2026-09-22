@@ -1,4 +1,4 @@
-// auth-guard.js — ใช้ร่วมกันทุกหน้าที่ต้อง "ล็อกอินก่อนถึงจะเข้าได้จริง" (advisor-change-*.html)
+// auth-guard.js — ใช้ร่วมกันทุกหน้าที่ต้อง "ล็อกอินก่อนถึงจะเข้าได้จริง" (help-request-*.html)
 // รอสถานะล็อกอินให้พร้อมก่อนเสมอ (onAuthStateChanged) แล้วค่อยอ่าน Firestore — ไม่งั้นจะเจอ
 // หน้าว่างเปล่าหรือ permission-denied เพราะอ่านข้อมูลไปก่อนที่ Firebase จะรู้ว่าใครล็อกอินอยู่
 import { auth, db } from "./firebase-config.js";

@@ -60,7 +60,7 @@
       cards.push({ href: "achievements.html", icon: "🏅", title: "Achievements & Streaks", desc: "Badges earned and your pulse point history." });
     }
     cards.push({ href: "weekly-report.html", icon: "📊", title: "Weekly Report", desc: "Your weekly progress summary against course targets." });
-    cards.push({ href: "advisor-change-list.html", icon: "🔄", title: "Advisor Change Requests", desc: "Firestore-backed demo — " + (isStudent ? "request a new advisor" : "approve or decline pending requests") + "." });
+    cards.push({ href: "help-request-list.html", icon: "🆘", title: "Help Requests", desc: "Firestore-backed demo — " + (isStudent ? "ask your advisor for help" : "approve or decline pending requests") + "." });
 
     return `<div class="grid grid-auto" style="margin-top:var(--pp-space-4);">${cards.map(linkCard).join("")}</div>`;
   }

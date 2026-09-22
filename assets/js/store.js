@@ -177,8 +177,8 @@
     return Object.assign({}, team, { memberIds });
   }
 
-  // การเปลี่ยนอาจารย์ที่ปรึกษาต้องผ่าน requestAdvisorChange + respondAdvisorChangeRequest เท่านั้น (ต้องได้รับอนุมัติ)
-  // ไม่ให้แก้ตรงผ่านฟอร์มข้อมูลทีมทั่วไป จึงตัด advisorId ออกจาก patch นี้เสมอ แม้จะมีการส่งมาด้วยก็ตาม
+  // อาจารย์ที่ปรึกษากำหนดตอนสร้างทีมเท่านั้น เปลี่ยนภายหลังไม่ได้ (ตัดสินใจแล้วตัดสินใจเลย)
+  // จึงตัด advisorId ออกจาก patch นี้เสมอ แม้จะมีการส่งมาด้วยก็ตาม
   function updateTeamInfo(teamId, patch) {
     const team = getTeam(teamId);
     const safePatch = Object.assign({}, patch);
@@ -197,38 +197,6 @@
     team.aiSuggestion = suggestedAction || "";
     team.aiSummaryUpdatedAt = new Date().toISOString();
     commit();
-  }
-
-  // ---------------------------------------------------------------------
-  // ขอเปลี่ยนอาจารย์ที่ปรึกษา — ต้องให้อาจารย์ท่านใหม่อนุมัติก่อนจึงมีผลจริง
-  // ---------------------------------------------------------------------
-  function requestAdvisorChange(teamId, newAdvisorId, reason) {
-    const team = getTeam(teamId);
-    if (!team || newAdvisorId === team.advisorId) return;
-    team.pendingAdvisorChange = { newAdvisorId, reason: (reason || "").trim(), requestedAt: new Date().toISOString() };
-    pushNotification({
-      audience: "advisor", advisorId: newAdvisorId, teamId: team.id, type: "advisor_change_request", severity: "info",
-      title: "คำขอเปลี่ยนอาจารย์ที่ปรึกษา",
-      message: `${team.name} ขอเปลี่ยนมาอยู่ในความดูแลของท่าน${team.pendingAdvisorChange.reason ? " — เหตุผล: " + team.pendingAdvisorChange.reason : ""}`,
-    });
-    commit();
-  }
-  function respondAdvisorChangeRequest(teamId, accept) {
-    const team = getTeam(teamId);
-    if (!team || !team.pendingAdvisorChange) return;
-    if (accept) {
-      team.advisorId = team.pendingAdvisorChange.newAdvisorId;
-      pushNotification({ audience: "student", teamId: team.id, type: "advisor_change_approved", severity: "success", title: "เปลี่ยนอาจารย์ที่ปรึกษาแล้ว", message: "คำขอเปลี่ยนอาจารย์ที่ปรึกษาของทีมได้รับการอนุมัติแล้ว" });
-    } else {
-      pushNotification({ audience: "student", teamId: team.id, type: "advisor_change_declined", severity: "warn", title: "คำขอเปลี่ยนอาจารย์ที่ปรึกษาไม่ได้รับการอนุมัติ", message: "อาจารย์ที่ท่านขอย้ายไปไม่รับคำขอนี้ในขณะนี้" });
-    }
-    team.pendingAdvisorChange = null;
-    commit();
-  }
-  function getPendingAdvisorChangeRequests(advisorId) {
-    return getTeams()
-      .filter((t) => t.pendingAdvisorChange && t.pendingAdvisorChange.newAdvisorId === advisorId)
-      .map((t) => ({ team: t, request: t.pendingAdvisorChange }));
   }
 
   function addTeamMember(teamId, { name, role }) {
@@ -1462,7 +1430,6 @@
     getAdvisors, getAdvisor, getTeams, getTeam, getTeamsByAdvisor,
     getStudentsByTeam, getStudent,
     createTeam, updateTeamInfo, saveAITeamSummary, addTeamMember, removeTeamMember, updateStudent,
-    requestAdvisorChange, respondAdvisorChangeRequest, getPendingAdvisorChangeRequests,
     getMilestoneDefs, getMilestones, getMilestone, getCurrentMilestone, statusMeta, getPendingWork, computeProgressPct,
     getSubmission, getSubmissionsByTeam, getFeedback, getFeedbackBySubmission, getFeedbacksByTeam,
     getOtherCourseTasks, addOtherCourseTask, removeOtherCourseTask, getSchedule, addScheduleBlock, removeScheduleBlock, getPersonalBlocks, getFreeTimeSuggestions,

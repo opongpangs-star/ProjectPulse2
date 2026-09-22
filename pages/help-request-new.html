@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Request Advisor Change — ProjectPulse</title>
+<title>New Help Request — ProjectPulse</title>
 <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
@@ -16,8 +16,8 @@
         <div class="page-head">
           <div class="page-head__title">
             <span class="page-head__eyebrow">Profile · Firestore demo</span>
-            <h1>Request Advisor Change</h1>
-            <p class="page-head__desc">Saves a real document to Firestore (<code>advisorChangeRequests</code>, reading team/advisor options live from the <code>teams</code>/<code>advisors</code> collections seeded earlier). Once sent, nothing about the request can be edited — only its <code>status</code> can later change, via Approve/Decline on the list page.</p>
+            <h1>New Help Request</h1>
+            <p class="page-head__desc">Saves a real document to Firestore (<code>helpRequests</code>) — a request for help from your team's advisor (deadline extension, extra consultation, or something else). Once sent, nothing about the request can be edited — only its <code>status</code> can later change, via Approve/Decline on the list page.</p>
           </div>
         </div>
 
@@ -42,17 +42,22 @@
 
   const esc = PPNav.escapeHtml;
   const formBox = document.getElementById("formContent");
+  const TYPE_OPTIONS = [
+    { value: "extension", label: "ขอเลื่อนกำหนดส่งงาน" },
+    { value: "consult", label: "ขอคำปรึกษาเพิ่มเติม" },
+    { value: "other", label: "อื่น ๆ" },
+  ];
 
   // รอสถานะล็อกอินให้พร้อมก่อนเสมอ — requireAuth() จะเด้งไปหน้า login.html เองถ้ายังไม่ได้ล็อกอิน
-  const { user: authUser, role } = await requireAuth("advisor-change-new.html");
+  const { user: authUser, role } = await requireAuth("help-request-new.html");
   renderAuthBar(document.getElementById("authBar"), authUser);
 
   if (role !== "student") {
     document.getElementById("roleGuardSlot").innerHTML = `
       <div class="empty-state">
         <div class="empty-state__icon">🚫</div>
-        Only students can request an advisor change.
-        <div style="margin-top:12px;"><a href="advisor-change-list.html" class="btn btn-primary btn-sm">View existing requests</a></div>
+        Only students can send a help request.
+        <div style="margin-top:12px;"><a href="help-request-list.html" class="btn btn-primary btn-sm">View existing requests</a></div>
       </div>`;
   } else {
     formBox.innerHTML = `
@@ -62,40 +67,40 @@
             <label for="teamSelect">Team</label>
             <select class="input" id="teamSelect" required><option value="" disabled selected>Loading teams from Firestore…</option></select>
           </div>
-          <div class="field" id="currentAdvisorField" style="display:none;">
-            <label>Current advisor</label>
-            <div class="callout-muted" id="currentAdvisorText"></div>
+          <div class="field" id="advisorField" style="display:none;">
+            <label>Advisor</label>
+            <div class="callout-muted" id="advisorText"></div>
           </div>
           <div class="field">
-            <label for="newAdvisorSelect">New advisor</label>
-            <select class="input" id="newAdvisorSelect" required disabled><option value="" disabled selected>Choose a team first…</option></select>
+            <label for="typeSelect">Request type</label>
+            <select class="input" id="typeSelect" required>
+              <option value="" disabled selected>Choose a type…</option>
+              ${TYPE_OPTIONS.map((t) => `<option value="${t.value}">${esc(t.label)}</option>`).join("")}
+            </select>
           </div>
           <div class="field">
             <label for="nameInput">Your name <span class="hint">(shown alongside your account's uid on the request)</span></label>
             <input class="input" id="nameInput" required placeholder="e.g. สมชาย ใจดี" />
           </div>
           <div class="field">
-            <label for="reasonInput">Reason <span class="hint">(required)</span></label>
-            <textarea class="input" id="reasonInput" rows="3" required placeholder="Why are you requesting this change?"></textarea>
+            <label for="messageInput">Message <span class="hint">(required)</span></label>
+            <textarea class="input" id="messageInput" rows="3" required placeholder="What do you need help with?"></textarea>
           </div>
           <div class="flex gap-2" style="margin-top:6px;flex-wrap:wrap;">
             <button type="submit" class="btn btn-primary" id="btnSubmit">Send Request →</button>
-            <a href="advisor-change-list.html" class="btn btn-ghost">Cancel</a>
+            <a href="help-request-list.html" class="btn btn-ghost">Cancel</a>
           </div>
         </form>
       </div>`;
 
     const teamSelect = document.getElementById("teamSelect");
-    const advisorSelect = document.getElementById("newAdvisorSelect");
-    const currentAdvisorField = document.getElementById("currentAdvisorField");
-    const currentAdvisorText = document.getElementById("currentAdvisorText");
+    const advisorField = document.getElementById("advisorField");
+    const advisorText = document.getElementById("advisorText");
 
     let teams = [];
-    let advisors = [];
 
-    Promise.all([getDocs(collection(db, "teams")), getDocs(collection(db, "advisors"))]).then(([teamSnap, advisorSnap]) => {
+    getDocs(collection(db, "teams")).then((teamSnap) => {
       teams = teamSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
-      advisors = advisorSnap.docs.map((d) => ({ id: d.id, ...d.data() }));
       teamSelect.innerHTML = teams.length
         ? `<option value="" disabled selected>Choose a team…</option>` + teams.map((t) => `<option value="${esc(t.id)}">${esc(t.name)}</option>`).join("")
         : `<option value="" disabled selected>No teams found in Firestore</option>`;
@@ -106,43 +111,36 @@
     teamSelect.addEventListener("change", () => {
       const team = teams.find((t) => t.id === teamSelect.value);
       if (!team) return;
-      currentAdvisorField.style.display = "";
-      currentAdvisorText.textContent = team.advisorName || "—";
-      const others = advisors.filter((a) => a.id !== team.advisorId);
-      advisorSelect.disabled = false;
-      advisorSelect.innerHTML = others.length
-        ? `<option value="" disabled selected>Choose an advisor…</option>` + others.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("")
-        : `<option value="" disabled selected>No other advisors available</option>`;
+      advisorField.style.display = "";
+      advisorText.textContent = team.advisorName || "—";
     });
 
     document.getElementById("reqForm").addEventListener("submit", async (e) => {
       e.preventDefault();
       const team = teams.find((t) => t.id === teamSelect.value);
-      const newAdvisorId = advisorSelect.value;
+      const type = document.getElementById("typeSelect").value;
       const name = document.getElementById("nameInput").value.trim();
-      const reason = document.getElementById("reasonInput").value.trim();
-      if (!team || !newAdvisorId || !name || !reason) return;
-      const newAdvisorName = advisorSelect.options[advisorSelect.selectedIndex].textContent;
+      const message = document.getElementById("messageInput").value.trim();
+      if (!team || !type || !name || !message) return;
       const btn = document.getElementById("btnSubmit");
       btn.disabled = true;
       btn.textContent = "Sending…";
       try {
-        await addDoc(collection(db, "advisorChangeRequests"), {
+        await addDoc(collection(db, "helpRequests"), {
           teamId: team.id,
           teamName: team.name,
-          currentAdvisorId: team.advisorId,
-          currentAdvisorName: team.advisorName || "—",
-          newAdvisorId,
-          newAdvisorName,
+          advisorId: team.advisorId,
+          advisorName: team.advisorName || "—",
+          type,
           requestedByName: name,
           createdByUid: authUser.uid,
-          reason,
+          message,
           status: "pending",
           createdAt: new Date().toISOString(),
           decidedAt: null,
         });
         PPToast.show("Request sent — saved to Firestore.", "success");
-        window.location.href = "advisor-change-list.html";
+        window.location.href = "help-request-list.html";
       } catch (err) {
         PPToast.show(`Couldn't save: ${err.message}`, "danger");
         btn.disabled = false;

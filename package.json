@@ -1,0 +1,27 @@
+{
+  "name": "projectpulse2",
+  "version": "1.0.0",
+  "description": "Playwright test suite for ProjectPulse (the app itself has no build step or dependencies).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs"
+  },
+  "scripts": {
+    "test": "playwright test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/opongpangs-star/ProjectPulse2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/opongpangs-star/ProjectPulse2/issues"
+  },
+  "homepage": "https://github.com/opongpangs-star/ProjectPulse2#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.63.0"
+  }
+}

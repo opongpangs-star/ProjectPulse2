@@ -55,7 +55,7 @@
       try {
         await signInWithEmailAndPassword(auth, email, password);
         const returnTo = new URLSearchParams(location.search).get("returnTo");
-        window.location.href = returnTo || "advisor-change-list.html";
+        window.location.href = returnTo || "help-request-list.html";
       } catch (err) {
         errorBox.innerHTML = `<div class="alert alert-danger" style="padding:8px 12px;"><div class="text-sm">${err.message}</div></div>`;
         btn.disabled = false;

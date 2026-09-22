@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Advisor Change Requests — ProjectPulse</title>
+<title>Help Requests — ProjectPulse</title>
 <link rel="stylesheet" href="../assets/css/style.css" />
 </head>
 <body>
@@ -16,8 +16,8 @@
         <div class="page-head">
           <div class="page-head__title">
             <span class="page-head__eyebrow">Profile · Firestore demo</span>
-            <h1>Advisor Change Requests</h1>
-            <p class="page-head__desc">Read live from Firestore's <code>advisorChangeRequests</code> collection — not <code>localStorage</code>. Requires signing in with a real Firebase Authentication account; what you can do here depends on your account's <code>role</code> field in the <code>users</code> collection (defaults to <code>student</code> at sign-up — an advisor account is set manually in the Firebase Console).</p>
+            <h1>Help Requests</h1>
+            <p class="page-head__desc">Read live from Firestore's <code>helpRequests</code> collection — not <code>localStorage</code>. Requires signing in with a real Firebase Authentication account; what you can do here depends on your account's <code>role</code> field in the <code>users</code> collection (defaults to <code>student</code> at sign-up — an advisor account is set manually in the Firebase Console).</p>
           </div>
           <div class="page-head__actions" id="pageActions"></div>
         </div>
@@ -38,23 +38,28 @@
 <script>PPNav.mount("profile");</script>
 <script type="module">
   import { db } from "../assets/js/firebase-config.js";
-  import { collection, getDocs, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  import { collection, getDocs, query, where, doc, updateDoc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
   import { requireAuth, renderAuthBar } from "../assets/js/auth-guard.js";
 
   const esc = PPNav.escapeHtml;
   const listBox = document.getElementById("listContent");
 
-  const { user: authUser, role } = await requireAuth("advisor-change-list.html");
+  const { user: authUser, role } = await requireAuth("help-request-list.html");
   renderAuthBar(document.getElementById("authBar"), authUser);
 
   if (role === "student") {
-    document.getElementById("pageActions").innerHTML = `<a href="advisor-change-new.html" class="btn btn-primary">+ New Request</a>`;
+    document.getElementById("pageActions").innerHTML = `<a href="help-request-new.html" class="btn btn-primary">+ New Request</a>`;
   }
 
   const STATUS_META = {
     pending: { label: "Pending", chip: "chip-waiting" },
     approved: { label: "Approved", chip: "chip-passed" },
     declined: { label: "Declined", chip: "chip-blocked" },
+  };
+  const TYPE_LABEL = {
+    extension: "ขอเลื่อนกำหนดส่งงาน",
+    consult: "ขอคำปรึกษาเพิ่มเติม",
+    other: "อื่น ๆ",
   };
 
   function rowHtml(r) {
@@ -74,11 +79,11 @@
       <div class="card-hd">
         <div>
           <h3>${esc(r.teamName)}</h3>
-          <div class="card-hd__sub">${esc(r.currentAdvisorName)} → ${esc(r.newAdvisorName)} · requested by ${esc(r.requestedByName || "—")}</div>
+          <div class="card-hd__sub">${esc(TYPE_LABEL[r.type] || r.type)} · to ${esc(r.advisorName)} · requested by ${esc(r.requestedByName || "—")}</div>
         </div>
         <span class="chip ${meta.chip}">${meta.label}</span>
       </div>
-      <div class="text-sm">${esc(r.reason)}</div>
+      <div class="text-sm">${esc(r.message)}</div>
       <div class="text-xs text-muted" style="margin-top:8px;">
         Requested ${r.createdAt ? ThaiDate.formatThaiDateTime(r.createdAt) : "—"}
         ${r.decidedAt ? ` · Decided ${ThaiDate.formatThaiDateTime(r.decidedAt)}` : ""}
@@ -90,14 +95,16 @@
   async function load() {
     listBox.innerHTML = `<div class="flex flex-col gap-3">${[1, 2, 3].map(() => `<div class="card skeleton skeleton-card"></div>`).join("")}</div>`;
     try {
-      const snap = await getDocs(collection(db, "advisorChangeRequests"));
-      let rows = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
-      // ACL: นิสิตเห็นเฉพาะคำขอของตัวเองเท่านั้น (กรองด้วย uid จริงจาก Firebase Auth ได้แล้ว)
-      // ฝั่งอาจารย์ยังเห็นคำขอทั้งหมด — เพราะบัญชี Firebase Auth ของอาจารย์ยังไม่ได้ผูกกับ advisor doc
+      // ACL: นิสิตเห็นเฉพาะคำร้องของตัวเองเท่านั้น — ยิง query ด้วย createdByUid ของตัวเองตรง ๆ
+      // ไม่ใช่ดึงมาทั้งคอลเล็กชันแล้วค่อยกรองฝั่งหน้าเว็บ เพราะ firestore.rules บังคับ createdByUid
+      // ไว้แล้ว (การอ่านทั้งคอลเล็กชันจะถูกปฏิเสธ = permission-denied ซึ่งเป็นพฤติกรรมที่ต้องการ)
+      // ฝั่งอาจารย์ยังเห็นคำร้องทั้งหมด — เพราะบัญชี Firebase Auth ของอาจารย์ยังไม่ได้ผูกกับ advisor doc
       // เฉพาะเจาะจงใน Firestore (นั่นต้องมีขั้นตอนผูกบัญชีเพิ่ม ซึ่งเกินขอบเขตของแบบฝึกหัดนี้)
-      if (role === "student") rows = rows.filter((r) => r.createdByUid === authUser.uid);
+      const reqCol = collection(db, "helpRequests");
+      const snap = await getDocs(role === "advisor" ? reqCol : query(reqCol, where("createdByUid", "==", authUser.uid)));
+      const rows = snap.docs.map((d) => ({ id: d.id, ...d.data() })).sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
       if (!rows.length) {
-        listBox.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state__icon">📭</div>${role === "student" ? "You haven't sent any requests yet." : "No advisor change requests yet."}${role === "student" ? ` <a href="advisor-change-new.html">Send one</a>.` : ""}</div></div>`;
+        listBox.innerHTML = `<div class="card"><div class="empty-state"><div class="empty-state__icon">📭</div>${role === "student" ? "You haven't sent any requests yet." : "No help requests yet."}${role === "student" ? ` <a href="help-request-new.html">Send one</a>.` : ""}</div></div>`;
         return;
       }
       listBox.innerHTML = `<div class="flex flex-col gap-3">${rows.map(rowHtml).join("")}</div>`;
@@ -113,10 +120,10 @@
     listBox.querySelectorAll("[data-delete]").forEach((btn) => btn.addEventListener("click", () => remove(btn.dataset.delete)));
   }
 
-  // แก้ไขเฉพาะช่อง status/decidedAt เท่านั้น — ไม่แตะช่องอื่น (teamId/reason/newAdvisorId ฯลฯ) ตามกติกาที่ตกลงไว้
+  // แก้ไขเฉพาะช่อง status/decidedAt เท่านั้น — ไม่แตะช่องอื่น (teamId/message/type ฯลฯ) ตามกติกาที่ตกลงไว้
   async function decide(id, status) {
     try {
-      await updateDoc(doc(db, "advisorChangeRequests", id), { status, decidedAt: new Date().toISOString() });
+      await updateDoc(doc(db, "helpRequests", id), { status, decidedAt: new Date().toISOString() });
       PPToast.show(`Request ${status}.`, status === "approved" ? "success" : "info");
       load();
     } catch (err) {
@@ -127,7 +134,7 @@
   async function remove(id) {
     if (!window.confirm("Delete this request permanently? This can't be undone.")) return;
     try {
-      await deleteDoc(doc(db, "advisorChangeRequests", id));
+      await deleteDoc(doc(db, "helpRequests", id));
       PPToast.show("Request deleted.", "info");
       load();
     } catch (err) {

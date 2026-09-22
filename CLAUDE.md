@@ -42,4 +42,4 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 - `README.md` — quick start and how to reset demo data.
 - `ARCHITECTURE.md`, `CONCEPTUAL_DATA_MODEL.md`, `CONCEPTUAL_API_SPEC.md`, `DETAILED_DESIGN.md` — conceptual, implementation-agnostic design docs (Mermaid diagrams). Deliberately not kept in sync with the running code — don't treat them as ground truth for `store.js`'s actual shape.
-- `DATA_MODEL.md`, `SPEC.md` — tied to the implementation, but have drifted behind it too (e.g. the gamification, phase-timeline, advisor-change-request, and risk-radar subsystems all exist in `store.js` today but aren't documented in `DATA_MODEL.md`). When in doubt, read `store.js` itself over these docs.
+- `DATA_MODEL.md`, `SPEC.md` — tied to the implementation, but have drifted behind it too (e.g. the gamification, phase-timeline, and risk-radar subsystems all exist in `store.js` today but aren't documented in `DATA_MODEL.md`). When in doubt, read `store.js` itself over these docs.

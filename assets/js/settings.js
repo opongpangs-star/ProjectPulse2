@@ -36,49 +36,9 @@
   // -----------------------------------------------------------------------
   // มุมมองอาจารย์ — แก้ไขกรอบเวลา Feedback ได้เต็มรูปแบบ (ระดับรายวิชา สิทธิ์อาจารย์เท่านั้น)
   // -----------------------------------------------------------------------
-  function pendingAdvisorRequestsCardHTML() {
-    const requests = PP.getPendingAdvisorChangeRequests(user.advisorId);
-    if (!requests.length) return "";
-    return `
-      <div class="card" style="border-color:#bcd8f5;">
-        <div class="card-hd">
-          <div>
-            <h3>📨 คำขอเปลี่ยนอาจารย์ที่ปรึกษา</h3>
-            <div class="card-hd__sub">ทีมที่ขอย้ายมาอยู่ในความดูแลของท่าน — ต้องอนุมัติก่อนจึงมีผลจริง</div>
-          </div>
-        </div>
-        <div class="flex flex-col gap-2">
-          ${requests.map(({ team, request }) => `
-            <div class="task-row" style="align-items:flex-start;flex-wrap:wrap;">
-              <div style="flex:1;min-width:200px;">
-                <div class="font-bold">${esc(team.name)} <span class="text-muted" style="font-weight:400;">· ${esc(team.projectName)}</span></div>
-                ${request.reason ? `<div class="text-sm text-muted">เหตุผล: ${esc(request.reason)}</div>` : ""}
-              </div>
-              <div class="flex gap-2">
-                <button class="btn btn-primary btn-sm" data-accept-advisor-req="${esc(team.id)}">✅ อนุมัติ</button>
-                <button class="btn btn-ghost btn-sm" data-decline-advisor-req="${esc(team.id)}">ปฏิเสธ</button>
-              </div>
-            </div>`).join("")}
-        </div>
-      </div>`;
-  }
-
-  function bindPendingAdvisorRequests() {
-    document.querySelectorAll("[data-accept-advisor-req]").forEach((btn) => btn.addEventListener("click", () => {
-      PP.respondAdvisorChangeRequest(btn.dataset.acceptAdvisorReq, true);
-      PPToast.show("อนุมัติคำขอเปลี่ยนอาจารย์ที่ปรึกษาแล้ว", "success");
-      renderAll();
-    }));
-    document.querySelectorAll("[data-decline-advisor-req]").forEach((btn) => btn.addEventListener("click", () => {
-      PP.respondAdvisorChangeRequest(btn.dataset.declineAdvisorReq, false);
-      PPToast.show("ปฏิเสธคำขอแล้ว", "info");
-      renderAll();
-    }));
-  }
-
   function renderAdvisorSettings(settings) {
     const notifyPrefs = PP.getNotificationPrefs(currentUserId());
-    document.getElementById("settingsContent").innerHTML = pendingAdvisorRequestsCardHTML() + `
+    document.getElementById("settingsContent").innerHTML = `
       <div class="card">
         <div class="card-hd">
           <div>
@@ -135,8 +95,6 @@
         <button class="btn btn-primary" id="btnSaveSettings">💾 บันทึกการตั้งค่า</button>
       </div>`;
 
-    bindPendingAdvisorRequests();
-
     document.getElementById("btnSaveSettings").addEventListener("click", () => {
       const settingsNow = PP.getCourseSettings();
       const slaVal = Number(document.getElementById("inpSla").value);
@@ -175,25 +133,11 @@
   // -----------------------------------------------------------------------
   function advisorChangeBlockHTML(team) {
     const currentAdvisor = PP.getAdvisor(team.advisorId);
-    if (team.pendingAdvisorChange) {
-      const target = PP.getAdvisor(team.pendingAdvisorChange.newAdvisorId);
-      return `
-        <div class="field">
-          <label>อาจารย์ที่ปรึกษา</label>
-          <div class="text-sm font-bold">${esc(currentAdvisor.name)}</div>
-          <div class="callout-muted" style="margin-top:6px;">📨 มีคำขอเปลี่ยนไปอยู่ในความดูแลของ <strong>${esc(target.name)}</strong> รอการอนุมัติจากอาจารย์ท่านนั้นอยู่</div>
-        </div>`;
-    }
-    const otherAdvisors = PP.getAdvisors().filter((a) => a.id !== team.advisorId);
     return `
       <div class="field">
         <label>อาจารย์ที่ปรึกษา</label>
         <div class="text-sm font-bold">${esc(currentAdvisor.name)}</div>
-        <span class="hint">การเปลี่ยนอาจารย์ที่ปรึกษาต้องได้รับอนุมัติจากอาจารย์ท่านใหม่ก่อนจึงมีผล — ไม่ใช่การเปลี่ยนทันที</span>
-        <div class="form-row" style="margin-top:8px;">
-          <select class="input" id="reqAdvisorSelect">${otherAdvisors.map((a) => `<option value="${esc(a.id)}">${esc(a.name)}</option>`).join("")}</select>
-          <button type="button" class="btn btn-outline btn-sm" id="btnRequestAdvisorChange">ส่งคำขอเปลี่ยนอาจารย์ที่ปรึกษา</button>
-        </div>
+        <span class="hint">กำหนดตอนสร้างทีม ไม่สามารถเปลี่ยนได้ภายหลัง — มีคำร้องขอความช่วยเหลือถึงอาจารย์ได้ที่หน้า Help Requests</span>
       </div>`;
   }
 
@@ -232,16 +176,6 @@
   }
 
   function bindTeamInfoCard(team) {
-    const reqBtn = document.getElementById("btnRequestAdvisorChange");
-    if (reqBtn) {
-      reqBtn.addEventListener("click", () => {
-        const targetId = document.getElementById("reqAdvisorSelect").value;
-        const reason = window.prompt("เหตุผลที่ขอเปลี่ยนอาจารย์ที่ปรึกษา (ไม่บังคับ)", "") || "";
-        PP.requestAdvisorChange(team.id, targetId, reason);
-        PPToast.show("ส่งคำขอเปลี่ยนอาจารย์ที่ปรึกษาแล้ว รอการอนุมัติจากอาจารย์ท่านใหม่", "success");
-        renderAll();
-      });
-    }
     const membersBox = document.getElementById("tiMembers");
     membersBox.querySelectorAll("[data-remove-member]").forEach((btn) => btn.addEventListener("click", () => {
       const row = btn.closest(".member-row");

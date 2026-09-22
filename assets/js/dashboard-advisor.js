@@ -307,6 +307,10 @@
   let aiSummaryState = null; // { teamId, logId, result }
 
   async function onAiSummaryClick(teamId, btn) {
+    if (!PPAI.isAvailable()) {
+      PPToast.show("ยังไม่ได้ตั้งค่าคีย์ AI — ไม่สามารถใช้ฟีเจอร์นี้ได้", "warn");
+      return;
+    }
     const originalLabel = btn.textContent;
     btn.disabled = true;
     btn.textContent = "🤖 กำลังอ่านข้อมูลทีม...";

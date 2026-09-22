@@ -1,13 +1,67 @@
 rules_version = '2';
 
-// กฎขั้นต่ำ: ต้องล็อกอินก่อนเสมอถึงจะอ่านหรือเขียนอะไรก็ได้ในโปรเจกต์นี้
-// (ยังไม่ใช่ role-based ACL เต็มรูปแบบตาม ACL.md — นั่นคือขั้นถัดไป ไม่ใช่ของหน้านี้)
+// กฎความปลอดภัยของ ProjectPulse
+// ชั้นที่ 1 (ฐาน): ต้องล็อกอินก่อนเสมอถึงจะอ่านหรือเขียนอะไรก็ได้ในโปรเจกต์นี้
+//   request.auth ไม่เป็น null ก็ต่อเมื่อมีการล็อกอินผ่าน Firebase Authentication มาแล้วเท่านั้น
+//   (ผู้ใช้ไม่ล็อกอิน = request.auth เป็น null เสมอ → อ่าน/เขียนไม่ได้เลย)
+// ชั้นที่ 2 (เฉพาะ helpRequests / users): ACL ตามบทบาทจริงตาม ACL.md และ MODULE2_SPEC.md
+//   หัวข้อ "จุดที่ต้องล็อกอิน (security boundary จริง)" — นิสิตเห็น/ลบได้เฉพาะคำร้องที่ createdByUid
+//   เป็นของตัวเอง, เปลี่ยนสถานะได้เฉพาะอาจารย์ (การกรองฝั่งหน้าเว็บอย่างเดียวไม่ใช่การบังคับใช้จริง)
 service cloud.firestore {
   match /databases/{database}/documents {
+
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    // บทบาทจริงอ่านจาก users/{uid}.role ("student" เป็นค่าตั้งต้น, "advisor" ตั้งมือจาก Firebase Console)
+    function roleOf() {
+      return signedIn() && exists(/databases/$(database)/documents/users/$(request.auth.uid))
+        ? get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role
+        : 'student';
+    }
+    function isAdvisor() {
+      return roleOf() == 'advisor';
+    }
+
+    // โปรไฟล์บัญชี: อ่าน/เขียนได้เฉพาะเอกสารของตัวเอง และห้ามตั้งบทบาทตัวเองเป็น advisor
+    // (ตรงกับที่ signup.html เขียนไว้ว่า role เริ่มต้นเป็น "student" เสมอ และเลื่อนเป็น advisor
+    //  ได้จาก Firebase Console เท่านั้น ซึ่ง Console/Admin SDK ไม่ถูกกฎนี้บังคับอยู่แล้ว)
+    match /users/{uid} {
+      allow read: if signedIn() && request.auth.uid == uid;
+      allow create: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.role == 'student';
+      allow update: if signedIn() && request.auth.uid == uid
+                    && request.resource.data.role == resource.data.role;
+      allow delete: if false;
+    }
+
+    // คำร้องขอความช่วยเหลือถึงอาจารย์ — security boundary จริงหนึ่งเดียวของระบบ
+    match /helpRequests/{requestId} {
+      // นิสิตอ่านได้เฉพาะคำร้องของตัวเอง (หน้า list ต้อง query ด้วย where("createdByUid","==",uid))
+      // อาจารย์อ่านได้ทั้งหมด — ช่องโหว่ที่ตั้งใจปล่อยไว้ตาม ACL.md (บัญชีอาจารย์ยังไม่ผูกกับ advisor doc)
+      allow read: if signedIn() && (isAdvisor() || resource.data.createdByUid == request.auth.uid);
+
+      // สร้างได้เฉพาะนิสิต และต้องประทับ uid ของตัวเอง + เริ่มที่สถานะ pending เท่านั้น
+      allow create: if signedIn() && !isAdvisor()
+                    && request.resource.data.createdByUid == request.auth.uid
+                    && request.resource.data.status == 'pending';
+
+      // อนุมัติ/ปฏิเสธได้เฉพาะอาจารย์ เฉพาะคำร้องที่ยัง pending และแก้ได้แค่ status/decidedAt
+      allow update: if signedIn() && isAdvisor()
+                    && resource.data.status == 'pending'
+                    && request.resource.data.status in ['approved', 'declined']
+                    && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['status', 'decidedAt']);
+
+      // ลบได้เฉพาะเจ้าของคำร้อง และเฉพาะตอนที่ยัง pending (อาจารย์ลบไม่ได้เลย)
+      allow delete: if signedIn() && !isAdvisor()
+                    && resource.data.createdByUid == request.auth.uid
+                    && resource.data.status == 'pending';
+    }
+
+    // คอลเล็กชันสาธิตอื่น ๆ (advisors, teams, aiTeamSummaries ฯลฯ) ยังใช้กฎขั้นต่ำ "ต้องล็อกอินก่อน"
     match /{document=**} {
-      // บรรทัดนี้คือ "ต้องล็อกอินก่อน": request.auth ไม่เป็น null ก็ต่อเมื่อมีการล็อกอินผ่าน
-      // Firebase Authentication มาแล้วเท่านั้น (ผู้ใช้ไม่ล็อกอิน = request.auth เป็น null เสมอ)
-      allow read, write: if request.auth != null;
+      allow read, write: if signedIn();
     }
   }
 }
